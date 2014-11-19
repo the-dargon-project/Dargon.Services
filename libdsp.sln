@@ -1,0 +1,71 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "libdsp.Tests", "libdsp.Tests\libdsp.Tests.csproj", "{AD1F3318-0005-4D68-99D5-83279264BE82}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{64983C16-8442-493E-8BE2-0A0FC8F0881E}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+		.nuget\NuGet.exe = .nuget\NuGet.exe
+		.nuget\NuGet.targets = .nuget\NuGet.targets
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "libdsp", "libdsp.csproj", "{9E41DC5D-E409-45E5-AE89-191DB4252EE0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NMockito", "..\NMockito\NMockito.csproj", "{0060E29C-DB43-45A8-97AF-17D4AEF0DAD7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x86 = Debug|x86
+		DummyPlatform|Any CPU = DummyPlatform|Any CPU
+		DummyPlatform|x86 = DummyPlatform|x86
+		Release|Any CPU = Release|Any CPU
+		Release|x86 = Release|x86
+		TempBuild|Any CPU = TempBuild|Any CPU
+		TempBuild|x86 = TempBuild|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AD1F3318-0005-4D68-99D5-83279264BE82}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD1F3318-0005-4D68-99D5-83279264BE82}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD1F3318-0005-4D68-99D5-83279264BE82}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{AD1F3318-0005-4D68-99D5-83279264BE82}.DummyPlatform|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD1F3318-0005-4D68-99D5-83279264BE82}.DummyPlatform|Any CPU.Build.0 = Debug|Any CPU
+		{AD1F3318-0005-4D68-99D5-83279264BE82}.DummyPlatform|x86.ActiveCfg = Debug|Any CPU
+		{AD1F3318-0005-4D68-99D5-83279264BE82}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD1F3318-0005-4D68-99D5-83279264BE82}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD1F3318-0005-4D68-99D5-83279264BE82}.Release|x86.ActiveCfg = Release|Any CPU
+		{AD1F3318-0005-4D68-99D5-83279264BE82}.TempBuild|Any CPU.ActiveCfg = Release|Any CPU
+		{AD1F3318-0005-4D68-99D5-83279264BE82}.TempBuild|Any CPU.Build.0 = Release|Any CPU
+		{AD1F3318-0005-4D68-99D5-83279264BE82}.TempBuild|x86.ActiveCfg = Release|Any CPU
+		{9E41DC5D-E409-45E5-AE89-191DB4252EE0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9E41DC5D-E409-45E5-AE89-191DB4252EE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9E41DC5D-E409-45E5-AE89-191DB4252EE0}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{9E41DC5D-E409-45E5-AE89-191DB4252EE0}.DummyPlatform|Any CPU.ActiveCfg = Debug|Any CPU
+		{9E41DC5D-E409-45E5-AE89-191DB4252EE0}.DummyPlatform|Any CPU.Build.0 = Debug|Any CPU
+		{9E41DC5D-E409-45E5-AE89-191DB4252EE0}.DummyPlatform|x86.ActiveCfg = Debug|Any CPU
+		{9E41DC5D-E409-45E5-AE89-191DB4252EE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9E41DC5D-E409-45E5-AE89-191DB4252EE0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9E41DC5D-E409-45E5-AE89-191DB4252EE0}.Release|x86.ActiveCfg = Release|Any CPU
+		{9E41DC5D-E409-45E5-AE89-191DB4252EE0}.TempBuild|Any CPU.ActiveCfg = Release|Any CPU
+		{9E41DC5D-E409-45E5-AE89-191DB4252EE0}.TempBuild|Any CPU.Build.0 = Release|Any CPU
+		{9E41DC5D-E409-45E5-AE89-191DB4252EE0}.TempBuild|x86.ActiveCfg = Release|Any CPU
+		{0060E29C-DB43-45A8-97AF-17D4AEF0DAD7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0060E29C-DB43-45A8-97AF-17D4AEF0DAD7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0060E29C-DB43-45A8-97AF-17D4AEF0DAD7}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0060E29C-DB43-45A8-97AF-17D4AEF0DAD7}.DummyPlatform|Any CPU.ActiveCfg = Debug|Any CPU
+		{0060E29C-DB43-45A8-97AF-17D4AEF0DAD7}.DummyPlatform|Any CPU.Build.0 = Debug|Any CPU
+		{0060E29C-DB43-45A8-97AF-17D4AEF0DAD7}.DummyPlatform|x86.ActiveCfg = Debug|Any CPU
+		{0060E29C-DB43-45A8-97AF-17D4AEF0DAD7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0060E29C-DB43-45A8-97AF-17D4AEF0DAD7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0060E29C-DB43-45A8-97AF-17D4AEF0DAD7}.Release|x86.ActiveCfg = Release|Any CPU
+		{0060E29C-DB43-45A8-97AF-17D4AEF0DAD7}.TempBuild|Any CPU.ActiveCfg = Release|Any CPU
+		{0060E29C-DB43-45A8-97AF-17D4AEF0DAD7}.TempBuild|Any CPU.Build.0 = Release|Any CPU
+		{0060E29C-DB43-45A8-97AF-17D4AEF0DAD7}.TempBuild|x86.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
