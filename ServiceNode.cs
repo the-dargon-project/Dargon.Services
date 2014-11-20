@@ -1,14 +1,15 @@
 ﻿using System.Collections.Generic;
 using Dargon.Services.Networking;
+using Dargon.Services.Networking.Server;
 
 namespace Dargon.Services {
    public class ServiceNode : IServiceNode {
-      private readonly IServiceConnector serviceConnector;
+      private readonly IConnector connector;
       private readonly IServiceContextFactory serviceContextFactory;
       private readonly Dictionary<object, IServiceContext> serviceContextsByService = new Dictionary<object, IServiceContext>(); 
 
-      public ServiceNode(IServiceConnector serviceConnector, IServiceContextFactory serviceContextFactory) {
-         this.serviceConnector = serviceConnector;
+      public ServiceNode(IConnector connector, IServiceContextFactory serviceContextFactory) {
+         this.connector = connector;
          this.serviceContextFactory = serviceContextFactory;
       }
 
@@ -16,7 +17,7 @@ namespace Dargon.Services {
          if (!serviceContextsByService.ContainsKey(service)) {
             var context = serviceContextFactory.Create(service);
             serviceContextsByService.Add(service, context);
-            serviceConnector.RegisterService(context);
+            connector.RegisterService(context);
          }
       }
 
@@ -24,7 +25,7 @@ namespace Dargon.Services {
          IServiceContext context;
          if (serviceContextsByService.TryGetValue(service, out context)) {
             serviceContextsByService.Remove(service);
-            serviceConnector.UnregisterService(context);
+            connector.UnregisterService(context);
          }
       }
    }

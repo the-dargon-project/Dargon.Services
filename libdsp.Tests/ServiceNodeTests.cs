@@ -1,18 +1,19 @@
 ﻿using Dargon.Services.Networking;
+using Dargon.Services.Networking.Server;
 using NMockito;
 using Xunit;
 
-namespace Dargon.Services.Tests {
+namespace Dargon.Services {
    public class ServiceNodeTests : NMockitoInstance {
-      private ServiceNode testObj;
+      private readonly ServiceNode testObj;
 
-      [Mock] private readonly IServiceConnector serviceConnector = null;
+      [Mock] private readonly IConnector connector = null;
       [Mock] private readonly IServiceContextFactory serviceContextFactory = null;
       [Mock] private readonly IDummyService dummyService = null;
       [Mock] private readonly IServiceContext dummyServiceContext = null;
 
       public ServiceNodeTests() {
-         testObj = new ServiceNode(serviceConnector, serviceContextFactory);
+         testObj = new ServiceNode(connector, serviceContextFactory);
       }
 
       [Fact]
@@ -22,7 +23,7 @@ namespace Dargon.Services.Tests {
          testObj.RegisterService(dummyService);
 
          Verify(serviceContextFactory).Create(dummyService);
-         Verify(serviceConnector, Once()).RegisterService(dummyServiceContext);
+         Verify(connector, Once()).RegisterService(dummyServiceContext);
          VerifyNoMoreInteractions();
       }
 
@@ -46,7 +47,7 @@ namespace Dargon.Services.Tests {
          RegisteringUnregisteredServiceDelegatesToServiceConnectorTest();
 
          testObj.UnregisterService(dummyService);
-         Verify(serviceConnector, Once()).UnregisterService(dummyServiceContext);
+         Verify(connector, Once()).UnregisterService(dummyServiceContext);
          VerifyNoMoreInteractions();
       }
 

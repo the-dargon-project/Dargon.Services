@@ -1,24 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
 using ItzWarty.Collections;
 
-namespace Dargon.Services.Networking {
-   public class ServiceConnector : IServiceConnector, IDisposable {
-      private readonly IServiceConnectorWorkerFactory serviceConnectorWorkerFactory;
+namespace Dargon.Services.Networking.Server {
+   public class Connector : IConnector, IDisposable {
+      private readonly IConnectorWorker connectorWorker;
       private readonly IConcurrentDictionary<string, IServiceContext> serviceContextsByName;
       private readonly object contextLock = new object();
-      private IServiceConnectorWorker serviceConnectorWorker;
 
-      public ServiceConnector(IServiceConnectorWorkerFactory serviceConnectorWorkerFactory) : this(serviceConnectorWorkerFactory, new ConcurrentDictionary<string, IServiceContext>()) { }
-
-      internal ServiceConnector(IServiceConnectorWorkerFactory serviceConnectorWorkerFactory, IConcurrentDictionary<string, IServiceContext> serviceContextsByName) {
-         this.serviceConnectorWorkerFactory = serviceConnectorWorkerFactory;
+      internal Connector(IConnectorWorker connectorWorker, IConcurrentDictionary<string, IServiceContext> serviceContextsByName) {
+         this.connectorWorker = connectorWorker;
          this.serviceContextsByName = serviceContextsByName;
       }
 
       public void Initialize() {
-         serviceConnectorWorker = serviceConnectorWorkerFactory.Create(serviceContextsByName);
-         serviceConnectorWorker.Start();
+         connectorWorker.Initalize(serviceContextsByName);
+         connectorWorker.Start();
       }
 
       public void RegisterService(IServiceContext serviceContext) {
@@ -26,7 +22,7 @@ namespace Dargon.Services.Networking {
             if (!this.serviceContextsByName.TryAdd(serviceContext.Name, serviceContext)) {
                throw new InvalidOperationException("Attempted to register service context twice!");
             } else {
-               serviceConnectorWorker.SignalUpdate();
+               connectorWorker.SignalUpdate();
             }
          }
       }
@@ -39,14 +35,14 @@ namespace Dargon.Services.Networking {
             } else if (removedContext != serviceContext) {
                throw new InvalidOperationException("ServiceContext of name " + serviceContext.Name + " removed, but references did not match!?");
             } else {
-               serviceConnectorWorker.SignalUpdate();
+               connectorWorker.SignalUpdate();
             }
          }
       }
 
       public void Dispose() {
-         if (serviceConnectorWorker != null) {
-            serviceConnectorWorker.Dispose();
+         if (connectorWorker != null) {
+            connectorWorker.Dispose();
          }
       }
    }

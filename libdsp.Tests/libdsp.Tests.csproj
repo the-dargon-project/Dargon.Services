@@ -6,7 +6,7 @@
     <ProjectGuid>{AD1F3318-0005-4D68-99D5-83279264BE82}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Dargon.Services.Tests</RootNamespace>
+    <RootNamespace>Dargon.Services</RootNamespace>
     <AssemblyName>libdsp.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -40,18 +40,28 @@
   <ItemGroup>
     <Reference Include="Castle.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\NMockito.0.0.0\lib\net45\\Castle.Core.dll</HintPath>
+      <HintPath>..\packages\NMockito.0.0.4\lib\net45\Castle.Core.dll</HintPath>
     </Reference>
-    <Reference Include="libwarty">
-      <HintPath>..\packages\libwarty.0.0.2\lib\portable-net45+netcore45+MonoAndroid1+MonoTouch1\libwarty.dll</HintPath>
+    <Reference Include="libdpo, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\libdpo.0.0.4\lib\net45\libdpo.dll</HintPath>
     </Reference>
-    <Reference Include="libwarty.proxies-api">
-      <HintPath>..\packages\libwarty.proxies-api.0.0.1\lib\net45\libwarty.proxies-api.dll</HintPath>
+    <Reference Include="libwarty, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\libdpo.0.0.4\lib\net45\libwarty.dll</HintPath>
+    </Reference>
+    <Reference Include="libwarty.proxies-api, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\libwarty.proxies-api.0.0.7\lib\net45\libwarty.proxies-api.dll</HintPath>
+    </Reference>
+    <Reference Include="NMockito, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\NMockito.0.0.4\lib\net45\NMockito.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="xunit, Version=1.9.2.1705, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\xunit.1.9.2\lib\net20\xunit.dll</HintPath>
+      <HintPath>..\packages\NMockito.0.0.4\lib\net45\xunit.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Choose>
@@ -63,24 +73,22 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
-    <Compile Include="ServiceConnectorTests.cs" />
+    <Compile Include="Networking\PortableObjects\G2HServiceBroadcastTests.cs" />
+    <Compile Include="Networking\Server\ConnectorContextTests.cs" />
+    <Compile Include="Networking\Server\ConnectorTests.cs" />
+    <Compile Include="Networking\Server\ConnectorWorkerTests.cs" />
+    <Compile Include="Networking\Server\Phases\IndeterminatePhaseTests.cs" />
     <Compile Include="ServiceNodeTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config">
-      <SubType>Designer</SubType>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\NMockito\NMockito.csproj">
-      <Project>{0060e29c-db43-45a8-97af-17d4aef0dad7}</Project>
-      <Name>NMockito</Name>
-    </ProjectReference>
     <ProjectReference Include="..\libdsp.csproj">
       <Project>{9E41DC5D-E409-45E5-AE89-191DB4252EE0}</Project>
       <Name>libdsp</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
