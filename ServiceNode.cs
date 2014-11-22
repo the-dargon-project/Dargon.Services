@@ -1,22 +1,25 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Dargon.Services.Networking;
 using Dargon.Services.Networking.Server;
+using ItzWarty;
+using ItzWarty.Collections;
 
 namespace Dargon.Services {
    public class ServiceNode : IServiceNode {
       private readonly IConnector connector;
       private readonly IServiceContextFactory serviceContextFactory;
-      private readonly Dictionary<object, IServiceContext> serviceContextsByService = new Dictionary<object, IServiceContext>(); 
+      private readonly IConcurrentDictionary<object, IServiceContext> serviceContextsByService; 
 
-      public ServiceNode(IConnector connector, IServiceContextFactory serviceContextFactory) {
+      public ServiceNode(ICollectionFactory collectionFactory, IConnector connector, IServiceContextFactory serviceContextFactory) {
          this.connector = connector;
          this.serviceContextFactory = serviceContextFactory;
+         this.serviceContextsByService = collectionFactory.CreateConcurrentDictionary<object, IServiceContext>();
       }
 
       public void RegisterService(object service) {
-         if (!serviceContextsByService.ContainsKey(service)) {
-            var context = serviceContextFactory.Create(service);
-            serviceContextsByService.Add(service, context);
+         IServiceContext context = null;
+         if (serviceContextsByService.TryAdd(service, () => context = serviceContextFactory.Create(service))) {
             connector.RegisterService(context);
          }
       }
@@ -24,8 +27,9 @@ namespace Dargon.Services {
       public void UnregisterService(object service) {
          IServiceContext context;
          if (serviceContextsByService.TryGetValue(service, out context)) {
-            serviceContextsByService.Remove(service);
-            connector.UnregisterService(context);
+            if (serviceContextsByService.TryRemove(service, context)) {
+               connector.UnregisterService(context);
+            }
          }
       }
    }

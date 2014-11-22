@@ -15,7 +15,7 @@ namespace Dargon.Services.Networking.Server {
       [Mock] private readonly ISemaphore updateSemaphore = null;
       [Mock] private readonly IThread workerThread = null;
       [Mock] private readonly IConcurrentDictionary<string, IServiceContext> serviceContextsByName = null;
-      private readonly CancellationToken cancellationToken = default(CancellationToken);
+      [Mock] private readonly ICancellationToken cancellationToken = null;
 
       public ConnectorWorkerTests() {
          When(threadingProxy.CreateCancellationTokenSource()).ThenReturn(cancellationTokenSource);

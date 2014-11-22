@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using Dargon.PortableObjects;
-using ItzWarty.Collections;
+﻿using ItzWarty.Collections;
 using NMockito;
+using System;
 using Xunit;
 
 namespace Dargon.Services.Networking.PortableObjects {
@@ -17,14 +14,13 @@ namespace Dargon.Services.Networking.PortableObjects {
 
       [Fact]
       public void PofSerializationTest() {
-         var context = new DspPofContext();
-         var serializer = new PofSerializer(context);
-         using (var ms = new MemoryStream()) {
-            serializer.Serialize(ms, testObj);
-            ms.Position = 0;
-            var deserialized = serializer.Deserialize<G2HServiceBroadcast>(ms);
-            AssertEquals(testObj, deserialized);
-         }
+         PofTestUtilities.CheckConfiguration(new DspPofContext(), testObj);
+      }
+
+      [Fact]
+      public void ServiceGuidsReflectsConstructorParameterTest() {
+         AssertEquals(guids, testObj.ServiceGuids);
+         VerifyNoMoreInteractions();
       }
    }
 }

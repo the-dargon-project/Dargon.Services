@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Sockets;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using ItzWarty.Networking;
+﻿using ItzWarty.Networking;
 using ItzWarty.Threading;
 using NMockito;
+using System.Net.Sockets;
 using Xunit;
 
 namespace Dargon.Services.Networking.Server.Phases {
@@ -67,6 +61,12 @@ namespace Dargon.Services.Networking.Server.Phases {
          Verify(threadingProxy, Once()).Sleep(Any<int>());
          Verify(phaseFactory, Once()).CreateHostPhase(listenerSocket);
          Verify(context, Once()).Transition(hostPhase);
+         VerifyNoMoreInteractions();
+      }
+
+      [Fact]
+      public void DisposeDoesNothing() {
+         testObj.Dispose();
          VerifyNoMoreInteractions();
       }
    }

@@ -26,5 +26,9 @@ namespace Dargon.Services.Networking.Server.Phases {
 
       public void HandleUpdate() {
       }
+
+      public void Dispose() {
+         throw new NotImplementedException();
+      }
    }
 }

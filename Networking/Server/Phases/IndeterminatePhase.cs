@@ -43,5 +43,9 @@ namespace Dargon.Services.Networking.Server.Phases {
             context.Transition(phaseFactory.CreateGuestPhase(clientSocket));
          }
       }
+
+      public void Dispose() {
+         // does nothing
+      }
    }
 }

@@ -1,4 +1,5 @@
 ﻿using Dargon.PortableObjects;
+using Dargon.Services.Networking.Server.Sessions;
 using ItzWarty;
 using ItzWarty.Networking;
 using ItzWarty.Threading;
@@ -7,13 +8,15 @@ namespace Dargon.Services.Networking.Server.Phases {
    public class PhaseFactory : IPhaseFactory {
       private readonly IThreadingProxy threadingProxy;
       private readonly INetworkingProxy networkingProxy;
+      private readonly IHostSessionFactory hostSessionFactory;
       private readonly IPofSerializer pofSerializer;
       private readonly IServiceConfiguration serviceConfiguration;
       private readonly IContext context;
 
-      public PhaseFactory(IThreadingProxy threadingProxy, INetworkingProxy networkingProxy, IPofSerializer pofSerializer,  IServiceConfiguration serviceConfiguration, IContext context) {
+      public PhaseFactory(IThreadingProxy threadingProxy, INetworkingProxy networkingProxy, IHostSessionFactory hostSessionFactory, IPofSerializer pofSerializer,  IServiceConfiguration serviceConfiguration, IContext context) {
          this.threadingProxy = threadingProxy;
          this.networkingProxy = networkingProxy;
+         this.hostSessionFactory = hostSessionFactory;
          this.pofSerializer = pofSerializer;
          this.serviceConfiguration = serviceConfiguration;
          this.context = context;
@@ -24,7 +27,7 @@ namespace Dargon.Services.Networking.Server.Phases {
       }
 
       public IPhase CreateHostPhase(IListenerSocket listenerSocket) {
-         return new HostPhase(threadingProxy, networkingProxy, pofSerializer, context, listenerSocket).With(x => x.Initialize());
+         return new HostPhase(threadingProxy, networkingProxy, pofSerializer, hostSessionFactory, context, listenerSocket).With(x => x.Initialize());
       }
 
       public IPhase CreateGuestPhase(IConnectedSocket clientSocket) {

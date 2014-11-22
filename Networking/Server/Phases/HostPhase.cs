@@ -1,5 +1,6 @@
 ﻿using Dargon.PortableObjects;
 using Dargon.Services.Networking.PortableObjects;
+using Dargon.Services.Networking.Server.Sessions;
 using ItzWarty.Collections;
 using ItzWarty.Networking;
 using ItzWarty.Threading;
@@ -15,48 +16,67 @@ namespace Dargon.Services.Networking.Server.Phases {
       private readonly IThreadingProxy threadingProxy;
       private readonly INetworkingProxy networkingProxy;
       private readonly IPofSerializer pofSerializer;
+      private readonly IHostSessionFactory hostSessionFactory;
       private readonly IContext context;
       private readonly IListenerSocket listenerSocket;
+      private readonly ICancellationTokenSource cancellationTokenSource;
 
       private readonly IConcurrentDictionary<IConnectedSocket, string> blahByClient = new ConcurrentDictionary<IConnectedSocket, string>();
 
-      public HostPhase(IThreadingProxy threadingProxy, INetworkingProxy networkingProxy, IPofSerializer pofSerializer, IContext context, IListenerSocket listenerSocket) {
+      private bool disposed = false;
+
+      public HostPhase(IThreadingProxy threadingProxy, INetworkingProxy networkingProxy, IPofSerializer pofSerializer, IHostSessionFactory hostSessionFactory, IContext context, IListenerSocket listenerSocket) {
          this.threadingProxy = threadingProxy;
          this.networkingProxy = networkingProxy;
          this.pofSerializer = pofSerializer;
+         this.hostSessionFactory = hostSessionFactory;
          this.context = context;
          this.listenerSocket = listenerSocket;
+         this.cancellationTokenSource = threadingProxy.CreateCancellationTokenSource();
       }
 
       public void Initialize() {
-         threadingProxy.CreateThread(ListenerThreadEntryPoint, new ThreadCreationOptions { IsBackground = true });
+         var listenerThread = threadingProxy.CreateThread(ListenerThreadEntryPoint, new ThreadCreationOptions { IsBackground = true });
+         listenerThread.Start();
       }
 
-      private void ListenerThreadEntryPoint() {
-         while (true) {
-            var socket = networkingProxy.Accept(listenerSocket);
-            threadingProxy.CreateThread(() => SessionThreadEntryPoint(socket), new ThreadCreationOptions { IsBackground = true });
+      internal void ListenerThreadEntryPoint() {
+         while (!cancellationTokenSource.IsCancellationRequested) {
+            var socket = listenerSocket.Accept();
+            var thread = threadingProxy.CreateThread(() => SessionThreadEntryPoint(socket), new ThreadCreationOptions { IsBackground = true });
+            thread.Start();
          }
       }
 
-      private void SessionThreadEntryPoint(IConnectedSocket socket) {
-         using (var ns = networkingProxy.CreateNetworkStream(socket, true)) 
-         using (var reader = new BinaryReader(ns)) 
-         using (var writer = new BinaryWriter(ns)) {
-            try {
-               while (true) {
-                  var serviceBroadcast = pofSerializer.Deserialize<G2HServiceBroadcast>(reader);
-               }
-            } catch (SocketException e) {
-               logger.Warn(e);
-            } catch (Exception e) {
-               logger.Error(e);
+      internal void SessionThreadEntryPoint(IConnectedSocket socket) {
+         try {
+            var handshake = pofSerializer.Deserialize<X2SHandshake>(socket.GetReader());
+            if (handshake.ClientRole == ClientRole.Client) {
+               var clientSession = hostSessionFactory.CreateClientSession(socket.GetReader(), socket.GetWriter());
+               clientSession.Run();
+            } else if (handshake.ClientRole == ClientRole.Guest) {
+               var guestSession = hostSessionFactory.CreateGuestSession(socket.GetReader(), socket.GetWriter());
+               guestSession.Run();
+            } else {
+               // do nothing
             }
+         } catch (SocketException e) {
+            logger.Warn(e);
+         } catch (Exception e) {
+            logger.Error(e);
          }
       }
 
       public void HandleUpdate() {
 
+      }
+
+      public void Dispose() {
+         if (!disposed) {
+            disposed = true;
+            cancellationTokenSource.Dispose();
+            listenerSocket.Dispose();
+         }
       }
    }
 }

@@ -1,4 +1,6 @@
-﻿using Dargon.Services.Networking.Server.Phases;
+﻿using System;
+using System.Diagnostics;
+using Dargon.Services.Networking.Server.Phases;
 using ItzWarty.Collections;
 using NMockito;
 using Xunit;
@@ -24,6 +26,8 @@ namespace Dargon.Services.Networking.Server {
       public void ServiceContextsByNameReflectsInitializeParameterTest() {
          InitializeHappyPathTest();
 
+         Debug.WriteLine(serviceContextsByName);
+         Debug.WriteLine(testObj.ServiceContextsByName);
          AssertEquals(serviceContextsByName, testObj.ServiceContextsByName);
          VerifyNoMoreInteractions();
       }
@@ -44,10 +48,36 @@ namespace Dargon.Services.Networking.Server {
       }
 
       [Fact]
+      public void TransitionThrowsIfDisposedTest() {
+         testObj.Dispose();
+         ClearInteractions();
+
+         Assert.Throws<ObjectDisposedException>(() => testObj.Transition(otherPhase));
+         VerifyNoMoreInteractions();
+      }
+
+      [Fact]
       public void HandleUpdateDelegatesToCurrentPhaseTest() {
          testObj.HandleUpdate();
 
          Verify(initialPhase).HandleUpdate();
+         VerifyNoMoreInteractions();
+      }
+
+      [Fact]
+      public void HandleUpdateThrowsIfDisposedTest() {
+         testObj.Dispose();
+         ClearInteractions();
+
+         Assert.Throws<ObjectDisposedException>(() => testObj.HandleUpdate());
+         VerifyNoMoreInteractions();
+      }
+
+      [Fact]
+      public void DisposeTest() {
+         testObj.Dispose();
+         Assert.Throws<ObjectDisposedException>(() => testObj.ThrowIfDisposed());
+         Verify(initialPhase).Dispose();
          VerifyNoMoreInteractions();
       }
    }

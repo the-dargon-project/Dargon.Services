@@ -1,5 +1,6 @@
 ﻿using Dargon.Services.Networking;
 using Dargon.Services.Networking.Server;
+using ItzWarty.Collections;
 using NMockito;
 using Xunit;
 
@@ -7,13 +8,22 @@ namespace Dargon.Services {
    public class ServiceNodeTests : NMockitoInstance {
       private readonly ServiceNode testObj;
 
+      [Mock] private readonly ICollectionFactory collectionFactory;
       [Mock] private readonly IConnector connector = null;
       [Mock] private readonly IServiceContextFactory serviceContextFactory = null;
       [Mock] private readonly IDummyService dummyService = null;
       [Mock] private readonly IServiceContext dummyServiceContext = null;
 
+      private readonly ConcurrentDictionary<object, IServiceContext> serviceContextsByService;
+
       public ServiceNodeTests() {
-         testObj = new ServiceNode(connector, serviceContextFactory);
+         serviceContextsByService = new ConcurrentDictionary<object, IServiceContext>();
+         When(collectionFactory.CreateConcurrentDictionary<object, IServiceContext>()).ThenReturn(serviceContextsByService);
+
+         testObj = new ServiceNode(collectionFactory, connector, serviceContextFactory);
+
+         Verify(collectionFactory).CreateConcurrentDictionary<object, IServiceContext>();
+         VerifyNoMoreInteractions();
       }
 
       [Fact]
