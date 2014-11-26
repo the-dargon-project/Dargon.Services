@@ -7,13 +7,13 @@ using Xunit;
 
 namespace Dargon.Services.Networking.Server {
    public class ConnectorContextTests : NMockitoInstance {
-      private readonly ConnectorContext testObj;
+      private readonly ConnectorConnectorContext testObj;
       [Mock] private readonly IPhase initialPhase = null;
       [Mock] private readonly IPhase otherPhase = null;
       [Mock] private readonly IConcurrentDictionary<string, IServiceContext> serviceContextsByName = null;
 
       public ConnectorContextTests() {
-         testObj = new ConnectorContext(initialPhase);
+         testObj = new ConnectorConnectorContext(initialPhase);
       }
 
       [Fact]
@@ -57,19 +57,19 @@ namespace Dargon.Services.Networking.Server {
       }
 
       [Fact]
-      public void HandleUpdateDelegatesToCurrentPhaseTest() {
-         testObj.HandleUpdate();
+      public void RunIterationDelegatesToCurrentPhaseTest() {
+         testObj.RunIteration();
 
-         Verify(initialPhase).HandleUpdate();
+         Verify(initialPhase).RunIteration();
          VerifyNoMoreInteractions();
       }
 
       [Fact]
-      public void HandleUpdateThrowsIfDisposedTest() {
+      public void RunIterationThrowsIfDisposedTest() {
          testObj.Dispose();
          ClearInteractions();
 
-         Assert.Throws<ObjectDisposedException>(() => testObj.HandleUpdate());
+         Assert.Throws<ObjectDisposedException>(() => testObj.RunIteration());
          VerifyNoMoreInteractions();
       }
 

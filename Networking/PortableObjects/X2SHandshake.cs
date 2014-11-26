@@ -7,26 +7,26 @@ using Dargon.PortableObjects;
 
 namespace Dargon.Services.Networking.PortableObjects {
    public class X2SHandshake : IPortableObject, IEquatable<X2SHandshake> {
-      private ClientRole clientRole;
+      private Role role;
 
       public X2SHandshake() { }
 
-      public X2SHandshake(ClientRole clientRole) {
-         this.clientRole = clientRole;
+      public X2SHandshake(Role role) {
+         this.role = role;
       }
 
-      public ClientRole ClientRole { get { return clientRole; } }
+      public Role Role { get { return role; } }
 
       public void Serialize(IPofWriter writer) {
-         writer.WriteU8(0, (byte)clientRole);
+         writer.WriteU8(0, (byte)role);
       }
 
       public void Deserialize(IPofReader reader) {
-         clientRole = (ClientRole)reader.ReadU8(0);
+         role = (Role)reader.ReadU8(0);
       }
 
       public bool Equals(X2SHandshake other) {
-         return other.clientRole == this.clientRole;
+         return other.role == this.role;
       }
    }
 }

@@ -34,15 +34,15 @@
   <ItemGroup>
     <Reference Include="libdpo, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\libdpo.0.0.4\lib\net45\libdpo.dll</HintPath>
+      <HintPath>packages\libdpo.0.0.7\lib\net45\libdpo.dll</HintPath>
     </Reference>
     <Reference Include="libwarty, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\libwarty.0.0.9\lib\portable-net45+netcore45+MonoAndroid1+MonoTouch1\libwarty.dll</HintPath>
+      <HintPath>packages\libdpo.0.0.7\lib\net45\libwarty.dll</HintPath>
     </Reference>
     <Reference Include="libwarty.proxies-api, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\libwarty.proxies-api.0.0.9\lib\net45\libwarty.proxies-api.dll</HintPath>
+      <HintPath>packages\libwarty.proxies-api.0.0.11\lib\net45\libwarty.proxies-api.dll</HintPath>
     </Reference>
     <Reference Include="NLog, Version=3.1.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -57,6 +57,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IService.cs" />
     <Compile Include="IServiceClient.cs" />
     <Compile Include="IServiceClientFactory.cs" />
     <Compile Include="IServiceConfiguration.cs" />
@@ -65,15 +66,22 @@
     <Compile Include="IServiceEndpoint.cs" />
     <Compile Include="IServiceNode.cs" />
     <Compile Include="IServiceNodeFactory.cs" />
+    <Compile Include="Networking\Events\ConnectorEvent.cs" />
+    <Compile Include="Networking\Events\ConnectorEventFactory.cs" />
+    <Compile Include="Networking\Events\ConnectorEventType.cs" />
+    <Compile Include="Networking\Events\IConnectorEvent.cs" />
+    <Compile Include="Networking\Events\IConnectorEventFactory.cs" />
     <Compile Include="Networking\IClientConnector.cs" />
     <Compile Include="Networking\IConnectorFactory.cs" />
     <Compile Include="Networking\PortableObjects\X2SHandshake.cs" />
-    <Compile Include="Networking\PortableObjects\ClientRole.cs" />
+    <Compile Include="Networking\PortableObjects\Role.cs" />
     <Compile Include="Networking\PortableObjects\DspPofContext.cs" />
     <Compile Include="Networking\PortableObjects\G2HServiceBroadcast.cs" />
     <Compile Include="Networking\Server\IConnector.cs" />
-    <Compile Include="Networking\Server\IContext.cs" />
+    <Compile Include="Networking\Server\IConnectorContext.cs" />
+    <Compile Include="Networking\Server\Phases\G2HServiceUpdate.cs" />
     <Compile Include="Networking\Server\Phases\GuestPhase.cs" />
+    <Compile Include="Networking\Server\Phases\H2GServiceInvocation.cs" />
     <Compile Include="Networking\Server\Phases\PhaseFactory.cs" />
     <Compile Include="Networking\Server\Phases\IPhase.cs" />
     <Compile Include="Networking\Server\Phases\IPhaseFactory.cs" />
@@ -81,7 +89,7 @@
     <Compile Include="Networking\Server\IConnectorWorkerFactory.cs" />
     <Compile Include="Networking\IServiceInvocationHandler.cs" />
     <Compile Include="Networking\Server\Connector.cs" />
-    <Compile Include="Networking\Server\ConnectorContext.cs" />
+    <Compile Include="Networking\Server\ConnectorConnectorContext.cs" />
     <Compile Include="Networking\Server\ConnectorWorker.cs" />
     <Compile Include="Networking\Server\Phases\IndeterminatePhase.cs" />
     <Compile Include="Networking\Server\Phases\HostPhase.cs" />

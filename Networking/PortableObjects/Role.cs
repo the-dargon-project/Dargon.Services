@@ -1,7 +1,8 @@
 ﻿namespace Dargon.Services.Networking.PortableObjects {
-   public enum ClientRole : byte {
+   public enum Role : byte {
       Undefined = 0,
       Client,
-      Guest
+      Guest,
+      Server
    }
 }

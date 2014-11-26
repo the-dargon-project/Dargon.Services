@@ -18,14 +18,14 @@ namespace Dargon.Services.Networking.Server.Phases {
       [Mock] private readonly INetworkingProxy networkingProxy = null;
       [Mock] private readonly IPofSerializer pofSerializer = null;
       [Mock] private readonly IHostSessionFactory hostSessionFactory = null;
-      [Mock] private readonly IContext context = null;
+      [Mock] private readonly IConnectorContext connectorContext = null;
       [Mock] private readonly IListenerSocket listenerSocket = null;
       [Mock] private readonly ICancellationTokenSource cancellationTokenSource = null;
 
       public HostPhaseTests() {
          When(threadingProxy.CreateCancellationTokenSource()).ThenReturn(cancellationTokenSource);
 
-         testObj = new HostPhase(threadingProxy, networkingProxy, pofSerializer, hostSessionFactory, context, listenerSocket);
+         testObj = new HostPhase(threadingProxy, networkingProxy, pofSerializer, hostSessionFactory, connectorContext, listenerSocket);
 
          Verify(threadingProxy).CreateCancellationTokenSource();
          VerifyNoMoreInteractions();
@@ -87,7 +87,7 @@ namespace Dargon.Services.Networking.Server.Phases {
          var reader = new BinaryReader(new MemoryStream());
          var writer = new BinaryWriter(new MemoryStream());
          var clientSession = CreateMock<IClientSession>();
-         var handshake = new X2SHandshake(ClientRole.Client);
+         var handshake = new X2SHandshake(Role.Client);
 
          When(socket.GetReader()).ThenReturn(reader);
          When(socket.GetWriter()).ThenReturn(writer);
@@ -100,7 +100,6 @@ namespace Dargon.Services.Networking.Server.Phases {
          Verify(socket).GetWriter();
          Verify(pofSerializer).Deserialize<X2SHandshake>(reader);
          Verify(hostSessionFactory).CreateClientSession(reader, writer);
-         Verify(clientSession).Run();
          VerifyNoMoreInteractions();
       }
 
@@ -110,7 +109,7 @@ namespace Dargon.Services.Networking.Server.Phases {
          var reader = new BinaryReader(new MemoryStream());
          var writer = new BinaryWriter(new MemoryStream());
          var guestSession = CreateMock<IGuestSession>();
-         var handshake = new X2SHandshake(ClientRole.Guest);
+         var handshake = new X2SHandshake(Role.Guest);
 
          When(socket.GetReader()).ThenReturn(reader);
          When(socket.GetWriter()).ThenReturn(writer);
@@ -123,7 +122,6 @@ namespace Dargon.Services.Networking.Server.Phases {
          Verify(socket).GetWriter();
          Verify(pofSerializer).Deserialize<X2SHandshake>(reader);
          Verify(hostSessionFactory).CreateGuestSession(reader, writer);
-         Verify(guestSession).Run();
          VerifyNoMoreInteractions();
       }
 
@@ -132,7 +130,7 @@ namespace Dargon.Services.Networking.Server.Phases {
          var socket = CreateMock<IConnectedSocket>();
          var reader = new BinaryReader(new MemoryStream());
          var writer = new BinaryWriter(new MemoryStream());
-         var handshake = new X2SHandshake(ClientRole.Undefined);
+         var handshake = new X2SHandshake(Role.Undefined);
 
          When(socket.GetReader()).ThenReturn(reader);
          When(socket.GetWriter()).ThenReturn(writer);

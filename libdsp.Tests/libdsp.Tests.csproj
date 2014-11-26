@@ -47,14 +47,16 @@
       <HintPath>..\packages\Dargon.TestUtilities.0.0.0\lib\net45\Dargon.TestUtilities.dll</HintPath>
     </Reference>
     <Reference Include="libdpo, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Dargon.TestUtilities.0.0.0\lib\net45\libdpo.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\libdpo.0.0.7\lib\net45\libdpo.dll</HintPath>
     </Reference>
     <Reference Include="libwarty, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\libwarty.0.0.9\lib\portable-net45+netcore45+MonoAndroid1+MonoTouch1\libwarty.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\libdpo.0.0.7\lib\net45\libwarty.dll</HintPath>
     </Reference>
     <Reference Include="libwarty.proxies-api, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\libwarty.proxies-api.0.0.9\lib\net45\libwarty.proxies-api.dll</HintPath>
+      <HintPath>..\packages\libwarty.proxies-api.0.0.11\lib\net45\libwarty.proxies-api.dll</HintPath>
     </Reference>
     <Reference Include="NMockito, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -76,9 +78,9 @@
   <ItemGroup>
     <Compile Include="Networking\PortableObjects\G2HServiceBroadcastTests.cs" />
     <Compile Include="Networking\PortableObjects\X2SHandshakeTests.cs" />
-    <Compile Include="Networking\Server\ConnectorContextTests.cs" />
-    <Compile Include="Networking\Server\ConnectorTests.cs" />
-    <Compile Include="Networking\Server\ConnectorWorkerTests.cs" />
+    <None Include="Networking\Server\ConnectorContextTests.cs" />
+    <None Include="Networking\Server\ConnectorTests.cs" />
+    <None Include="Networking\Server\ConnectorWorkerTests.cs" />
     <Compile Include="Networking\Server\Phases\HostPhaseTests.cs" />
     <Compile Include="Networking\Server\Phases\IndeterminatePhaseTests.cs" />
     <Compile Include="Networking\Server\Phases\PhaseFactoryTests.cs" />

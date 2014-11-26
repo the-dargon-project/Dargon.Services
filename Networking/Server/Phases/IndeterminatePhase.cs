@@ -14,17 +14,17 @@ namespace Dargon.Services.Networking.Server.Phases {
       private readonly INetworkingProxy networkingProxy;
       private readonly IPhaseFactory phaseFactory;
       private readonly IServiceConfiguration configuration;
-      private readonly IContext context;
+      private readonly IConnectorContext connectorContext;
 
-      public IndeterminatePhase(IThreadingProxy threadingProxy, INetworkingProxy networkingProxy, IPhaseFactory phaseFactory, IServiceConfiguration configuration, IContext context) {
+      public IndeterminatePhase(IThreadingProxy threadingProxy, INetworkingProxy networkingProxy, IPhaseFactory phaseFactory, IServiceConfiguration configuration, IConnectorContext connectorContext) {
          this.threadingProxy = threadingProxy;
          this.networkingProxy = networkingProxy;
          this.phaseFactory = phaseFactory;
          this.configuration = configuration;
-         this.context = context;
+         this.connectorContext = connectorContext;
       }
 
-      public void HandleUpdate() {
+      public void RunIteration() {
          IListenerSocket listenerSocket = null;
          IConnectedSocket clientSocket = null;
          var connectEndpoint = networkingProxy.CreateLoopbackEndPoint(configuration.Port);
@@ -38,9 +38,9 @@ namespace Dargon.Services.Networking.Server.Phases {
          }
 
          if (listenerSocket != null) {
-            context.Transition(phaseFactory.CreateHostPhase(listenerSocket));
+            connectorContext.Transition(phaseFactory.CreateHostPhase(listenerSocket));
          } else {
-            context.Transition(phaseFactory.CreateGuestPhase(clientSocket));
+            connectorContext.Transition(phaseFactory.CreateGuestPhase(clientSocket));
          }
       }
 

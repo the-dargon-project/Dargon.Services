@@ -14,18 +14,18 @@ namespace Dargon.Services.Networking.Server.Phases {
       [Mock] private readonly INetworkingProxy networkingProxy = null;
       [Mock(Tracking.Untracked)] private readonly IServiceConfiguration configuration = null;
       [Mock] private readonly IPhaseFactory phaseFactory = null;
-      [Mock] private readonly IContext context = null;
+      [Mock] private readonly IConnectorContext connectorContext = null;
       [Mock] private readonly ITcpEndPoint connectEndpoint = null;
 
       public IndeterminatePhaseTests() {
-         testObj = new IndeterminatePhase(threadingProxy, networkingProxy, phaseFactory, configuration, context);
+         testObj = new IndeterminatePhase(threadingProxy, networkingProxy, phaseFactory, configuration, connectorContext);
 
          When(configuration.Port).ThenReturn(kPort);
          When(networkingProxy.CreateLoopbackEndPoint(kPort)).ThenReturn(connectEndpoint);
       }
 
       [Fact]
-      public void HandleUpdateGuestPathTest() {
+      public void RunIterationGuestPathTest() {
          var clientSocket = CreateMock<IConnectedSocket>();
          var guestPhase = CreateMock<IPhase>();
 
@@ -33,19 +33,19 @@ namespace Dargon.Services.Networking.Server.Phases {
          When(networkingProxy.CreateConnectedSocket(connectEndpoint)).ThenThrow(new SocketException()).ThenReturn(clientSocket);
          When(phaseFactory.CreateGuestPhase(clientSocket)).ThenReturn(guestPhase);
 
-         testObj.HandleUpdate();
+         testObj.RunIteration();
 
          Verify(networkingProxy, Once()).CreateLoopbackEndPoint(kPort);
          Verify(networkingProxy, Times(2)).CreateListenerSocket(kPort);
          Verify(networkingProxy, Times(2)).CreateConnectedSocket(connectEndpoint);
          Verify(threadingProxy, Once()).Sleep(Any<int>());
          Verify(phaseFactory, Once()).CreateGuestPhase(clientSocket);
-         Verify(context, Once()).Transition(guestPhase);
+         Verify(connectorContext, Once()).Transition(guestPhase);
          VerifyNoMoreInteractions();
       }
 
       [Fact]
-      public void HandleUpdateHostPathTest() {
+      public void RunIterationHostPathTest() {
          var listenerSocket = CreateMock<IListenerSocket>();
          var hostPhase = CreateMock<IPhase>();
 
@@ -53,14 +53,14 @@ namespace Dargon.Services.Networking.Server.Phases {
          When(networkingProxy.CreateConnectedSocket(connectEndpoint)).ThenThrow(new SocketException());
          When(phaseFactory.CreateHostPhase(listenerSocket)).ThenReturn(hostPhase);
 
-         testObj.HandleUpdate();
+         testObj.RunIteration();
 
          Verify(networkingProxy, Once()).CreateLoopbackEndPoint(kPort);
          Verify(networkingProxy, Times(2)).CreateListenerSocket(kPort);
          Verify(networkingProxy, Once()).CreateConnectedSocket(connectEndpoint);
          Verify(threadingProxy, Once()).Sleep(Any<int>());
          Verify(phaseFactory, Once()).CreateHostPhase(listenerSocket);
-         Verify(context, Once()).Transition(hostPhase);
+         Verify(connectorContext, Once()).Transition(hostPhase);
          VerifyNoMoreInteractions();
       }
 

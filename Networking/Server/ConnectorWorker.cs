@@ -1,42 +1,35 @@
-﻿using ItzWarty.Collections;
+﻿using System.Timers;
+using ItzWarty.Collections;
 using ItzWarty.Threading;
 
 namespace Dargon.Services.Networking.Server {
-   class ConnectorWorker : IConnectorWorker {
+   public class ConnectorWorker : IConnectorWorker {
       private readonly IThreadingProxy threadingProxy;
-      private readonly IContext context;
+      private readonly IConnectorContext connectorContext;
+      private readonly IServiceConfiguration serviceConfiguration;
       private readonly ICancellationTokenSource cancellationTokenSource;
       private readonly ISemaphore updateSemaphore;
       private readonly IThread workerThread;
 
-      public ConnectorWorker(IThreadingProxy threadingProxy, IContext context) {
+      public ConnectorWorker(IThreadingProxy threadingProxy, IConnectorContext connectorContext, IServiceConfiguration serviceConfiguration) {
          this.threadingProxy = threadingProxy;
-         this.context = context;
+         this.connectorContext = connectorContext;
+         this.serviceConfiguration = serviceConfiguration;
          this.cancellationTokenSource = threadingProxy.CreateCancellationTokenSource();
          this.updateSemaphore = threadingProxy.CreateSemaphore(0, int.MaxValue);
          this.workerThread = threadingProxy.CreateThread(ThreadEntryPoint, new ThreadCreationOptions { IsBackground = true });
       }
 
-      public void Initalize(IConcurrentDictionary<string, IServiceContext> serviceContextsByName) {
-         this.context.Initialize(serviceContextsByName);
+      public void Initalize() {
          this.workerThread.Start();
       }
 
       internal void ThreadEntryPoint() {
          while (!this.cancellationTokenSource.IsCancellationRequested) {
-            if (this.updateSemaphore.Wait(cancellationTokenSource.Token)) {
-               this.context.HandleUpdate();
-            }
+            this.connectorContext.RunIteration();
+
+            this.cancellationTokenSource.Token.WaitForCancellation(serviceConfiguration.HeartbeatIntervalMilliseconds);
          }
-      }
-
-      public void Start() {
-         this.updateSemaphore.Release();
-         this.workerThread.Start();
-      }
-
-      public void SignalUpdate() {
-         this.updateSemaphore.Release();
       }
 
       public void Dispose() {

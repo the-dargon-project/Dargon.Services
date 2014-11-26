@@ -4,7 +4,7 @@ using Xunit;
 namespace Dargon.Services.Networking.PortableObjects {
    public class X2SHandshakeTests : NMockitoInstance {
       private readonly X2SHandshake testObj;
-      private const ClientRole kClientRole = ClientRole.Guest;
+      private const Role kClientRole = Role.Guest;
 
       public X2SHandshakeTests() {
          testObj = new X2SHandshake(kClientRole);
@@ -17,7 +17,7 @@ namespace Dargon.Services.Networking.PortableObjects {
 
       [Fact]
       public void ClientRoleReflectsConstructorParameterTest() {
-         AssertEquals(kClientRole, testObj.ClientRole);
+         AssertEquals(kClientRole, testObj.Role);
          VerifyNoMoreInteractions();
       }
    }

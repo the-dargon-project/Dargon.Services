@@ -17,22 +17,24 @@ namespace Dargon.Services.Networking.Server.Phases {
       private readonly INetworkingProxy networkingProxy;
       private readonly IPofSerializer pofSerializer;
       private readonly IHostSessionFactory hostSessionFactory;
-      private readonly IContext context;
+      private readonly IConnectorContext connectorContext;
       private readonly IListenerSocket listenerSocket;
       private readonly ICancellationTokenSource cancellationTokenSource;
+      private readonly IConcurrentSet<IHostSession> sessions;
 
       private readonly IConcurrentDictionary<IConnectedSocket, string> blahByClient = new ConcurrentDictionary<IConnectedSocket, string>();
 
       private bool disposed = false;
 
-      public HostPhase(IThreadingProxy threadingProxy, INetworkingProxy networkingProxy, IPofSerializer pofSerializer, IHostSessionFactory hostSessionFactory, IContext context, IListenerSocket listenerSocket) {
+      public HostPhase(IThreadingProxy threadingProxy, INetworkingProxy networkingProxy, IPofSerializer pofSerializer, IHostSessionFactory hostSessionFactory, IConnectorContext connectorContext, IListenerSocket listenerSocket) {
          this.threadingProxy = threadingProxy;
          this.networkingProxy = networkingProxy;
          this.pofSerializer = pofSerializer;
          this.hostSessionFactory = hostSessionFactory;
-         this.context = context;
+         this.connectorContext = connectorContext;
          this.listenerSocket = listenerSocket;
          this.cancellationTokenSource = threadingProxy.CreateCancellationTokenSource();
+         this.sessions = new ConcurrentSet<IHostSession>();
       }
 
       public void Initialize() {
@@ -51,12 +53,12 @@ namespace Dargon.Services.Networking.Server.Phases {
       internal void SessionThreadEntryPoint(IConnectedSocket socket) {
          try {
             var handshake = pofSerializer.Deserialize<X2SHandshake>(socket.GetReader());
-            if (handshake.ClientRole == ClientRole.Client) {
+            if (handshake.Role == Role.Client) {
                var clientSession = hostSessionFactory.CreateClientSession(socket.GetReader(), socket.GetWriter());
-               clientSession.Run();
-            } else if (handshake.ClientRole == ClientRole.Guest) {
+               this.sessions.Add(clientSession);
+            } else if (handshake.Role == Role.Guest) {
                var guestSession = hostSessionFactory.CreateGuestSession(socket.GetReader(), socket.GetWriter());
-               guestSession.Run();
+               this.sessions.Add(guestSession);
             } else {
                // do nothing
             }
@@ -67,8 +69,8 @@ namespace Dargon.Services.Networking.Server.Phases {
          }
       }
 
-      public void HandleUpdate() {
-
+      public void RunIteration() {
+         // this.connectorContext.CurrentPhase
       }
 
       public void Dispose() {

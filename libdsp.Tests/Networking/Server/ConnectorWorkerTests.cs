@@ -10,7 +10,7 @@ namespace Dargon.Services.Networking.Server {
       private readonly ConnectorWorker testObj;
 
       [Mock] private readonly IThreadingProxy threadingProxy = null;
-      [Mock] private readonly IContext context = null;
+      [Mock] private readonly IConnectorContext connectorContext = null;
       [Mock] private readonly ICancellationTokenSource cancellationTokenSource = null;
       [Mock] private readonly ISemaphore updateSemaphore = null;
       [Mock] private readonly IThread workerThread = null;
@@ -22,7 +22,7 @@ namespace Dargon.Services.Networking.Server {
          When(threadingProxy.CreateSemaphore(0, int.MaxValue)).ThenReturn(updateSemaphore);
          When(threadingProxy.CreateThread(Any<ThreadEntryPoint>(), Any<ThreadCreationOptions>())).ThenReturn(workerThread);
 
-         this.testObj = new ConnectorWorker(threadingProxy, context);
+         this.testObj = new ConnectorWorker(threadingProxy, connectorContext);
          
          var threadCreationOptionsCaptor = new ArgumentCaptor<ThreadCreationOptions>();
          Verify(threadingProxy, Once()).CreateCancellationTokenSource();
@@ -39,7 +39,7 @@ namespace Dargon.Services.Networking.Server {
       public void InitializeHappyPathTest() {
          testObj.Initalize(serviceContextsByName);
 
-         Verify(context).Initialize(serviceContextsByName);
+         Verify(connectorContext).Initialize(serviceContextsByName);
          Verify(workerThread).Start();
          VerifyNoMoreInteractions();
       }
@@ -104,7 +104,7 @@ namespace Dargon.Services.Networking.Server {
          Verify(cancellationTokenSource).IsCancellationRequested.Wrap();
          Verify(cancellationTokenSource).Token.Wrap();
          Verify(updateSemaphore, Times(2)).Wait(cancellationToken);
-         Verify(context, Times(2)).HandleUpdate();
+         Verify(connectorContext, Times(2)).RunIteration();
          VerifyNoMoreInteractions();
       }
    }

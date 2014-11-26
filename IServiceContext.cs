@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Dargon.Services {
    public interface IServiceContext {
-      string Name { get; }
+      Guid Guid { get; }
       object HandleInvocation(string action, object[] arguments);
    }
 }

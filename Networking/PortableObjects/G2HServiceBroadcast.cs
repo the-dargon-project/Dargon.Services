@@ -16,11 +16,11 @@ namespace Dargon.Services.Networking.PortableObjects {
       public IReadOnlySet<Guid> ServiceGuids { get { return serviceGuids; } } 
 
       public void Serialize(IPofWriter writer) {
-         writer.WriteArray(0, serviceGuids.ToArray());
+         writer.WriteCollection(0, serviceGuids);
       }
 
       public void Deserialize(IPofReader reader) {
-         serviceGuids = new HashSet<Guid>(reader.ReadArray<Guid>(0));
+         serviceGuids = reader.ReadCollection<Guid, HashSet<Guid>>(0, new HashSet<Guid>());
       }
 
       public override bool Equals(object obj) {

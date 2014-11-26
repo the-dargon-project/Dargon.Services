@@ -14,10 +14,10 @@ namespace Dargon.Services.Networking.Server.Phases {
       [Mock] private readonly IHostSessionFactory hostSessionFactory = null;
       [Mock] private readonly IPofSerializer pofSerializer = null;
       [Mock] private readonly IServiceConfiguration serviceConfiguration = null;
-      [Mock] private readonly IContext context = null;
+      [Mock] private readonly IConnectorContext connectorContext = null;
 
       public PhaseFactoryTests() {
-         testObj = new PhaseFactory(threadingProxy, networkingProxy, hostSessionFactory, pofSerializer, serviceConfiguration, context);
+         testObj = new PhaseFactory(threadingProxy, networkingProxy, hostSessionFactory, pofSerializer, serviceConfiguration, connectorContext);
       }
 
       [Fact]
@@ -47,8 +47,6 @@ namespace Dargon.Services.Networking.Server.Phases {
       public void CreateGuestPhaseTest() {
          var clientSocket = CreateMock<IConnectedSocket>();
          var obj = testObj.CreateGuestPhase(clientSocket);
-         VerifyNoMoreInteractions();
-
          AssertTrue(obj is GuestPhase);
       }
    }

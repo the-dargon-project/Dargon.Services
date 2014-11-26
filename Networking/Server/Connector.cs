@@ -4,40 +4,27 @@ using ItzWarty.Collections;
 namespace Dargon.Services.Networking.Server {
    public class Connector : IConnector, IDisposable {
       private readonly IConnectorWorker connectorWorker;
+      private readonly IConnectorContext connectorContext;
       private readonly IConcurrentDictionary<string, IServiceContext> serviceContextsByName;
       private readonly object contextLock = new object();
 
-      internal Connector(IConnectorWorker connectorWorker, IConcurrentDictionary<string, IServiceContext> serviceContextsByName) {
+      internal Connector(IConnectorWorker connectorWorker, IConnectorContext connectorContext, IConcurrentDictionary<string, IServiceContext> serviceContextsByName) {
          this.connectorWorker = connectorWorker;
+         this.connectorContext = connectorContext;
          this.serviceContextsByName = serviceContextsByName;
       }
 
       public void Initialize() {
-         connectorWorker.Initalize(serviceContextsByName);
-         connectorWorker.Start();
+         this.connectorContext.Initialize(serviceContextsByName);
+         connectorWorker.Initalize();
       }
 
       public void RegisterService(IServiceContext serviceContext) {
-         lock (contextLock) {
-            if (!this.serviceContextsByName.TryAdd(serviceContext.Name, serviceContext)) {
-               throw new InvalidOperationException("Attempted to register service context twice!");
-            } else {
-               connectorWorker.SignalUpdate();
-            }
-         }
+         connectorContext.HandleServiceRegistered(serviceContext);
       }
 
       public void UnregisterService(IServiceContext serviceContext) {
-         lock (contextLock) {
-            IServiceContext removedContext;
-            if (!this.serviceContextsByName.TryRemove(serviceContext.Name, out removedContext)) {
-               throw new InvalidOperationException("Attempted to deregister unregistered service context!");
-            } else if (removedContext != serviceContext) {
-               throw new InvalidOperationException("ServiceContext of name " + serviceContext.Name + " removed, but references did not match!?");
-            } else {
-               connectorWorker.SignalUpdate();
-            }
-         }
+         connectorContext.HandleServiceUnregistered(serviceContext);
       }
 
       public void Dispose() {
