@@ -21,8 +21,7 @@ namespace Dargon.Services.Networking.Server.Phases {
       private readonly IListenerSocket listenerSocket;
       private readonly ICancellationTokenSource cancellationTokenSource;
       private readonly IConcurrentSet<IHostSession> sessions;
-
-      private readonly IConcurrentDictionary<IConnectedSocket, string> blahByClient = new ConcurrentDictionary<IConnectedSocket, string>();
+      private readonly IHostContext hostContext;
 
       private bool disposed = false;
 

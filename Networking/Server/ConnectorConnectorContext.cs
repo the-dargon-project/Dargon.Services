@@ -9,7 +9,7 @@ namespace Dargon.Services.Networking.Server {
       private readonly IConnectorEventFactory connectorEventFactory;
       private readonly IConcurrentQueue<IConnectorEvent> connectorEventQueue;
       private IPhase phase;
-      private IConcurrentDictionary<string, IServiceContext> serviceContextsByName;
+      private IConcurrentDictionary<Guid, IServiceContext> serviceContextsByGuid;
       private bool disposed = false;
 
       public ConnectorConnectorContext(IConnectorEventFactory connectorEventFactory, ICollectionFactory collectionFactory, IPhase initialPhase) {
@@ -18,12 +18,12 @@ namespace Dargon.Services.Networking.Server {
          this.phase = initialPhase;
       }
 
-      public IConcurrentDictionary<string, IServiceContext> ServiceContextsByName { get { return serviceContextsByName; } }
+      public IConcurrentDictionary<Guid, IServiceContext> ServiceContextsByGuid { get { return serviceContextsByGuid; } }
       public IPhase CurrentPhase { get { return phase; } }
       public IConcurrentQueue<IConnectorEvent> EventQueue { get { return connectorEventQueue; } }
 
-      public void Initialize(IConcurrentDictionary<string, IServiceContext> serviceContextsByName) {
-         this.serviceContextsByName = serviceContextsByName;
+      public void Initialize(IConcurrentDictionary<Guid, IServiceContext> serviceContextsByGuid) {
+         this.serviceContextsByGuid = serviceContextsByGuid;
       }
 
       public void Transition(IPhase phase) {

@@ -1,17 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Dargon.PortableObjects;
 
-namespace Dargon.Services.Networking.Server.Phases {
+namespace Dargon.Services.Networking.PortableObjects {
    public class H2GServiceInvocation : IPortableObject {
+      private uint invocationId;
       private Guid serviceGuid;
       private string methodName;
       private object[] methodArguments;
 
-      public H2GServiceInvocation(Guid serviceGuid, string methodName, object[] methodArguments) {
+      public H2GServiceInvocation() { }
+
+      public H2GServiceInvocation(uint invocationId, Guid serviceGuid, string methodName, object[] methodArguments) {
+         this.invocationId = invocationId;
          this.serviceGuid = serviceGuid;
          this.methodName = methodName;
          this.methodArguments = methodArguments;
@@ -22,15 +22,17 @@ namespace Dargon.Services.Networking.Server.Phases {
       public object[] MethodArguments { get { return methodArguments; } }
 
       public void Serialize(IPofWriter writer) {
-         writer.WriteGuid(0, serviceGuid);
-         writer.WriteString(1, methodName);
-         writer.WriteCollection(2, methodArguments, true);
+         writer.WriteU32(0, invocationId);
+         writer.WriteGuid(1, serviceGuid);
+         writer.WriteString(2, methodName);
+         writer.WriteCollection(3, methodArguments, true);
       }
 
       public void Deserialize(IPofReader reader) {
-         serviceGuid = reader.ReadGuid(0);
-         methodName = reader.ReadString(1);
-         methodArguments = reader.ReadArray<object>(2, true);
+         invocationId = reader.ReadU32(0);
+         serviceGuid = reader.ReadGuid(1);
+         methodName = reader.ReadString(2);
+         methodArguments = reader.ReadArray<object>(3, true);
       }
    }
 }

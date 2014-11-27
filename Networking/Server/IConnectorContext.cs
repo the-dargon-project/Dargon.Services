@@ -9,7 +9,7 @@ namespace Dargon.Services.Networking.Server {
       IPhase CurrentPhase { get; }
       IConcurrentQueue<IConnectorEvent> EventQueue { get; }
 
-      void Initialize(IConcurrentDictionary<string, IServiceContext> serviceContextsByName);
+      void Initialize(IConcurrentDictionary<Guid, IServiceContext> serviceContextsByName);
       void Transition(IPhase phase);
 
       void HandleServiceRegistered(IServiceContext serviceContext);

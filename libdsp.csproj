@@ -36,13 +36,11 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>packages\libdpo.0.0.7\lib\net45\libdpo.dll</HintPath>
     </Reference>
-    <Reference Include="libwarty, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\libdpo.0.0.7\lib\net45\libwarty.dll</HintPath>
+    <Reference Include="libwarty">
+      <HintPath>packages\libwarty.proxies-api.0.0.13\lib\net45\libwarty.dll</HintPath>
     </Reference>
-    <Reference Include="libwarty.proxies-api, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\libwarty.proxies-api.0.0.11\lib\net45\libwarty.proxies-api.dll</HintPath>
+    <Reference Include="libwarty.proxies-api">
+      <HintPath>packages\libwarty.proxies-api.0.0.13\lib\net45\libwarty.proxies-api.dll</HintPath>
     </Reference>
     <Reference Include="NLog, Version=3.1.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -73,15 +71,18 @@
     <Compile Include="Networking\Events\IConnectorEventFactory.cs" />
     <Compile Include="Networking\IClientConnector.cs" />
     <Compile Include="Networking\IConnectorFactory.cs" />
+    <Compile Include="Networking\PortableObjects\C2HServiceInvocation.cs" />
+    <Compile Include="Networking\PortableObjects\PortableException.cs" />
     <Compile Include="Networking\PortableObjects\X2SHandshake.cs" />
     <Compile Include="Networking\PortableObjects\Role.cs" />
     <Compile Include="Networking\PortableObjects\DspPofContext.cs" />
     <Compile Include="Networking\PortableObjects\G2HServiceBroadcast.cs" />
     <Compile Include="Networking\Server\IConnector.cs" />
     <Compile Include="Networking\Server\IConnectorContext.cs" />
-    <Compile Include="Networking\Server\Phases\G2HServiceUpdate.cs" />
+    <Compile Include="Networking\PortableObjects\G2HServiceUpdate.cs" />
     <Compile Include="Networking\Server\Phases\GuestPhase.cs" />
-    <Compile Include="Networking\Server\Phases\H2GServiceInvocation.cs" />
+    <Compile Include="Networking\PortableObjects\H2GServiceInvocation.cs" />
+    <Compile Include="Networking\Server\Phases\IHostContext.cs" />
     <Compile Include="Networking\Server\Phases\PhaseFactory.cs" />
     <Compile Include="Networking\Server\Phases\IPhase.cs" />
     <Compile Include="Networking\Server\Phases\IPhaseFactory.cs" />
@@ -93,10 +94,14 @@
     <Compile Include="Networking\Server\ConnectorWorker.cs" />
     <Compile Include="Networking\Server\Phases\IndeterminatePhase.cs" />
     <Compile Include="Networking\Server\Phases\HostPhase.cs" />
+    <Compile Include="Networking\Server\Sessions\HostClientSession.cs" />
+    <Compile Include="Networking\Server\Sessions\HostGuestSession.cs" />
+    <Compile Include="Networking\PortableObjects\H2CInvocationResult.cs" />
     <Compile Include="Networking\Server\Sessions\IClientSession.cs" />
     <Compile Include="Networking\Server\Sessions\IGuestSession.cs" />
     <Compile Include="Networking\Server\Sessions\IHostSession.cs" />
     <Compile Include="Networking\Server\Sessions\IHostSessionFactory.cs" />
+    <Compile Include="Networking\Server\Sessions\HostSessionBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServiceNode.cs" />
   </ItemGroup>

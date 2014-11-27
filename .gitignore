@@ -186,5 +186,3 @@ FakesAssemblies/
 
 # Nuget Executables and configuration
 NuGet.exe
-NuGet.config
-nuget.config

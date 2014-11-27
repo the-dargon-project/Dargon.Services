@@ -1,5 +1,6 @@
 ﻿using Dargon.PortableObjects;
 using Dargon.Services.Networking.Server.Sessions;
+using ItzWarty.Collections;
 using ItzWarty.Networking;
 using ItzWarty.Threading;
 using NMockito;
@@ -9,6 +10,7 @@ namespace Dargon.Services.Networking.Server.Phases {
    public class PhaseFactoryTests : NMockitoInstance {
       private readonly PhaseFactory testObj;
 
+      [Mock] private readonly ICollectionFactory collectionFactory = null;
       [Mock] private readonly IThreadingProxy threadingProxy = null;
       [Mock] private readonly INetworkingProxy networkingProxy = null;
       [Mock] private readonly IHostSessionFactory hostSessionFactory = null;
@@ -17,7 +19,7 @@ namespace Dargon.Services.Networking.Server.Phases {
       [Mock] private readonly IConnectorContext connectorContext = null;
 
       public PhaseFactoryTests() {
-         testObj = new PhaseFactory(threadingProxy, networkingProxy, hostSessionFactory, pofSerializer, serviceConfiguration, connectorContext);
+         testObj = new PhaseFactory(collectionFactory, threadingProxy, networkingProxy, hostSessionFactory, pofSerializer, serviceConfiguration, connectorContext);
       }
 
       [Fact]

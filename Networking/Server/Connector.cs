@@ -5,17 +5,17 @@ namespace Dargon.Services.Networking.Server {
    public class Connector : IConnector, IDisposable {
       private readonly IConnectorWorker connectorWorker;
       private readonly IConnectorContext connectorContext;
-      private readonly IConcurrentDictionary<string, IServiceContext> serviceContextsByName;
+      private readonly IConcurrentDictionary<Guid, IServiceContext> serviceContextsByGuid;
       private readonly object contextLock = new object();
 
-      internal Connector(IConnectorWorker connectorWorker, IConnectorContext connectorContext, IConcurrentDictionary<string, IServiceContext> serviceContextsByName) {
+      internal Connector(IConnectorWorker connectorWorker, IConnectorContext connectorContext, IConcurrentDictionary<Guid, IServiceContext> serviceContextsByGuid) {
          this.connectorWorker = connectorWorker;
          this.connectorContext = connectorContext;
-         this.serviceContextsByName = serviceContextsByName;
+         this.serviceContextsByGuid = serviceContextsByGuid;
       }
 
       public void Initialize() {
-         this.connectorContext.Initialize(serviceContextsByName);
+         this.connectorContext.Initialize(serviceContextsByGuid);
          connectorWorker.Initalize();
       }
 

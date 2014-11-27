@@ -67,9 +67,12 @@ namespace Dargon.Services.Networking.Server.Phases {
                var serviceInvocation = pofSerializer.Deserialize<H2GServiceInvocation>(socket.GetReader());
                IServiceContext serviceContext;
                if (!context.ServiceContextsByGuid.TryGetValue(serviceInvocation.ServiceGuid, out serviceContext)) {
+                  
+                  pofSerializer.Serialize(socket.GetWriter(), new PortableException(new InvalidOperationException()));
                } else {
-                  var result = serviceContext.HandleInvocation(serviceInvocation.MethodName, serviceInvocation.MethodArguments);
-                  pofSerializer.Serialize;
+                  object result;
+                  result = serviceContext.HandleInvocation(serviceInvocation.MethodName, serviceInvocation.MethodArguments);
+                  pofSerializer.Serialize(socket.GetWriter(), (IPortableObject)result); // HACK
                }
             }
          } catch (SocketException e) {
