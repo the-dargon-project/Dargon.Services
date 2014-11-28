@@ -17,6 +17,7 @@ namespace Dargon.Services.Networking.PortableObjects {
          this.methodArguments = methodArguments;
       }
 
+      public uint InvocationId { get { return invocationId; } }
       public Guid ServiceGuid { get { return serviceGuid; } }
       public string MethodName { get { return methodName; } }
       public object[] MethodArguments { get { return methodArguments; } }

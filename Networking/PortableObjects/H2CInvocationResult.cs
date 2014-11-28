@@ -8,16 +8,14 @@ namespace Dargon.Services.Networking.PortableObjects {
 
       public H2CInvocationResult() { }
 
-      public H2CInvocationResult(uint invocationId, PortableException exception) : this(invocationId, (object)exception) { }
-
-      public H2CInvocationResult(uint invocationId, object result) {
+      public H2CInvocationResult(uint invocationId, object payload) {
          this.invocationId = invocationId;
-         this.payload = result;
+         this.payload = payload;
       }
 
       public void Serialize(IPofWriter writer) {
          writer.WriteU32(0, invocationId);
-         writer.WriteObject(1, (IPortableObject)payload);
+         writer.WriteObject(1, payload);
       }
 
       public void Deserialize(IPofReader reader) {

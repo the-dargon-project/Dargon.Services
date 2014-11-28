@@ -1,13 +1,11 @@
-﻿using System;
-using System.IO;
-using System.Net.Sockets;
-using Dargon.PortableObjects;
+﻿using Dargon.PortableObjects;
 using Dargon.Services.Networking.Events;
 using Dargon.Services.Networking.PortableObjects;
-using ItzWarty;
 using ItzWarty.Collections;
 using ItzWarty.Networking;
 using ItzWarty.Threading;
+using System;
+using System.Net.Sockets;
 
 namespace Dargon.Services.Networking.Server.Phases {
    public class GuestPhase : IPhase {
@@ -64,20 +62,30 @@ namespace Dargon.Services.Networking.Server.Phases {
       private void ReaderThreadEntryPoint() {
          try {
             while (true) {
-               var serviceInvocation = pofSerializer.Deserialize<H2GServiceInvocation>(socket.GetReader());
-               IServiceContext serviceContext;
-               if (!context.ServiceContextsByGuid.TryGetValue(serviceInvocation.ServiceGuid, out serviceContext)) {
-                  
-                  pofSerializer.Serialize(socket.GetWriter(), new PortableException(new InvalidOperationException()));
-               } else {
-                  object result;
-                  result = serviceContext.HandleInvocation(serviceInvocation.MethodName, serviceInvocation.MethodArguments);
-                  pofSerializer.Serialize(socket.GetWriter(), (IPortableObject)result); // HACK
+               var message = pofSerializer.Deserialize(socket.GetReader());
+               if (message is H2GServiceInvocation) {
+                  ProcessH2GServiceInvocation((H2GServiceInvocation)message);
                }
             }
          } catch (SocketException e) {
             context.Transition(phaseFactory.CreateIndeterminatePhase());
          }
+      }
+
+      private void ProcessH2GServiceInvocation(H2GServiceInvocation x) {
+         IServiceContext serviceContext;
+         object payload;
+         if (!context.ServiceContextsByGuid.TryGetValue(x.ServiceGuid, out serviceContext)) {
+            payload = new PortableException(new InvalidOperationException("Service Not Found"));
+         } else {
+            try {
+               payload = serviceContext.HandleInvocation(x.MethodName, x.MethodArguments);
+            } catch (Exception e) {
+               payload = new PortableException(e);
+            }
+         }
+         var result = new G2HInvocationResult(x.InvocationId, payload);
+         pofSerializer.Serialize(socket.GetWriter(), result);
       }
 
       public void Dispose() {

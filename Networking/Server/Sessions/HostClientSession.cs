@@ -1,31 +1,33 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using Dargon.PortableObjects;
+﻿using Dargon.PortableObjects;
 using Dargon.Services.Networking.PortableObjects;
 using Dargon.Services.Networking.Server.Phases;
 using ItzWarty.Collections;
 using ItzWarty.IO;
+using System;
 
 namespace Dargon.Services.Networking.Server.Sessions {
    public class HostClientSession : HostSessionBase, IClientSession {
-      public HostClientSession(ICollectionFactory collectionFactory, IPofSerializer pofSerializer, IHostContext hostContext, IBinaryReader reader, IBinaryWriter writer)
-         : base(collectionFactory, pofSerializer, hostContext, reader, writer, Role.Client) { 
+      public HostClientSession(
+         ICollectionFactory collectionFactory,
+         IPofSerializer pofSerializer,
+         IHostContext hostContext,
+         IBinaryReader reader,
+         IBinaryWriter writer
+      ) : base(collectionFactory, pofSerializer, hostContext, reader, writer) {
          RegisterMessageHandler<C2HServiceInvocation>(HandleC2HServiceInvocation);
       }
 
-      private void HandleC2HServiceInvocation(C2HServiceInvocation message) {
-         if (message == null) {
-            var error = new ArgumentException("Expected " + typeof(C2HServiceInvocation).FullName + " got " + (obj == null ? "null" : obj.GetType().FullName));
-            pofSerializer.Serialize(writer.__Writer, new H2CInvocationResult(uint.MaxValue, new PortableException(error)));
-         } else {
-            try {
-               var result = hostContext.Invoke(message.ServiceGuid, message.MethodName, message.MethodArguments);
-               pofSerializer.Serialize(writer.__Writer, new H2CInvocationResult(message.InvocationId, result));
-            } catch (Exception e) {
-               pofSerializer.Serialize(writer.__Writer, new H2CInvocationResult(message.InvocationId, new PortableException(e)));
-            }
+      public override Role Role { get { return Role.Client; } }
+
+      private void HandleC2HServiceInvocation(C2HServiceInvocation x) {
+         object payload;
+         try {
+            payload = hostContext.Invoke(x.ServiceGuid, x.MethodName, x.MethodArguments);
+         } catch (Exception e) {
+            payload = new PortableException(e);
          }
+         var result = new H2CInvocationResult(x.InvocationId, payload);
+         pofSerializer.Serialize(writer.__Writer, result);
       }
    }
 }

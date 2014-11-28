@@ -7,7 +7,12 @@ namespace Dargon.Services.Networking.Server.Phases {
       private IReadOnlySet<Guid> addedServiceGuids;
       private IReadOnlySet<Guid> removedServiceGuids;
 
-      public G2HServiceUpdate(IReadOnlySet<Guid> addedServiceGuids, IReadOnlySet<Guid> removedServiceGuids) {
+      public G2HServiceUpdate() { }
+
+      public G2HServiceUpdate(
+         IReadOnlySet<Guid> addedServiceGuids, 
+         IReadOnlySet<Guid> removedServiceGuids
+      ) {
          this.addedServiceGuids = addedServiceGuids;
          this.removedServiceGuids = removedServiceGuids;
       }

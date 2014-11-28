@@ -1,8 +1,7 @@
-﻿using System;
-using System.Diagnostics;
-using Dargon.Services.Networking.Events;
+﻿using Dargon.Services.Networking.Events;
 using Dargon.Services.Networking.Server.Phases;
 using ItzWarty.Collections;
+using System;
 
 namespace Dargon.Services.Networking.Server {
    public class ConnectorConnectorContext : IConnectorContext {
@@ -57,7 +56,8 @@ namespace Dargon.Services.Networking.Server {
 
       internal void ThrowIfDisposed() {
          if (disposed) {
-            throw new ObjectDisposedException("this", "This connector context has already been disposed!");
+            const string error = "This connector context has already been disposed!";
+            throw new ObjectDisposedException("this", error);
          }
       }
    }

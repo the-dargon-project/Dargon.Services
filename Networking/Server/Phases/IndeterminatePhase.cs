@@ -25,22 +25,22 @@ namespace Dargon.Services.Networking.Server.Phases {
       }
 
       public void RunIteration() {
-         IListenerSocket listenerSocket = null;
-         IConnectedSocket clientSocket = null;
+         IListenerSocket listener = null;
+         IConnectedSocket client = null;
          var connectEndpoint = networkingProxy.CreateLoopbackEndPoint(configuration.Port);
-         while (listenerSocket == null && clientSocket == null) {
-            if (Util.IsThrown<SocketException>(() => { listenerSocket = networkingProxy.CreateListenerSocket(configuration.Port); })) {
-               if (Util.IsThrown<SocketException>(() => { clientSocket = networkingProxy.CreateConnectedSocket(connectEndpoint); })) {
+         while (listener == null && client == null) {
+            if (Util.IsThrown<SocketException>(() => { listener = networkingProxy.CreateListenerSocket(configuration.Port); })) {
+               if (Util.IsThrown<SocketException>(() => { client = networkingProxy.CreateConnectedSocket(connectEndpoint); })) {
                   logger.Warn("Unable to either listen or connect to port " + configuration.Port);
                   threadingProxy.Sleep(kRetryInterval);
                }
             }
          }
 
-         if (listenerSocket != null) {
-            connectorContext.Transition(phaseFactory.CreateHostPhase(listenerSocket));
+         if (listener != null) {
+            connectorContext.Transition(phaseFactory.CreateHostPhase(listener));
          } else {
-            connectorContext.Transition(phaseFactory.CreateGuestPhase(clientSocket));
+            connectorContext.Transition(phaseFactory.CreateGuestPhase(client));
          }
       }
 

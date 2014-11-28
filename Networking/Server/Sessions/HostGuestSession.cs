@@ -8,9 +8,15 @@ namespace Dargon.Services.Networking.Server.Sessions {
    public class HostGuestSession : HostSessionBase, IGuestSession {
       private int invocationCounter = 0;
 
-      public HostGuestSession(ICollectionFactory collectionFactory, IPofSerializer pofSerializer, IHostContext hostContext, IBinaryReader reader, IBinaryWriter writer) 
-         : base(collectionFactory, pofSerializer, hostContext, reader, writer, Role.Guest) {
+      public HostGuestSession(
+         ICollectionFactory collectionFactory, 
+         IPofSerializer pofSerializer, 
+         IHostContext hostContext, 
+         IBinaryReader reader, 
+         IBinaryWriter writer
+      ) : base(collectionFactory, pofSerializer, hostContext, reader, writer) {
       }
 
+      public override Role Role { get { return Role.Guest; } }
    }
 }

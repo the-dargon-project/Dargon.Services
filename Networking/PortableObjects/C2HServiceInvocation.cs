@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Dargon.PortableObjects;
+using System;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Dargon.PortableObjects;
 
 namespace Dargon.Services.Networking.PortableObjects {
-   public class C2HServiceInvocation : IPortableObject {
+   public class C2HServiceInvocation : IPortableObject, IEquatable<C2HServiceInvocation> {
       private uint invocationId;
       private Guid serviceGuid;
       private string methodName;
@@ -14,7 +11,12 @@ namespace Dargon.Services.Networking.PortableObjects {
 
       public C2HServiceInvocation() { }
 
-      public C2HServiceInvocation(uint invocationId, Guid serviceGuid, string methodName, object[] methodArguments) {
+      public C2HServiceInvocation(
+         uint invocationId, 
+         Guid serviceGuid, 
+         string methodName, 
+         object[] methodArguments
+      ) {
          this.invocationId = invocationId;
          this.serviceGuid = serviceGuid;
          this.methodName = methodName;
@@ -38,6 +40,14 @@ namespace Dargon.Services.Networking.PortableObjects {
          serviceGuid = reader.ReadGuid(1);
          methodName = reader.ReadString(2);
          methodArguments = reader.ReadArray<object>(3, true);
+      }
+
+      public bool Equals(C2HServiceInvocation other) { 
+         return other != null && 
+                invocationId == other.invocationId && 
+                serviceGuid.Equals(other.serviceGuid) && 
+                methodName.Equals(other.MethodName) && 
+                methodArguments.SequenceEqual(other.methodArguments); 
       }
    }
 }

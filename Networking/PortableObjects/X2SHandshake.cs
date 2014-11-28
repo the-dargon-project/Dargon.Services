@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Dargon.PortableObjects;
+﻿using Dargon.PortableObjects;
+using System;
 
 namespace Dargon.Services.Networking.PortableObjects {
    public class X2SHandshake : IPortableObject, IEquatable<X2SHandshake> {

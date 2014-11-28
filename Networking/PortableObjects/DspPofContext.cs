@@ -10,6 +10,7 @@ namespace Dargon.Services.Networking.PortableObjects {
       public DspPofContext() {
          RegisterPortableObjectType(1, typeof(G2HServiceBroadcast));
          RegisterPortableObjectType(2, typeof(X2SHandshake));
+         RegisterPortableObjectType(3, typeof(C2HServiceInvocation));
       }
    }
 }

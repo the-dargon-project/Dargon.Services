@@ -34,10 +34,11 @@
   <ItemGroup>
     <Reference Include="libdpo, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\libdpo.0.0.7\lib\net45\libdpo.dll</HintPath>
+      <HintPath>packages\libdpo.0.0.10\lib\net45\libdpo.dll</HintPath>
     </Reference>
-    <Reference Include="libwarty">
-      <HintPath>packages\libwarty.proxies-api.0.0.13\lib\net45\libwarty.dll</HintPath>
+    <Reference Include="libwarty, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\libwarty.0.0.15\lib\portable-net45+netcore45+MonoAndroid1+MonoTouch1\libwarty.dll</HintPath>
     </Reference>
     <Reference Include="libwarty.proxies-api">
       <HintPath>packages\libwarty.proxies-api.0.0.13\lib\net45\libwarty.proxies-api.dll</HintPath>
@@ -72,6 +73,7 @@
     <Compile Include="Networking\IClientConnector.cs" />
     <Compile Include="Networking\IConnectorFactory.cs" />
     <Compile Include="Networking\PortableObjects\C2HServiceInvocation.cs" />
+    <Compile Include="Networking\PortableObjects\G2HInvocationResult.cs" />
     <Compile Include="Networking\PortableObjects\PortableException.cs" />
     <Compile Include="Networking\PortableObjects\X2SHandshake.cs" />
     <Compile Include="Networking\PortableObjects\Role.cs" />

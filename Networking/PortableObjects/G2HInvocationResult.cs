@@ -7,7 +7,9 @@ namespace Dargon.Services.Networking.PortableObjects {
 
       public G2HInvocationResult() { }
 
-      public G2HInvocationResult(uint invocationId, PortableException exception) : this(invocationId, (object)exception) { }
+      public G2HInvocationResult(uint invocationId, PortableException exception) 
+         : this(invocationId, (object)exception) { 
+      }
 
       public G2HInvocationResult(uint invocationId, object result) {
          this.invocationId = invocationId;

@@ -1,10 +1,9 @@
 ﻿using Dargon.PortableObjects;
 using ItzWarty.Collections;
 using System;
-using System.Linq;
 
 namespace Dargon.Services.Networking.PortableObjects {
-   public class G2HServiceBroadcast : IPortableObject, IEquatable<G2HServiceBroadcast> {
+   public class G2HServiceBroadcast : IPortableObject, IEquatable<G2HServiceBroadcast> {           
       private IReadOnlySet<Guid> serviceGuids;
 
       public G2HServiceBroadcast() { }
@@ -20,7 +19,7 @@ namespace Dargon.Services.Networking.PortableObjects {
       }
 
       public void Deserialize(IPofReader reader) {
-         serviceGuids = reader.ReadCollection<Guid, HashSet<Guid>>(0, new HashSet<Guid>());
+         serviceGuids = reader.ReadCollection<Guid, HashSet<Guid>>(0);
       }
 
       public override bool Equals(object obj) {
@@ -28,7 +27,7 @@ namespace Dargon.Services.Networking.PortableObjects {
       }
 
       public bool Equals(G2HServiceBroadcast other) {
-         return new System.Collections.Generic.HashSet<Guid>(serviceGuids).SetEquals(other.serviceGuids);
+         return serviceGuids.SetEquals(other.serviceGuids);
       }
    }
 }

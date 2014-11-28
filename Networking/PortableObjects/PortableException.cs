@@ -14,7 +14,11 @@ namespace Dargon.Services.Networking.PortableObjects {
          this.type = e.GetType().FullName;
          this.message = e.Message;
          this.stackTrace = e.StackTrace;
-         this.innerException = e.InnerException == null ? null : new PortableException(e.InnerException);
+         if (e.InnerException == null) {
+            this.innerException = null;
+         } else {
+            this.innerException = new PortableException(e.InnerException);
+         }
       }
 
       public void Serialize(IPofWriter writer) {

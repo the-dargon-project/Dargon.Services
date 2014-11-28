@@ -10,27 +10,32 @@ using ItzWarty.Collections;
 using ItzWarty.IO;
 
 namespace Dargon.Services.Networking.Server.Sessions {
-   public class HostSessionBase : IHostSession {
+   public abstract class HostSessionBase : IHostSession {
       protected readonly ICollectionFactory collectionFactory;
       protected readonly IPofSerializer pofSerializer;
       protected readonly IHostContext hostContext;
       protected readonly IBinaryReader reader;
       protected readonly IBinaryWriter writer;
-      private readonly Role role;
       private readonly IDictionary<Type, Action<IPortableObject>> handlers;
 
-      protected HostSessionBase(ICollectionFactory collectionFactory, IPofSerializer pofSerializer, IHostContext hostContext, IBinaryReader reader, IBinaryWriter writer, Role role) {
+      protected HostSessionBase(
+         ICollectionFactory collectionFactory, 
+         IPofSerializer pofSerializer, 
+         IHostContext hostContext, 
+         IBinaryReader reader, 
+         IBinaryWriter writer
+      ) {
          this.collectionFactory = collectionFactory;
          this.pofSerializer = pofSerializer;
          this.hostContext = hostContext;
          this.reader = reader;
          this.writer = writer;
-         this.role = role;
 
          this.handlers = collectionFactory.CreateDictionary<Type, Action<IPortableObject>>();
       }
 
-      public Role Role { get { return role; } }
+      public abstract Role Role { get; }
+
       public void Run() {
          while (true) {
             var message = pofSerializer.Deserialize<IPortableObject>(reader.__Reader);

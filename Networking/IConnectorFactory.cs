@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Dargon.Services.Networking.Server;
+﻿using Dargon.Services.Networking.Server;
 
 namespace Dargon.Services.Networking {
    public interface IConnectorFactory {
