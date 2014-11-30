@@ -1,4 +1,5 @@
-﻿using NMockito;
+﻿using Dargon.Services.PortableObjects;
+using NMockito;
 using Xunit;
 
 namespace Dargon.Services.Networking.PortableObjects {

@@ -32,6 +32,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Castle.Core">
+      <HintPath>packages\Castle.Core.3.3.3\lib\net45\Castle.Core.dll</HintPath>
+    </Reference>
     <Reference Include="libdpo, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>packages\libdpo.0.0.10\lib\net45\libdpo.dll</HintPath>
@@ -56,60 +59,62 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IService.cs" />
-    <Compile Include="IServiceClient.cs" />
-    <Compile Include="IServiceClientFactory.cs" />
+    <Compile Include="Client\IServiceClient.cs" />
+    <Compile Include="Client\IServiceClientFactory.cs" />
     <Compile Include="IServiceConfiguration.cs" />
-    <Compile Include="IServiceContext.cs" />
-    <Compile Include="IServiceContextFactory.cs" />
-    <Compile Include="IServiceEndpoint.cs" />
-    <Compile Include="IServiceNode.cs" />
-    <Compile Include="IServiceNodeFactory.cs" />
-    <Compile Include="Networking\Events\ConnectorEvent.cs" />
-    <Compile Include="Networking\Events\ConnectorEventFactory.cs" />
-    <Compile Include="Networking\Events\ConnectorEventType.cs" />
-    <Compile Include="Networking\Events\IConnectorEvent.cs" />
-    <Compile Include="Networking\Events\IConnectorEventFactory.cs" />
-    <Compile Include="Networking\IClientConnector.cs" />
-    <Compile Include="Networking\IConnectorFactory.cs" />
-    <Compile Include="Networking\PortableObjects\C2HServiceInvocation.cs" />
-    <Compile Include="Networking\PortableObjects\G2HInvocationResult.cs" />
-    <Compile Include="Networking\PortableObjects\PortableException.cs" />
-    <Compile Include="Networking\PortableObjects\X2SHandshake.cs" />
-    <Compile Include="Networking\PortableObjects\Role.cs" />
-    <Compile Include="Networking\PortableObjects\DspPofContext.cs" />
-    <Compile Include="Networking\PortableObjects\G2HServiceBroadcast.cs" />
-    <Compile Include="Networking\Server\IConnector.cs" />
-    <Compile Include="Networking\Server\IConnectorContext.cs" />
-    <Compile Include="Networking\PortableObjects\G2HServiceUpdate.cs" />
-    <Compile Include="Networking\Server\Phases\GuestPhase.cs" />
-    <Compile Include="Networking\PortableObjects\H2GServiceInvocation.cs" />
-    <Compile Include="Networking\Server\Phases\IHostContext.cs" />
-    <Compile Include="Networking\Server\Phases\PhaseFactory.cs" />
-    <Compile Include="Networking\Server\Phases\IPhase.cs" />
-    <Compile Include="Networking\Server\Phases\IPhaseFactory.cs" />
-    <Compile Include="Networking\Server\IConnectorWorker.cs" />
-    <Compile Include="Networking\Server\IConnectorWorkerFactory.cs" />
-    <Compile Include="Networking\IServiceInvocationHandler.cs" />
-    <Compile Include="Networking\Server\Connector.cs" />
-    <Compile Include="Networking\Server\ConnectorConnectorContext.cs" />
-    <Compile Include="Networking\Server\ConnectorWorker.cs" />
-    <Compile Include="Networking\Server\Phases\IndeterminatePhase.cs" />
-    <Compile Include="Networking\Server\Phases\HostPhase.cs" />
-    <Compile Include="Networking\Server\Sessions\HostClientSession.cs" />
-    <Compile Include="Networking\Server\Sessions\HostGuestSession.cs" />
-    <Compile Include="Networking\PortableObjects\H2CInvocationResult.cs" />
-    <Compile Include="Networking\Server\Sessions\IClientSession.cs" />
-    <Compile Include="Networking\Server\Sessions\IGuestSession.cs" />
-    <Compile Include="Networking\Server\Sessions\IHostSession.cs" />
-    <Compile Include="Networking\Server\Sessions\IHostSessionFactory.cs" />
-    <Compile Include="Networking\Server\Sessions\HostSessionBase.cs" />
+    <Compile Include="Server\IServiceContext.cs" />
+    <Compile Include="Server\IServiceContextFactory.cs" />
+    <Compile Include="Client\IServiceEndpoint.cs" />
+    <Compile Include="Server\IServiceNode.cs" />
+    <Compile Include="Server\IServiceNodeFactory.cs" />
+    <Compile Include="Client\IServiceProxyFactory.cs" />
+    <Compile Include="Client\ServiceClient.cs" />
+    <Compile Include="Client\ServiceInvocationInterceptor.cs" />
+    <Compile Include="Client\ServiceProxyFactory.cs" />
+    <Compile Include="Client\IConnector.cs" />
+    <Compile Include="Server\Events\ConnectorEvent.cs" />
+    <Compile Include="Server\Events\ConnectorEventFactory.cs" />
+    <Compile Include="Server\Events\ConnectorEventType.cs" />
+    <Compile Include="Server\Events\IConnectorEvent.cs" />
+    <Compile Include="Server\Events\IConnectorEventFactory.cs" />
+    <Compile Include="Server\IConnectorFactory.cs" />
+    <Compile Include="PortableObjects\C2HServiceInvocation.cs" />
+    <Compile Include="PortableObjects\G2HInvocationResult.cs" />
+    <Compile Include="PortableObjects\PortableException.cs" />
+    <Compile Include="PortableObjects\X2SHandshake.cs" />
+    <Compile Include="PortableObjects\Role.cs" />
+    <Compile Include="PortableObjects\DspPofContext.cs" />
+    <Compile Include="PortableObjects\G2HServiceBroadcast.cs" />
+    <Compile Include="Server\IConnector.cs" />
+    <Compile Include="Server\IConnectorContext.cs" />
+    <Compile Include="PortableObjects\G2HServiceUpdate.cs" />
+    <Compile Include="Server\Phases\GuestPhase.cs" />
+    <Compile Include="PortableObjects\H2GServiceInvocation.cs" />
+    <Compile Include="Server\Phases\IHostContext.cs" />
+    <Compile Include="Server\Phases\PhaseFactory.cs" />
+    <Compile Include="Server\Phases\IPhase.cs" />
+    <Compile Include="Server\Phases\IPhaseFactory.cs" />
+    <Compile Include="Server\IConnectorWorker.cs" />
+    <Compile Include="Server\IConnectorWorkerFactory.cs" />
+    <Compile Include="Server\Connector.cs" />
+    <Compile Include="Server\ConnectorConnectorContext.cs" />
+    <Compile Include="Server\ConnectorWorker.cs" />
+    <Compile Include="Server\Phases\IndeterminatePhase.cs" />
+    <Compile Include="Server\Phases\HostPhase.cs" />
+    <Compile Include="Server\Sessions\HostClientSession.cs" />
+    <Compile Include="Server\Sessions\HostGuestSession.cs" />
+    <Compile Include="PortableObjects\H2CInvocationResult.cs" />
+    <Compile Include="Server\Sessions\IClientSession.cs" />
+    <Compile Include="Server\Sessions\IGuestSession.cs" />
+    <Compile Include="Server\Sessions\IHostSession.cs" />
+    <Compile Include="Server\Sessions\IHostSessionFactory.cs" />
+    <Compile Include="Server\Sessions\HostSessionBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ServiceNode.cs" />
+    <Compile Include="Server\ServiceContext.cs" />
+    <Compile Include="Server\ServiceNode.cs" />
+    <Compile Include="Utilities\AttributeUtilities.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Networking\Client\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>

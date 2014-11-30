@@ -91,6 +91,7 @@
     <Compile Include="Networking\Server\Phases\HostPhaseTests.cs" />
     <Compile Include="Networking\Server\Phases\IndeterminatePhaseTests.cs" />
     <Compile Include="Networking\Server\Phases\PhaseFactoryTests.cs" />
+    <Compile Include="ServiceContextIT.cs" />
     <Compile Include="ServiceNodeTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
