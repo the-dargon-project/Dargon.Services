@@ -91,6 +91,8 @@ namespace Dargon.Services.Client {
 
       public void Dispose() {
          this.cancellationTokenSource.Cancel();
+         this.reader.Dispose();
+         this.writer.Dispose();
       }
    }
 }

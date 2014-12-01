@@ -36,6 +36,10 @@ namespace Dargon.Services.Client {
             return (TService)serviceProxy;
          }
       }
+
+      public void Dispose() {
+         this.connector.Dispose();
+      }
    }
 
    public interface IServiceContext {

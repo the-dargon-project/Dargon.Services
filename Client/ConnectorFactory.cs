@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using Dargon.PortableObjects;
+using Dargon.Services.PortableObjects;
 using ItzWarty.Collections;
 using ItzWarty.IO;
 using ItzWarty.Networking;
@@ -29,6 +30,10 @@ namespace Dargon.Services.Client {
       public IConnector Create(ITcpEndPoint endpoint) {
          var socket = socketFactory.CreateConnectedSocket(endpoint);
          var context = new ConnectorContext(collectionFactory, threadingProxy, invocationStateFactory);
+
+         // HACK: Send handshake
+         pofSerializer.Serialize(socket.GetWriter().__Writer, new X2SHandshake(Role.Client));
+
          var connector = new Connector(context);
          var reader = new MessageReader(threadingProxy, pofSerializer, context, socket.GetReader());
          var writer = new MessageWriter(threadingProxy, pofSerializer, context, socket.GetWriter());

@@ -22,7 +22,7 @@ namespace Dargon.Services.PortableObjects {
 
       public void Deserialize(IPofReader reader) {
          invocationId = reader.ReadU32(0);
-         payload = reader.ReadObject<IPortableObject>(1);
+         payload = reader.ReadObject(1);
       }
    }
 }

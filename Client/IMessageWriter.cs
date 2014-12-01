@@ -15,6 +15,8 @@ namespace Dargon.Services.Client {
       private readonly IInvocationRequestConsumerContext context;
       private readonly IBinaryWriter writer;
       private readonly IThread thread;
+      private readonly ICancellationTokenSource writerCancellationTokenSource;
+      private readonly ICancellationTokenSource linkedCancellationTokenSource;
 
       public MessageWriter(IThreadingProxy threadingProxy, IPofSerializer pofSerializer, IInvocationRequestConsumerContext context, IBinaryWriter writer) {
          this.threadingProxy = threadingProxy;
@@ -23,6 +25,8 @@ namespace Dargon.Services.Client {
          this.writer = writer;
 
          this.thread = threadingProxy.CreateThread(ThreadEntryPoint, new ThreadCreationOptions { IsBackground = true });
+         this.writerCancellationTokenSource = threadingProxy.CreateCancellationTokenSource();
+         this.linkedCancellationTokenSource = threadingProxy.CreateLinkedCancellationTokenSource(context.CancellationToken, writerCancellationTokenSource.Token);
       }
 
       public void Initialize() {
@@ -46,7 +50,10 @@ namespace Dargon.Services.Client {
       }
 
       public void Dispose() {
-         throw new NotImplementedException();
+         writerCancellationTokenSource.Cancel();
+         linkedCancellationTokenSource.Cancel();
+         writer.Dispose();
+         thread.Join();
       }
    }
 }
