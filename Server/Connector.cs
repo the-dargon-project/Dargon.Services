@@ -2,21 +2,12 @@
 using ItzWarty.Collections;
 
 namespace Dargon.Services.Server {
-   public class Connector : IConnector, IDisposable {
-      private readonly IConnectorWorker connectorWorker;
+   public class Connector : IConnector {
       private readonly IConnectorContext connectorContext;
-      private readonly IConcurrentDictionary<Guid, IServiceContext> serviceContextsByGuid;
       private readonly object contextLock = new object();
 
-      internal Connector(IConnectorWorker connectorWorker, IConnectorContext connectorContext, IConcurrentDictionary<Guid, IServiceContext> serviceContextsByGuid) {
-         this.connectorWorker = connectorWorker;
+      internal Connector(IConnectorContext connectorContext) {
          this.connectorContext = connectorContext;
-         this.serviceContextsByGuid = serviceContextsByGuid;
-      }
-
-      public void Initialize() {
-         this.connectorContext.Initialize(serviceContextsByGuid);
-         connectorWorker.Initalize();
       }
 
       public void RegisterService(IServiceContext serviceContext) {
@@ -28,9 +19,7 @@ namespace Dargon.Services.Server {
       }
 
       public void Dispose() {
-         if (connectorWorker != null) {
-            connectorWorker.Dispose();
-         }
+         connectorContext.Dispose();
       }
    }
 }

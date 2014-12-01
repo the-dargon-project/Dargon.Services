@@ -96,6 +96,7 @@
     <None Include="Networking\Server\Phases\PhaseFactoryTests.cs" />
     <Compile Include="ServiceClientFT.cs" />
     <Compile Include="ServiceContextIT.cs" />
+    <Compile Include="ServiceNodeFT.cs" />
     <Compile Include="ServiceNodeTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

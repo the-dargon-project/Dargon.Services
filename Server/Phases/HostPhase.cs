@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Linq;
 using System.Net.Sockets;
 using Dargon.PortableObjects;
 using Dargon.Services.PortableObjects;
@@ -22,7 +24,7 @@ namespace Dargon.Services.Server.Phases {
       private readonly IConcurrentSet<IClientSession> clientSessions;
       private readonly IConcurrentSet<IGuestSession> guestSessions;
       private readonly IHostContext hostContext;
-
+      private readonly IThread listenerThread;
       private bool disposed = false;
 
       public HostPhase(ICollectionFactory collectionFactory, IThreadingProxy threadingProxy, INetworkingProxy networkingProxy, IPofSerializer pofSerializer, IHostSessionFactory hostSessionFactory, IConnectorContext connectorContext, IListenerSocket listenerSocket, IHostContext hostContext) {
@@ -37,32 +39,36 @@ namespace Dargon.Services.Server.Phases {
          this.cancellationTokenSource = threadingProxy.CreateCancellationTokenSource();
          this.clientSessions = collectionFactory.CreateConcurrentSet<IClientSession>();
          this.guestSessions = collectionFactory.CreateConcurrentSet<IGuestSession>();
+         this.listenerThread = threadingProxy.CreateThread(ListenerThreadEntryPoint, new ThreadCreationOptions { IsBackground = true });
       }
 
-      public void Initialize() {
-         var listenerThread = threadingProxy.CreateThread(ListenerThreadEntryPoint, new ThreadCreationOptions { IsBackground = true });
+      public void HandleEnter() {
          listenerThread.Start();
       }
 
       internal void ListenerThreadEntryPoint() {
+         Debug.WriteLine("Entering Host Phase ListenerThreadEntryPoint");
          while (!cancellationTokenSource.IsCancellationRequested) {
             var socket = listenerSocket.Accept();
-            var thread = threadingProxy.CreateThread(() => SessionThreadEntryPoint(socket), new ThreadCreationOptions { IsBackground = true });
+            IThread thread = null;
+            thread = threadingProxy.CreateThread(() => SessionThreadEntryPoint(socket, thread), new ThreadCreationOptions { IsBackground = true });
             thread.Start();
          }
+         Debug.WriteLine("Exiting Host Phase ListenerThreadEntryPoint");
       }
 
-      internal void SessionThreadEntryPoint(IConnectedSocket socket) {
+      internal void SessionThreadEntryPoint(IConnectedSocket socket, IThread thread) {
+         Debug.WriteLine("Entering Host Phase SessionThreadEntryPoint");
          IHostSession session = null;
          try {
             var handshake = pofSerializer.Deserialize<X2SHandshake>(socket.GetReader().__Reader);
             if (handshake.Role == Role.Client) {
-               var clientSession = hostSessionFactory.CreateClientSession(socket.GetReader().__Reader, socket.GetWriter().__Writer);
+               var clientSession = hostSessionFactory.CreateClientSession(thread, hostContext, socket);
                session = clientSession;
                clientSessions.Add(clientSession);
                clientSession.Run();
             } else if (handshake.Role == Role.Guest) {
-               var guestSession = hostSessionFactory.CreateGuestSession(socket.GetReader().__Reader, socket.GetWriter().__Writer);
+               var guestSession = hostSessionFactory.CreateGuestSession(thread, hostContext, socket);
                session = guestSession;
                guestSessions.Add(guestSession);
                guestSession.Run();
@@ -71,8 +77,10 @@ namespace Dargon.Services.Server.Phases {
             }
          } catch (SocketException e) {
             logger.Warn(e);
+            Debug.WriteLine(e);
          } catch (Exception e) {
             logger.Error(e);
+            Debug.WriteLine(e);
          } finally {
             if (session != null) {
                if (session.Role == Role.Client) {
@@ -82,17 +90,30 @@ namespace Dargon.Services.Server.Phases {
                }
             }
          }
+         Debug.WriteLine("Exiting Host Phase SessionThreadEntryPoint");
       }
 
-      public void RunIteration() {
-         // this.connectorContext.CurrentPhase
+      public void HandleServiceRegistered(IServiceContext serviceContext) {
+         // does nothing
+      }
+
+      public void HandleServiceUnregistered(IServiceContext serviceContext) {
+         // does nothing
       }
 
       public void Dispose() {
          if (!disposed) {
             disposed = true;
+            cancellationTokenSource.Cancel();
             cancellationTokenSource.Dispose();
             listenerSocket.Dispose();
+            hostContext.Dispose();
+            foreach (var session in clientSessions.ToArray()) {
+               session.Dispose();
+            }
+            foreach (var session in guestSessions.ToArray()) {
+               session.Dispose();
+            }
          }
       }
    }

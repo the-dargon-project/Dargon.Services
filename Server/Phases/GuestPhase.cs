@@ -2,7 +2,6 @@
 using System.Net.Sockets;
 using Dargon.PortableObjects;
 using Dargon.Services.PortableObjects;
-using Dargon.Services.Server.Events;
 using ItzWarty.Collections;
 using ItzWarty.Networking;
 using ItzWarty.Threading;
@@ -29,34 +28,11 @@ namespace Dargon.Services.Server.Phases {
          this.readerThread = threadingProxy.CreateThread(ReaderThreadEntryPoint, new ThreadCreationOptions { IsBackground = true });
       }
 
-      public void Initialize() {
+      public void HandleEnter() {
          var handshake = new X2SHandshake(Role.Guest);
          pofSerializer.Serialize(socket.GetWriter().__Writer, handshake);
 
          readerThread.Start();
-      }
-
-      public void RunIteration() {
-         var addedServices = collectionFactory.CreateHashSet<Guid>();
-         var removedServices = collectionFactory.CreateHashSet<Guid>();
-
-         IConnectorEvent connectorEvent;
-         while (context.EventQueue.TryDequeue(out connectorEvent)) {
-            var serviceContext = connectorEvent.ServiceContext;
-            switch (connectorEvent.Type) {
-               case ConnectorEventType.ServiceRegistered:
-                  addedServices.Add(serviceContext.Guid);
-                  removedServices.Remove(serviceContext.Guid);
-                  break;
-               case ConnectorEventType.ServiceUnregistered:
-                  addedServices.Remove(serviceContext.Guid);
-                  removedServices.Add(serviceContext.Guid);
-                  break;
-            }
-         }
-
-         var serviceUpdate = new G2HServiceUpdate(addedServices, removedServices);
-         pofSerializer.Serialize(socket.GetWriter().__Writer, serviceUpdate);
       }
 
       private void ReaderThreadEntryPoint() {
@@ -68,7 +44,7 @@ namespace Dargon.Services.Server.Phases {
                }
             }
          } catch (SocketException e) {
-            context.Transition(phaseFactory.CreateIndeterminatePhase());
+            context.Transition(phaseFactory.CreateIndeterminatePhase(context));
          }
       }
 
@@ -89,6 +65,22 @@ namespace Dargon.Services.Server.Phases {
       }
 
       public void Dispose() {
+      }
+
+      public void HandleServiceRegistered(IServiceContext serviceContext) {
+         var addedServices = new HashSet<Guid>();
+         var removedServices = new HashSet<Guid>();
+         addedServices.Add(serviceContext.Guid);
+         var serviceUpdate = new G2HServiceUpdate(addedServices, removedServices);
+         pofSerializer.Serialize(socket.GetWriter().__Writer, serviceUpdate);
+      }
+
+      public void HandleServiceUnregistered(IServiceContext serviceContext) {
+         var addedServices = new HashSet<Guid>();
+         var removedServices = new HashSet<Guid>();
+         removedServices.Add(serviceContext.Guid);
+         var serviceUpdate = new G2HServiceUpdate(addedServices, removedServices);
+         pofSerializer.Serialize(socket.GetWriter().__Writer, serviceUpdate);
       }
    }
 }

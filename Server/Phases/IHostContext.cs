@@ -1,7 +1,7 @@
 ﻿using System;
 
 namespace Dargon.Services.Server.Phases {
-   public interface IHostContext {
+   public interface IHostContext : IDisposable {
       object Invoke(Guid serviceGuid, string methodName, object[] methodArguments);
    }
 
@@ -19,6 +19,9 @@ namespace Dargon.Services.Server.Phases {
          } else {
             throw new NotImplementedException("TODO: Implement guest invocation.");
          }
+      }
+
+      public void Dispose() {
       }
    }
 }

@@ -28,11 +28,11 @@ namespace Dargon.Services {
 
       [Fact]
       public void RegisteringUnregisteredServiceDelegatesToServiceConnectorTest() {
-         When(serviceContextFactory.Create(dummyService)).ThenReturn(dummyServiceContext);
+         When(serviceContextFactory.Create(dummyService, typeof(IDummyService))).ThenReturn(dummyServiceContext);
 
-         testObj.RegisterService(dummyService);
+         testObj.RegisterService(dummyService, typeof(IDummyService));
 
-         Verify(serviceContextFactory).Create(dummyService);
+         Verify(serviceContextFactory).Create(dummyService, typeof(IDummyService));
          Verify(connector, Once()).RegisterService(dummyServiceContext);
          VerifyNoMoreInteractions();
       }
@@ -41,14 +41,14 @@ namespace Dargon.Services {
       public void RegisteringRegisteredServiceDoesNothingTest() {
          RegisteringUnregisteredServiceDelegatesToServiceConnectorTest();
 
-         testObj.RegisterService(dummyService);
+         testObj.RegisterService(dummyService, typeof(IDummyService));
 
          VerifyNoMoreInteractions();
       }
 
       [Fact]
       public void UnregisteringUnregisteredServiceDoesNothingTest() {
-         testObj.UnregisterService(dummyService);
+         testObj.UnregisterService(dummyService, typeof(IDummyService));
          VerifyNoMoreInteractions();
       }
 
@@ -56,7 +56,7 @@ namespace Dargon.Services {
       public void UnregisteringRegisteredServiceDelegatesToServiceConnectorTest() {
          RegisteringUnregisteredServiceDelegatesToServiceConnectorTest();
 
-         testObj.UnregisterService(dummyService);
+         testObj.UnregisterService(dummyService, typeof(IDummyService));
          Verify(connector, Once()).UnregisterService(dummyServiceContext);
          VerifyNoMoreInteractions();
       }

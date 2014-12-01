@@ -16,11 +16,11 @@ using Xunit;
 
 namespace Dargon.Services {
    public class ServiceClientFT : NMockitoInstance {
-      private readonly ITcpEndPointFactory tcpEndPointFactory;
-      private readonly IServiceClientFactory serviceClientFactory;
-      private readonly ISocketFactory socketFactory;
       private readonly ISynchronizationFactory synchronizationFactory;
+      private readonly ITcpEndPointFactory tcpEndPointFactory;
+      private readonly ISocketFactory socketFactory;
       private readonly IPofSerializer pofSerializer;
+      private readonly IServiceClientFactory serviceClientFactory;
       private const int kTestPort = 20001;
       private const string kVersioningServiceGuid = "1D98294F-FA5A-472F-91F7-2A96CF973531";
       private const string kVersioningServiceVersion = "123.343.5-asdf";
@@ -39,7 +39,7 @@ namespace Dargon.Services {
          INetworkingInternalFactory networkingInternalFactory = new NetworkingInternalFactory(threadingProxy, streamFactory);
          socketFactory = new SocketFactory(tcpEndPointFactory, networkingInternalFactory);
          IInvocationStateFactory invocationStateFactory = new InvocationStateFactory(threadingProxy);
-         IPofContext pofContext = new TestPofContext();
+         IPofContext pofContext = new DspPofContext();
          pofSerializer = new PofSerializer(pofContext);
          IConnectorFactory connectorFactory = new ConnectorFactory(collectionFactory, threadingProxy, socketFactory, invocationStateFactory, pofSerializer);
          serviceClientFactory = new ServiceClientFactory(collectionFactory, serviceProxyFactory, serviceContextFactory, connectorFactory);
@@ -99,12 +99,6 @@ namespace Dargon.Services {
          listener.Dispose();
          client.Dispose();
          log("Finished disposing resources.");
-      }
-
-      public class TestPofContext : PofContext {
-         public TestPofContext() {
-            this.MergeContext(new DspPofContext());
-         }
       }
 
       [Guid(kVersioningServiceGuid)]

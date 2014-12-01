@@ -13,20 +13,19 @@ namespace Dargon.Services.Server.Phases {
       private readonly IThreadingProxy threadingProxy;
       private readonly INetworkingProxy networkingProxy;
       private readonly IPhaseFactory phaseFactory;
-      private readonly IServiceConfiguration configuration;
       private readonly IConnectorContext connectorContext;
 
-      public IndeterminatePhase(IThreadingProxy threadingProxy, INetworkingProxy networkingProxy, IPhaseFactory phaseFactory, IServiceConfiguration configuration, IConnectorContext connectorContext) {
+      public IndeterminatePhase(IThreadingProxy threadingProxy, INetworkingProxy networkingProxy, IPhaseFactory phaseFactory, IConnectorContext connectorContext) {
          this.threadingProxy = threadingProxy;
          this.networkingProxy = networkingProxy;
          this.phaseFactory = phaseFactory;
-         this.configuration = configuration;
          this.connectorContext = connectorContext;
       }
 
-      public void RunIteration() {
+      public void HandleEnter() {
          IListenerSocket listener = null;
          IConnectedSocket client = null;
+         var configuration = connectorContext.ServiceConfiguration;
          var connectEndpoint = networkingProxy.CreateLoopbackEndPoint(configuration.Port);
          while (listener == null && client == null) {
             if (Util.IsThrown<SocketException>(() => { listener = networkingProxy.CreateListenerSocket(configuration.Port); })) {
@@ -38,10 +37,18 @@ namespace Dargon.Services.Server.Phases {
          }
 
          if (listener != null) {
-            connectorContext.Transition(phaseFactory.CreateHostPhase(listener));
+            connectorContext.Transition(phaseFactory.CreateHostPhase(connectorContext, listener));
          } else {
-            connectorContext.Transition(phaseFactory.CreateGuestPhase(client));
+            connectorContext.Transition(phaseFactory.CreateGuestPhase(connectorContext, client));
          }
+      }
+
+      public void HandleServiceRegistered(IServiceContext serviceContext) {
+         // does nothing
+      }
+
+      public void HandleServiceUnregistered(IServiceContext serviceContext) {
+         // does nothing
       }
 
       public void Dispose() {

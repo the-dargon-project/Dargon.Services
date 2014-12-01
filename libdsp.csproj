@@ -83,11 +83,6 @@
     <Compile Include="Client\ServiceInvocationInterceptor.cs" />
     <Compile Include="Client\ServiceProxyFactory.cs" />
     <Compile Include="Client\IConnector.cs" />
-    <Compile Include="Server\Events\ConnectorEvent.cs" />
-    <Compile Include="Server\Events\ConnectorEventFactory.cs" />
-    <Compile Include="Server\Events\ConnectorEventType.cs" />
-    <Compile Include="Server\Events\IConnectorEvent.cs" />
-    <Compile Include="Server\Events\IConnectorEventFactory.cs" />
     <Compile Include="Server\IConnectorFactory.cs" />
     <Compile Include="PortableObjects\C2HServiceInvocation.cs" />
     <Compile Include="PortableObjects\G2HInvocationResult.cs" />
@@ -108,8 +103,7 @@
     <Compile Include="Server\IConnectorWorker.cs" />
     <Compile Include="Server\IConnectorWorkerFactory.cs" />
     <Compile Include="Server\Connector.cs" />
-    <Compile Include="Server\ConnectorConnectorContext.cs" />
-    <Compile Include="Server\ConnectorWorker.cs" />
+    <Compile Include="Server\ConnectorContext.cs" />
     <Compile Include="Server\Phases\IndeterminatePhase.cs" />
     <Compile Include="Server\Phases\HostPhase.cs" />
     <Compile Include="Server\Sessions\HostClientSession.cs" />
@@ -123,6 +117,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Server\ServiceContext.cs" />
     <Compile Include="Server\ServiceNode.cs" />
+    <Compile Include="ServiceConfiguration.cs" />
     <Compile Include="Utilities\AttributeUtilities.cs" />
   </ItemGroup>
   <ItemGroup />
