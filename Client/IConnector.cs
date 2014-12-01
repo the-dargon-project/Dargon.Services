@@ -1,7 +1,7 @@
 ﻿using System;
 
 namespace Dargon.Services.Client {
-   public interface IClientConnector {
+   public interface IConnector {
       object Invoke(Guid serviceGuid, string methodName, object[] methodArguments);
    }
 }

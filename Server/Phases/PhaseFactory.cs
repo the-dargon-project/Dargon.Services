@@ -29,7 +29,8 @@ namespace Dargon.Services.Server.Phases {
       }
 
       public IPhase CreateHostPhase(IListenerSocket listenerSocket) {
-         return new HostPhase(threadingProxy, networkingProxy, pofSerializer, hostSessionFactory, connectorContext, listenerSocket);
+         var hostContext = new HostContext(connectorContext);
+         return new HostPhase(collectionFactory, threadingProxy, networkingProxy, pofSerializer, hostSessionFactory, connectorContext, listenerSocket, hostContext);
       }
 
       public IPhase CreateGuestPhase(IConnectedSocket clientSocket) {

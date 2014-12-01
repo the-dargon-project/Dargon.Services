@@ -8,8 +8,8 @@ namespace Dargon.Services.Client {
          this.proxyGenerator = proxyGenerator;
       }
 
-      public TService CreateServiceProxy<TService>(IClientConnector clientConnector) where TService : class {
-         var interceptor = new ServiceInvocationInterceptor(clientConnector);
+      public TService CreateServiceProxy<TService>(IServiceContext context) where TService : class {
+         var interceptor = new ServiceInvocationInterceptor(context);
          return proxyGenerator.CreateInterfaceProxyWithoutTarget<TService>(interceptor);
       }
    }

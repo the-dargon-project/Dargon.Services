@@ -8,6 +8,7 @@ using Dargon.Services.Server;
 using Dargon.Services.Server.Phases;
 using Dargon.Services.Server.Sessions;
 using ItzWarty;
+using ItzWarty.Collections;
 using ItzWarty.Networking;
 using ItzWarty.Threading;
 using NMockito;
@@ -17,6 +18,7 @@ namespace Dargon.Services.Networking.Server.Phases {
    public class HostPhaseTests : NMockitoInstance {
       private readonly HostPhase testObj;
 
+      [Mock] private readonly ICollectionFactory collectionFactory = null;
       [Mock] private readonly IThreadingProxy threadingProxy = null;
       [Mock] private readonly INetworkingProxy networkingProxy = null;
       [Mock] private readonly IPofSerializer pofSerializer = null;
@@ -24,11 +26,12 @@ namespace Dargon.Services.Networking.Server.Phases {
       [Mock] private readonly IConnectorContext connectorContext = null;
       [Mock] private readonly IListenerSocket listenerSocket = null;
       [Mock] private readonly ICancellationTokenSource cancellationTokenSource = null;
+      [Mock] private readonly IHostContext hostContext = null;
 
       public HostPhaseTests() {
          When(threadingProxy.CreateCancellationTokenSource()).ThenReturn(cancellationTokenSource);
 
-         testObj = new HostPhase(threadingProxy, networkingProxy, pofSerializer, hostSessionFactory, connectorContext, listenerSocket);
+         testObj = new HostPhase(collectionFactory, threadingProxy, networkingProxy, pofSerializer, hostSessionFactory, connectorContext, listenerSocket, hostContext);
 
          Verify(threadingProxy).CreateCancellationTokenSource();
          VerifyNoMoreInteractions();

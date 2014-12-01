@@ -43,8 +43,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>packages\libwarty.0.0.15\lib\portable-net45+netcore45+MonoAndroid1+MonoTouch1\libwarty.dll</HintPath>
     </Reference>
-    <Reference Include="libwarty.proxies-api">
-      <HintPath>packages\libwarty.proxies-api.0.0.13\lib\net45\libwarty.proxies-api.dll</HintPath>
+    <Reference Include="libwarty.proxies-api, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\libwarty.proxies-api.0.0.15\lib\net45\libwarty.proxies-api.dll</HintPath>
     </Reference>
     <Reference Include="NLog, Version=3.1.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -59,8 +60,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Client\Connector.cs" />
+    <Compile Include="Client\ConnectorFactory.cs" />
+    <Compile Include="Client\IConnectorContext.cs" />
+    <Compile Include="Client\IInvocationState.cs" />
+    <Compile Include="Client\IInvocationStateFactory.cs" />
+    <Compile Include="Client\IMessageReader.cs" />
+    <Compile Include="Client\IMessageWriter.cs" />
+    <Compile Include="Client\InvocationState.cs" />
     <Compile Include="Client\IServiceClient.cs" />
     <Compile Include="Client\IServiceClientFactory.cs" />
+    <Compile Include="Client\IServiceContextFactory.cs" />
+    <Compile Include="Client\ServiceClientFactory.cs" />
     <Compile Include="IServiceConfiguration.cs" />
     <Compile Include="Server\IServiceContext.cs" />
     <Compile Include="Server\IServiceContextFactory.cs" />

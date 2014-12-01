@@ -19,20 +19,24 @@ namespace Dargon.Services.Server.Phases {
       private readonly IConnectorContext connectorContext;
       private readonly IListenerSocket listenerSocket;
       private readonly ICancellationTokenSource cancellationTokenSource;
-      private readonly IConcurrentSet<IHostSession> sessions;
+      private readonly IConcurrentSet<IClientSession> clientSessions;
+      private readonly IConcurrentSet<IGuestSession> guestSessions;
       private readonly IHostContext hostContext;
 
       private bool disposed = false;
 
-      public HostPhase(IThreadingProxy threadingProxy, INetworkingProxy networkingProxy, IPofSerializer pofSerializer, IHostSessionFactory hostSessionFactory, IConnectorContext connectorContext, IListenerSocket listenerSocket) {
+      public HostPhase(ICollectionFactory collectionFactory, IThreadingProxy threadingProxy, INetworkingProxy networkingProxy, IPofSerializer pofSerializer, IHostSessionFactory hostSessionFactory, IConnectorContext connectorContext, IListenerSocket listenerSocket, IHostContext hostContext) {
          this.threadingProxy = threadingProxy;
          this.networkingProxy = networkingProxy;
          this.pofSerializer = pofSerializer;
          this.hostSessionFactory = hostSessionFactory;
          this.connectorContext = connectorContext;
          this.listenerSocket = listenerSocket;
+         this.hostContext = hostContext;
+
          this.cancellationTokenSource = threadingProxy.CreateCancellationTokenSource();
-         this.sessions = new ConcurrentSet<IHostSession>();
+         this.clientSessions = collectionFactory.CreateConcurrentSet<IClientSession>();
+         this.guestSessions = collectionFactory.CreateConcurrentSet<IGuestSession>();
       }
 
       public void Initialize() {
@@ -49,14 +53,19 @@ namespace Dargon.Services.Server.Phases {
       }
 
       internal void SessionThreadEntryPoint(IConnectedSocket socket) {
+         IHostSession session = null;
          try {
-            var handshake = pofSerializer.Deserialize<X2SHandshake>(socket.GetReader());
+            var handshake = pofSerializer.Deserialize<X2SHandshake>(socket.GetReader().__Reader);
             if (handshake.Role == Role.Client) {
-               var clientSession = hostSessionFactory.CreateClientSession(socket.GetReader(), socket.GetWriter());
-               this.sessions.Add(clientSession);
+               var clientSession = hostSessionFactory.CreateClientSession(socket.GetReader().__Reader, socket.GetWriter().__Writer);
+               session = clientSession;
+               clientSessions.Add(clientSession);
+               clientSession.Run();
             } else if (handshake.Role == Role.Guest) {
-               var guestSession = hostSessionFactory.CreateGuestSession(socket.GetReader(), socket.GetWriter());
-               this.sessions.Add(guestSession);
+               var guestSession = hostSessionFactory.CreateGuestSession(socket.GetReader().__Reader, socket.GetWriter().__Writer);
+               session = guestSession;
+               guestSessions.Add(guestSession);
+               guestSession.Run();
             } else {
                // do nothing
             }
@@ -64,6 +73,14 @@ namespace Dargon.Services.Server.Phases {
             logger.Warn(e);
          } catch (Exception e) {
             logger.Error(e);
+         } finally {
+            if (session != null) {
+               if (session.Role == Role.Client) {
+                  clientSessions.Remove((IClientSession)session);
+               } else if (session.Role == Role.Guest) {
+                  guestSessions.Remove((IGuestSession)session);
+               }
+            }
          }
       }
 

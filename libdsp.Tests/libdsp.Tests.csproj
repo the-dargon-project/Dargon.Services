@@ -45,8 +45,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Dargon.TestUtilities.0.0.0\lib\net45\Dargon.TestUtilities.dll</HintPath>
     </Reference>
-    <Reference Include="ImpromptuInterface">
-      <HintPath>..\packages\libwarty.proxies-impl.0.0.10\lib\net45\ImpromptuInterface.dll</HintPath>
+    <Reference Include="ImpromptuInterface, Version=6.2.2.0, Culture=neutral, PublicKeyToken=0b1781c923b2975b, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\libwarty.proxies-impl.0.0.11\lib\net45\ImpromptuInterface.dll</HintPath>
     </Reference>
     <Reference Include="libdargon.utilities">
       <HintPath>..\packages\libdargon.utilities.0.0.3\lib\net45\libdargon.utilities.dll</HintPath>
@@ -59,11 +60,13 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\libwarty.0.0.15\lib\portable-net45+netcore45+MonoAndroid1+MonoTouch1\libwarty.dll</HintPath>
     </Reference>
-    <Reference Include="libwarty.proxies-api">
-      <HintPath>..\packages\libwarty.proxies-impl.0.0.10\lib\net45\libwarty.proxies-api.dll</HintPath>
+    <Reference Include="libwarty.proxies-api, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\libwarty.proxies-impl.0.0.11\lib\net45\libwarty.proxies-api.dll</HintPath>
     </Reference>
-    <Reference Include="libwarty.proxies-impl">
-      <HintPath>..\packages\libwarty.proxies-impl.0.0.10\lib\net45\libwarty.proxies-impl.dll</HintPath>
+    <Reference Include="libwarty.proxies-impl, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\libwarty.proxies-impl.0.0.11\lib\net45\libwarty.proxies-impl.dll</HintPath>
     </Reference>
     <Reference Include="NMockito">
       <HintPath>..\packages\NMockito.0.0.6\lib\net45\NMockito.dll</HintPath>
@@ -88,9 +91,10 @@
     <None Include="Networking\Server\ConnectorContextTests.cs" />
     <None Include="Networking\Server\ConnectorTests.cs" />
     <None Include="Networking\Server\ConnectorWorkerTests.cs" />
-    <Compile Include="Networking\Server\Phases\HostPhaseTests.cs" />
-    <Compile Include="Networking\Server\Phases\IndeterminatePhaseTests.cs" />
-    <Compile Include="Networking\Server\Phases\PhaseFactoryTests.cs" />
+    <None Include="Networking\Server\Phases\HostPhaseTests.cs" />
+    <None Include="Networking\Server\Phases\IndeterminatePhaseTests.cs" />
+    <None Include="Networking\Server\Phases\PhaseFactoryTests.cs" />
+    <Compile Include="ServiceClientFT.cs" />
     <Compile Include="ServiceContextIT.cs" />
     <Compile Include="ServiceNodeTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -12,6 +12,9 @@ namespace Dargon.Services.PortableObjects {
          this.payload = payload;
       }
 
+      public uint InvocationId { get { return invocationId; } }
+      public object Payload { get { return payload; } }
+
       public void Serialize(IPofWriter writer) {
          writer.WriteU32(0, invocationId);
          writer.WriteObject(1, payload);
