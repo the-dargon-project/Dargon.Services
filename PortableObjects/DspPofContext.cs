@@ -10,6 +10,7 @@ namespace Dargon.Services.PortableObjects {
          RegisterPortableObjectType(kPofIdentifierOffset + 3, typeof(C2HServiceInvocation));
          RegisterPortableObjectType(kPofIdentifierOffset + 4, typeof(H2CInvocationResult));
          RegisterPortableObjectType(kPofIdentifierOffset + 5, typeof(PortableException));
+         RegisterPortableObjectType(kPofIdentifierOffset + 6, typeof(G2HInvocationResult));
       }
    }
 }
