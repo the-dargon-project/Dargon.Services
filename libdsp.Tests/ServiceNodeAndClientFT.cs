@@ -1,4 +1,5 @@
-﻿using Castle.DynamicProxy;
+﻿using System.Linq;
+using Castle.DynamicProxy;
 using Dargon.PortableObjects;
 using Dargon.Services.Client;
 using Dargon.Services.PortableObjects;
@@ -10,6 +11,8 @@ using ItzWarty.IO;
 using ItzWarty.Networking;
 using ItzWarty.Threading;
 using NMockito;
+using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Xunit;
@@ -61,20 +64,34 @@ namespace Dargon.Services {
          var versioningService = serviceClient.GetService<IVersioningService>();
 
          AssertEquals(kVersioningServiceVersion, versioningService.GetVersion());
+         AssertTrue(versioningService.GetTags().SequenceEqual(new[] { "Prerelease", "Beta" }));
+         AssertTrue(versioningService.GetTagsArray().SequenceEqual(new[] { "Prerelease", "Beta" }));
 
          serviceNode.Dispose();
          serviceClient.Dispose();
+         Debug.WriteLine("Exited cleanly");
       }
 
       [Guid(kVersioningServiceGuid)]
       public interface IVersioningService {
          string GetVersion();
+         IEnumerable<string> GetTags();
+         string[] GetTagsArray();
       }
 
       public class VersioningService : IVersioningService {
          public string GetVersion() {
             Debug.WriteLine("VersioningService: Invoked GetVersion()!");
             return kVersioningServiceVersion;
+         }
+
+         public IEnumerable<string> GetTags() {
+            yield return "Prerelease";
+            yield return "Beta";
+         }
+
+         public string[] GetTagsArray() {
+            return new string[] { "Prerelease", "Beta" };
          }
       }
    }
