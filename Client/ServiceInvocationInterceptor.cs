@@ -14,7 +14,13 @@ namespace Dargon.Services.Client {
       public void Intercept(IInvocation invocation) {
          var methodName = invocation.Method.Name;
          var methodArguments = invocation.Arguments;
-         invocation.ReturnValue = serviceContext.Invoke(methodName, methodArguments);
+         var result = serviceContext.Invoke(methodName, methodArguments);
+         var exception = result as Exception;
+         if (exception != null) {
+            throw exception;
+         } else {
+            invocation.ReturnValue = result;;
+         }
       }
    }
 }
