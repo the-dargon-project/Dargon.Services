@@ -66,14 +66,19 @@ namespace Dargon.Services {
          AssertEquals(kVersioningServiceVersion, versioningService.GetVersion());
          AssertTrue(versioningService.GetTags().SequenceEqual(new[] { "Prerelease", "Beta" }));
          AssertTrue(versioningService.GetTagsArray().SequenceEqual(new[] { "Prerelease", "Beta" }));
+         AssertEquals("status", ((IStatusService)versioningService).GetStatus());
 
          serviceNode.Dispose();
          serviceClient.Dispose();
          Debug.WriteLine("Exited cleanly");
       }
 
+      public interface IStatusService {
+         string GetStatus();
+      }
+
       [Guid(kVersioningServiceGuid)]
-      public interface IVersioningService {
+      public interface IVersioningService : IStatusService {
          string GetVersion();
          IEnumerable<string> GetTags();
          string[] GetTagsArray();
@@ -92,6 +97,10 @@ namespace Dargon.Services {
 
          public string[] GetTagsArray() {
             return new string[] { "Prerelease", "Beta" };
+         }
+
+         public string GetStatus() {
+            return "status";
          }
       }
    }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using Dargon.Services.Utilities;
+using ItzWarty;
 using ItzWarty.Collections;
 
 namespace Dargon.Services.Client {
@@ -61,9 +62,12 @@ namespace Dargon.Services.Client {
          this.connector = connector;
 
          methodsByName = collectionFactory.CreateMultiValueDictionary<string, MethodInfo>();
-         var methods = serviceInterface.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-         foreach (var method in methods) {
-            methodsByName.Add(method.Name, method);
+         var interfaces = serviceInterface.GetInterfaces().Concat(serviceInterface);
+         foreach (var i in interfaces) {
+            var methods = i.GetMethods(BindingFlags.Instance | BindingFlags.Public);
+            foreach (var method in methods) {
+               methodsByName.Add(method.Name, method);
+            }
          }
 
          serviceGuid = AttributeUtilities.GetInterfaceGuid(serviceInterface);
