@@ -37,7 +37,7 @@
     </Reference>
     <Reference Include="libdpo, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\libdpo.0.0.10\lib\net45\libdpo.dll</HintPath>
+      <HintPath>packages\libdpo.0.0.11\lib\net45\libdpo.dll</HintPath>
     </Reference>
     <Reference Include="libwarty, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -120,7 +120,6 @@
     <Compile Include="ServiceConfiguration.cs" />
     <Compile Include="Utilities\AttributeUtilities.cs" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
