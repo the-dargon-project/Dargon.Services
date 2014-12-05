@@ -23,9 +23,8 @@ namespace Dargon.Services.Server {
       }
 
       public IConnector CreateServiceConnector(IServiceConfiguration serviceConfiguration) {
-         IConcurrentDictionary<Guid, IServiceContext> serviceContextsByName = collectionFactory.CreateConcurrentDictionary<Guid, IServiceContext>();
          IConnectorContext connectorContext = new ConnectorContext(collectionFactory, serviceConfiguration);
-         IPhase initialPhase = new IndeterminatePhase(threadingProxy, networkingProxy, phaseFactory, connectorContext);
+         IPhase initialPhase = phaseFactory.CreateIndeterminatePhase(connectorContext);
          connectorContext.Transition(initialPhase);
          var connector = new Connector(connectorContext);
          return connector;
