@@ -27,19 +27,43 @@ namespace Dargon.Services.Server.Phases {
          IConnectedSocket client = null;
          var configuration = connectorContext.ServiceConfiguration;
          var connectEndpoint = networkingProxy.CreateLoopbackEndPoint(configuration.Port);
+         var hostAllowed = !configuration.NodeOwnershipFlags.HasFlag(NodeOwnershipFlags.GuestOnly);
+         var guestAllowed = !configuration.NodeOwnershipFlags.HasFlag(NodeOwnershipFlags.HostOnly);
          while (listener == null && client == null) {
-            if (Util.IsThrown<SocketException>(() => { listener = networkingProxy.CreateListenerSocket(configuration.Port); })) {
-               if (Util.IsThrown<SocketException>(() => { client = networkingProxy.CreateConnectedSocket(connectEndpoint); })) {
-                  logger.Warn("Unable to either listen or connect to port " + configuration.Port);
-                  threadingProxy.Sleep(kRetryInterval);
-               }
+            if (hostAllowed && TryCreateHostListener(configuration, out listener)) {
+               break;
             }
+            if (guestAllowed && TryCreateGuestSocket(connectEndpoint, out client)) {
+               break;
+            }
+            logger.Warn("Unable to either listen/connect to port " + configuration.Port);
+            threadingProxy.Sleep(kRetryInterval);
          }
 
          if (listener != null) {
             connectorContext.Transition(phaseFactory.CreateHostPhase(connectorContext, listener));
          } else {
             connectorContext.Transition(phaseFactory.CreateGuestPhase(connectorContext, client));
+         }
+      }
+
+      private bool TryCreateGuestSocket(ITcpEndPoint connectEndpoint, out IConnectedSocket client) {
+         try {
+            client = networkingProxy.CreateConnectedSocket(connectEndpoint);
+            return true;
+         } catch (SocketException) {
+            client = null;
+            return false;
+         }
+      }
+
+      private bool TryCreateHostListener(IServiceConfiguration configuration, out IListenerSocket listener) {
+         try {
+            listener = networkingProxy.CreateListenerSocket(configuration.Port);
+            return true;
+         } catch (SocketException) {
+            listener = null;
+            return false;
          }
       }
 
