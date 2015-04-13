@@ -1,7 +1,7 @@
-﻿using System.Linq;
-using Castle.DynamicProxy;
+﻿using Castle.DynamicProxy;
 using Dargon.PortableObjects;
 using Dargon.Services.Client;
+using Dargon.Services.Common;
 using Dargon.Services.PortableObjects;
 using Dargon.Services.Server;
 using Dargon.Services.Server.Phases;
@@ -11,9 +11,9 @@ using ItzWarty.IO;
 using ItzWarty.Networking;
 using ItzWarty.Threading;
 using NMockito;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.InteropServices;
 using Xunit;
 
@@ -47,11 +47,11 @@ namespace Dargon.Services {
          IHostSessionFactory hostSessionFactory = new HostSessionFactory(collectionFactory, pofSerializer);
          IPhaseFactory phaseFactory = new PhaseFactory(collectionFactory, threadingProxy, networkingProxy, hostSessionFactory, pofSerializer);
          Server.IConnectorFactory serverConnectorFactory = new Server.ConnectorFactory(collectionFactory, threadingProxy, networkingProxy, phaseFactory);
-         Client.IConnectorFactory clientConnectorFactory = new Client.ConnectorFactory(collectionFactory, threadingProxy, socketFactory, invocationStateFactory, pofSerializer);
+         IInvocationManagerFactory invocationManagerFactory = new InvocationManagerFactory(collectionFactory, threadingProxy, socketFactory, invocationStateFactory, pofSerializer);
          Server.IServiceContextFactory serverServiceContextFactory = new Server.ServiceContextFactory(collectionFactory);
          Client.IServiceContextFactory clientServiceContextFactory = new Client.ServiceContextFactory(collectionFactory);
          serviceNodeFactory = new ServiceNodeFactory(serverConnectorFactory, serverServiceContextFactory, collectionFactory);
-         serviceClientFactory = new ServiceClientFactory(collectionFactory, serviceProxyFactory, clientServiceContextFactory, clientConnectorFactory);
+         serviceClientFactory = new ServiceClientFactory(collectionFactory, serviceProxyFactory, clientServiceContextFactory, invocationManagerFactory);
       }
 
       [Fact]

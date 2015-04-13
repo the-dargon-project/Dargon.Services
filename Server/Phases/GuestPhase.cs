@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net.Sockets;
 using Dargon.PortableObjects;
 using Dargon.Services.PortableObjects;
@@ -32,6 +33,9 @@ namespace Dargon.Services.Server.Phases {
          var handshake = new X2SHandshake(Role.Guest);
          pofSerializer.Serialize(socket.GetWriter().__Writer, handshake);
 
+         var servicesGuids = new HashSet<Guid>(context.ServiceContextsByGuid.Keys);
+         pofSerializer.Serialize(socket.GetWriter().__Writer, new G2HServiceBroadcast(servicesGuids));
+
          readerThread.Start();
       }
 
@@ -39,8 +43,8 @@ namespace Dargon.Services.Server.Phases {
          try {
             while (true) {
                var message = pofSerializer.Deserialize(socket.GetReader().__Reader);
-               if (message is H2GServiceInvocation) {
-                  ProcessH2GServiceInvocation((H2GServiceInvocation)message);
+               if (message is X2XServiceInvocation) {
+                  ProcessH2GServiceInvocation((X2XServiceInvocation)message);
                }
             }
          } catch (SocketException e) {
@@ -48,7 +52,7 @@ namespace Dargon.Services.Server.Phases {
          }
       }
 
-      private void ProcessH2GServiceInvocation(H2GServiceInvocation x) {
+      private void ProcessH2GServiceInvocation(X2XServiceInvocation x) {
          IServiceContext serviceContext;
          object payload;
          if (!context.ServiceContextsByGuid.TryGetValue(x.ServiceGuid, out serviceContext)) {
@@ -60,7 +64,7 @@ namespace Dargon.Services.Server.Phases {
                payload = new PortableException(e);
             }
          }
-         var result = new G2HInvocationResult(x.InvocationId, payload);
+         var result = new X2XInvocationResult(x.InvocationId, payload);
          pofSerializer.Serialize(socket.GetWriter().__Writer, result);
       }
 

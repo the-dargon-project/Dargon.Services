@@ -92,12 +92,12 @@ namespace Dargon.Services {
          const int invocationId = 0;
          const string methodName = "GetVersion";
          var methodArguments = new object[0];
-         var invocation = new C2HServiceInvocation(invocationId, Guid.Parse(kVersioningServiceGuid), methodName, methodArguments);
+         var invocation = new X2XServiceInvocation(invocationId, Guid.Parse(kVersioningServiceGuid), methodName, methodArguments);
          pofSerializer.Serialize(client.GetWriter().__Writer, invocation);
          log("Sent invocation to server.");
 
          log("Awaiting invocation result from server.");
-         var invocationResult = pofSerializer.Deserialize<H2CInvocationResult>(client.GetReader().__Reader);
+         var invocationResult = pofSerializer.Deserialize<X2XInvocationResult>(client.GetReader().__Reader);
          AssertEquals(kVersioningServiceVersion, invocationResult.Payload);
          log("Received and validated invocation result from server!");
          Thread.Sleep(1000);

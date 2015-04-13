@@ -1,7 +1,8 @@
 using System;
+using Dargon.Services.Client;
 using ItzWarty.Threading;
 
-namespace Dargon.Services.Client {
+namespace Dargon.Services.Common {
    public interface IInvocationStateFactory {
       IInvocationState Create(uint invocationId, Guid serviceGuid, string methodName, object[] methodArguments);
    }

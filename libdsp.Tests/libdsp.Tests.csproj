@@ -86,7 +86,6 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Networking\PortableObjects\C2HServiceInvocationTests.cs" />
-    <Compile Include="Networking\PortableObjects\G2HInvocationResultTests.cs" />
     <Compile Include="Networking\PortableObjects\G2HServiceBroadcastTests.cs" />
     <Compile Include="Networking\PortableObjects\X2SHandshakeTests.cs" />
     <None Include="Networking\Server\ConnectorContextTests.cs" />

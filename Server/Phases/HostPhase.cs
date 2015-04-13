@@ -69,6 +69,7 @@ namespace Dargon.Services.Server.Phases {
                clientSession.Run();
             } else if (handshake.Role == Role.Guest) {
                var guestSession = hostSessionFactory.CreateGuestSession(thread, hostContext, socket);
+               hostContext.AddGuestSession(guestSession);
                session = guestSession;
                guestSessions.Add(guestSession);
                guestSession.Run();
@@ -86,7 +87,9 @@ namespace Dargon.Services.Server.Phases {
                if (session.Role == Role.Client) {
                   clientSessions.Remove((IClientSession)session);
                } else if (session.Role == Role.Guest) {
-                  guestSessions.Remove((IGuestSession)session);
+                  var guestSession = (IGuestSession)session;
+                  guestSessions.Remove(guestSession);
+                  hostContext.RemoveGuestSessions(guestSession);
                }
             }
          }

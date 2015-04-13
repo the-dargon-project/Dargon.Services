@@ -1,9 +1,10 @@
 ﻿using System;
+using Dargon.Services.Common;
 using ItzWarty.Collections;
 
 namespace Dargon.Services.Client {
    public interface IServiceContextFactory {
-      IServiceContext Create(Type serviceInterface, IConnector connector);
+      IServiceContext Create(Type serviceInterface, IUserInvocationManager invocationManager);
    }
 
    public class ServiceContextFactory : IServiceContextFactory {
@@ -13,8 +14,8 @@ namespace Dargon.Services.Client {
          this.collectionFactory = collectionFactory;
       }
 
-      public IServiceContext Create(Type serviceInterface, IConnector connector) {
-         return new ServiceContext(collectionFactory, serviceInterface, connector);
+      public IServiceContext Create(Type serviceInterface, IUserInvocationManager invocationManager) {
+         return new ServiceContext(collectionFactory, serviceInterface, invocationManager);
       }
    }
 }

@@ -12,6 +12,7 @@ using ItzWarty.Networking;
 using ItzWarty.Threading;
 using NMockito;
 using System.Threading;
+using Dargon.Services.Common;
 using Xunit;
 
 namespace Dargon.Services {
@@ -39,10 +40,10 @@ namespace Dargon.Services {
          INetworkingInternalFactory networkingInternalFactory = new NetworkingInternalFactory(threadingProxy, streamFactory);
          socketFactory = new SocketFactory(tcpEndPointFactory, networkingInternalFactory);
          IInvocationStateFactory invocationStateFactory = new InvocationStateFactory(threadingProxy);
+         InvocationManagerFactory invocationManagerFactory = new InvocationManagerFactory(collectionFactory, threadingProxy, socketFactory, invocationStateFactory, pofSerializer);
          IPofContext pofContext = new DspPofContext();
          pofSerializer = new PofSerializer(pofContext);
-         IConnectorFactory connectorFactory = new ConnectorFactory(collectionFactory, threadingProxy, socketFactory, invocationStateFactory, pofSerializer);
-         serviceClientFactory = new ServiceClientFactory(collectionFactory, serviceProxyFactory, serviceContextFactory, connectorFactory);
+         serviceClientFactory = new ServiceClientFactory(collectionFactory, serviceProxyFactory, serviceContextFactory, invocationManagerFactory);
       }
 
       [Fact]
@@ -86,13 +87,13 @@ namespace Dargon.Services {
          AssertEquals(Role.Client, handshake.Role);
          log("Received and validated client handshake.");
          
-         var request = pofSerializer.Deserialize<C2HServiceInvocation>(client.GetReader().__Reader);
+         var request = pofSerializer.Deserialize<X2XServiceInvocation>(client.GetReader().__Reader);
          AssertEquals(Guid.Parse(kVersioningServiceGuid), request.ServiceGuid);
          AssertEquals("GetVersion", request.MethodName);
          AssertEquals(0, request.MethodArguments.Length);
          log("Received and validated client service invocation.");
          
-         var response = new H2CInvocationResult(request.InvocationId, kVersioningServiceVersion);
+         var response = new X2XInvocationResult(request.InvocationId, kVersioningServiceVersion);
          pofSerializer.Serialize(client.GetWriter().__Writer, response);
          log("Sent response to client service invocation.");
 

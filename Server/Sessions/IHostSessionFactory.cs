@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using Dargon.PortableObjects;
 using Dargon.Services.Server.Phases;
 using ItzWarty.Collections;
@@ -26,7 +27,8 @@ namespace Dargon.Services.Server.Sessions {
       }
 
       public IGuestSession CreateGuestSession(IThread thread, IHostContext hostContext, IConnectedSocket socket) {
-         return new HostGuestSession(thread, collectionFactory, pofSerializer, hostContext, socket);
+         throw new NotImplementedException();
+         //return new HostGuestSession(thread, collectionFactory, pofSerializer, hostContext, socket);
       }
    }
 }

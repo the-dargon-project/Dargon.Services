@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Threading.Tasks;
 
-namespace Dargon.Services.Client {
+namespace Dargon.Services.Common {
    public interface IInvocationState {
       uint InvocationId { get; }
       Guid ServiceGuid { get; }

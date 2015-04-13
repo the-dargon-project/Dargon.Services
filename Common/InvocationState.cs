@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Threading;
 using ItzWarty.Threading;
 
-namespace Dargon.Services.Client {
+namespace Dargon.Services.Common {
    public class InvocationState : IInvocationState {
       private readonly uint invocationId;
       private readonly Guid serviceGuid;

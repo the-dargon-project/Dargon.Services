@@ -1,13 +1,14 @@
+using System;
 using Dargon.PortableObjects;
 
 namespace Dargon.Services.PortableObjects {
-   public class H2CInvocationResult : IPortableObject {
+   public class X2XInvocationResult : IPortableObject, IEquatable<X2XInvocationResult> {
       private uint invocationId;
       private object payload;
 
-      public H2CInvocationResult() { }
+      public X2XInvocationResult() { }
 
-      public H2CInvocationResult(uint invocationId, object payload) {
+      public X2XInvocationResult(uint invocationId, object payload) {
          this.invocationId = invocationId;
          this.payload = payload;
       }
@@ -23,6 +24,12 @@ namespace Dargon.Services.PortableObjects {
       public void Deserialize(IPofReader reader) {
          invocationId = reader.ReadU32(0);
          payload = reader.ReadObject(1);
+      }
+
+      public bool Equals(X2XInvocationResult other) {
+         return other != null &&
+                invocationId == other.invocationId &&
+                Equals(payload, other.payload);
       }
    }
 }
