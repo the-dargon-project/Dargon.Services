@@ -26,7 +26,7 @@ namespace Dargon.Services {
       private const int kHeartBeatIntervalMilliseconds = 30000;
       private const string kVersioningServiceGuid = "1D98294F-FA5A-472F-91F7-2A96CF973531";
       private const string kVersioningServiceVersion = "123.343.5-asdf";
-      private readonly IServiceConfiguration serviceConfiguration = new ServiceConfiguration(kTestPort, kHeartBeatIntervalMilliseconds);
+      private readonly INodeConfiguration nodeConfiguration = new NodeConfiguration(kTestPort, kHeartBeatIntervalMilliseconds);
 
       public ServiceNodeAndClientFT() {
          var proxyGenerator = new ProxyGenerator();
@@ -56,7 +56,7 @@ namespace Dargon.Services {
 
       [Fact]
       public void Run() {
-         var serviceNode = serviceNodeFactory.CreateOrJoin(serviceConfiguration);
+         var serviceNode = serviceNodeFactory.CreateOrJoin(nodeConfiguration);
          serviceNode.RegisterService(new VersioningService(), typeof(IVersioningService));
          
          var localEndpoint = tcpEndPointFactory.CreateLoopbackEndPoint(kTestPort);

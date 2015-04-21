@@ -1,23 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Castle.DynamicProxy;
+﻿using Castle.DynamicProxy;
 using Dargon.PortableObjects;
-using Dargon.Services.Server;
 using Dargon.Services.PortableObjects;
-using Dargon.Services.Server.Phases;
-using Dargon.Services.Server.Sessions;
-using ItzWarty;
+using Dargon.Services.Server;
 using ItzWarty.Collections;
 using ItzWarty.IO;
 using ItzWarty.Networking;
 using ItzWarty.Threading;
 using NMockito;
+using System;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
+using System.Threading;
+using Dargon.PortableObjects.Streams;
+using Dargon.Services.Phases;
+using Dargon.Services.Phases.Host;
 using Xunit;
 
 namespace Dargon.Services {
@@ -31,7 +27,7 @@ namespace Dargon.Services {
       private const int kHeartBeatIntervalMilliseconds = 30000;
       private const string kVersioningServiceGuid = "1D98294F-FA5A-472F-91F7-2A96CF973531";
       private const string kVersioningServiceVersion = "123.343.5-asdf";
-      private readonly IServiceConfiguration serviceConfiguration = new ServiceConfiguration(kTestPort, kHeartBeatIntervalMilliseconds);
+      private readonly INodeConfiguration nodeConfiguration = new NodeConfiguration(kTestPort, kHeartBeatIntervalMilliseconds);
 
       public ServiceNodeFT() {
          var proxyGenerator = new ProxyGenerator();
@@ -46,12 +42,17 @@ namespace Dargon.Services {
          ISocketFactory socketFactory = new SocketFactory(tcpEndPointFactory, networkingInternalFactory);
          networkingProxy = new NetworkingProxy(socketFactory, tcpEndPointFactory);
          IPofContext pofContext = new DspPofContext();
-         pofSerializer = new PofSerializer(pofContext);
-         IHostSessionFactory hostSessionFactory = new HostSessionFactory(collectionFactory, pofSerializer);
-         IPhaseFactory phaseFactory = new PhaseFactory(collectionFactory, threadingProxy, networkingProxy, hostSessionFactory, pofSerializer);
-         IConnectorFactory connectorFactory = new ConnectorFactory(collectionFactory, threadingProxy, networkingProxy, phaseFactory);
          IServiceContextFactory serviceContextFactory = new ServiceContextFactory(collectionFactory);
-         serviceNodeFactory = new ServiceNodeFactory(connectorFactory, serviceContextFactory, collectionFactory);
+         pofSerializer = new PofSerializer(pofContext);
+         PofStreamsFactory pofStreamsFactory = new PofStreamsFactoryImpl(threadingProxy, streamFactory, pofSerializer);
+         IHostSessionFactory hostSessionFactory = new HostSessionFactory(threadingProxy, collectionFactory, pofSerializer, pofStreamsFactory);
+         IPhaseFactory phaseFactory = new PhaseFactory(collectionFactory, threadingProxy, networkingProxy, hostSessionFactory, pofSerializer);
+         serviceNodeFactory = new ServiceNodeFactory(collectionFactory, serviceContextFactory, phaseFactory);
+         //         IHostSessionFactory hostSessionFactory = new HostSessionFactory(collectionFactory, pofSerializer);
+//         IPhaseFactory phaseFactory = new PhaseFactory(collectionFactory, threadingProxy, networkingProxy, hostSessionFactory, pofSerializer);
+//         IConnectorFactory connectorFactory = new ConnectorFactory(collectionFactory, threadingProxy, networkingProxy, phaseFactory);
+//         IServiceContextFactory serviceContextFactory = new ServiceContextFactory(collectionFactory);
+//         serviceNodeFactory = new ServiceNodeFactory(connectorFactory, serviceContextFactory, collectionFactory);
       }
 
       [Fact]
@@ -59,7 +60,7 @@ namespace Dargon.Services {
          Action<string> log = (x) => Debug.WriteLine("S: " + x);
 
          log("Spawning Service Node.");
-         var serviceNode = serviceNodeFactory.CreateOrJoin(serviceConfiguration);
+         var serviceNode = serviceNodeFactory.CreateOrJoin(nodeConfiguration);
          var versioningService = new VersioningService();
 
          log("Registering Versioning Service to Service Node.");
@@ -85,9 +86,9 @@ namespace Dargon.Services {
          var client = networkingProxy.CreateConnectedSocket(endpoint);
          log("Connected to server.");
 
-         var handshake = new X2SHandshake(Role.Client);
-         pofSerializer.Serialize(client.GetWriter().__Writer, handshake);
-         log("Sent handshake to server.");
+//         var handshake = new X2SHandshake(Role.Client);
+//         pofSerializer.Serialize(client.GetWriter().__Writer, handshake);
+//         log("Sent handshake to server.");
 
          const int invocationId = 0;
          const string methodName = "GetVersion";

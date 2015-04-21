@@ -1,12 +1,12 @@
-﻿namespace Dargon.Services.Server {
-   public class ServiceConfiguration : IServiceConfiguration {
+﻿namespace Dargon.Services {
+   public class NodeConfiguration : INodeConfiguration {
       private readonly int port;
       private readonly int heartbeatIntervalMilliseconds;
       private readonly NodeOwnershipFlags nodeOwnershipFlags;
 
-      public ServiceConfiguration(int port, int heartbeatIntervalMilliseconds) : this(port, heartbeatIntervalMilliseconds, NodeOwnershipFlags.Default){ }
+      public NodeConfiguration(int port, int heartbeatIntervalMilliseconds) : this(port, heartbeatIntervalMilliseconds, NodeOwnershipFlags.Default){ }
 
-      public ServiceConfiguration(int port, int heartbeatIntervalMilliseconds, NodeOwnershipFlags nodeOwnershipFlags) {
+      public NodeConfiguration(int port, int heartbeatIntervalMilliseconds, NodeOwnershipFlags nodeOwnershipFlags) {
          this.heartbeatIntervalMilliseconds = heartbeatIntervalMilliseconds;
          this.port = port;
          this.nodeOwnershipFlags = nodeOwnershipFlags;

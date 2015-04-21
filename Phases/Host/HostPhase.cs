@@ -2,44 +2,35 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Net.Sockets;
-using Dargon.PortableObjects;
 using Dargon.Services.PortableObjects;
-using Dargon.Services.Server.Sessions;
+using Dargon.Services.Server;
 using ItzWarty.Collections;
 using ItzWarty.Networking;
 using ItzWarty.Threading;
 using NLog;
 
-namespace Dargon.Services.Server.Phases {
+namespace Dargon.Services.Phases.Host {
    public class HostPhase : IPhase {
       private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
       private readonly IThreadingProxy threadingProxy;
-      private readonly INetworkingProxy networkingProxy;
-      private readonly IPofSerializer pofSerializer;
       private readonly IHostSessionFactory hostSessionFactory;
-      private readonly IConnectorContext connectorContext;
+      private readonly IHostContext hostContext;
       private readonly IListenerSocket listenerSocket;
       private readonly ICancellationTokenSource cancellationTokenSource;
-      private readonly IConcurrentSet<IClientSession> clientSessions;
-      private readonly IConcurrentSet<IGuestSession> guestSessions;
-      private readonly IHostContext hostContext;
       private readonly IThread listenerThread;
+      private readonly IConcurrentSet<IHostSession> sessions;
       private bool disposed = false;
 
-      public HostPhase(ICollectionFactory collectionFactory, IThreadingProxy threadingProxy, INetworkingProxy networkingProxy, IPofSerializer pofSerializer, IHostSessionFactory hostSessionFactory, IConnectorContext connectorContext, IListenerSocket listenerSocket, IHostContext hostContext) {
+      public HostPhase(ICollectionFactory collectionFactory, IThreadingProxy threadingProxy, IHostSessionFactory hostSessionFactory, IHostContext hostContext, IListenerSocket listenerSocket) {
          this.threadingProxy = threadingProxy;
-         this.networkingProxy = networkingProxy;
-         this.pofSerializer = pofSerializer;
          this.hostSessionFactory = hostSessionFactory;
-         this.connectorContext = connectorContext;
-         this.listenerSocket = listenerSocket;
          this.hostContext = hostContext;
+         this.listenerSocket = listenerSocket;
 
          this.cancellationTokenSource = threadingProxy.CreateCancellationTokenSource();
-         this.clientSessions = collectionFactory.CreateConcurrentSet<IClientSession>();
-         this.guestSessions = collectionFactory.CreateConcurrentSet<IGuestSession>();
          this.listenerThread = threadingProxy.CreateThread(ListenerThreadEntryPoint, new ThreadCreationOptions { IsBackground = true });
+         sessions = collectionFactory.CreateConcurrentSet<IHostSession>();
       }
 
       public void HandleEnter() {
@@ -61,21 +52,9 @@ namespace Dargon.Services.Server.Phases {
          Debug.WriteLine("Entering Host Phase SessionThreadEntryPoint");
          IHostSession session = null;
          try {
-            var handshake = pofSerializer.Deserialize<X2SHandshake>(socket.GetReader().__Reader);
-            if (handshake.Role == Role.Client) {
-               var clientSession = hostSessionFactory.CreateClientSession(thread, hostContext, socket);
-               session = clientSession;
-               clientSessions.Add(clientSession);
-               clientSession.Run();
-            } else if (handshake.Role == Role.Guest) {
-               var guestSession = hostSessionFactory.CreateGuestSession(thread, hostContext, socket);
-               hostContext.AddGuestSession(guestSession);
-               session = guestSession;
-               guestSessions.Add(guestSession);
-               guestSession.Run();
-            } else {
-               // do nothing
-            }
+            session = hostSessionFactory.Create(thread, hostContext, socket);
+            sessions.Add(session);
+            session.Start();
          } catch (SocketException e) {
             logger.Warn(e);
             Debug.WriteLine(e);
@@ -83,15 +62,7 @@ namespace Dargon.Services.Server.Phases {
             logger.Error(e);
             Debug.WriteLine(e);
          } finally {
-            if (session != null) {
-               if (session.Role == Role.Client) {
-                  clientSessions.Remove((IClientSession)session);
-               } else if (session.Role == Role.Guest) {
-                  var guestSession = (IGuestSession)session;
-                  guestSessions.Remove(guestSession);
-                  hostContext.RemoveGuestSessions(guestSession);
-               }
-            }
+            sessions.Remove(session);
          }
          Debug.WriteLine("Exiting Host Phase SessionThreadEntryPoint");
       }
@@ -111,10 +82,7 @@ namespace Dargon.Services.Server.Phases {
             cancellationTokenSource.Dispose();
             listenerSocket.Dispose();
             hostContext.Dispose();
-            foreach (var session in clientSessions.ToArray()) {
-               session.Dispose();
-            }
-            foreach (var session in guestSessions.ToArray()) {
+            foreach (var session in sessions.ToArray()) {
                session.Dispose();
             }
          }

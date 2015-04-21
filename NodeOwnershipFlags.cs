@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Dargon.Services.Server {
+namespace Dargon.Services {
    [Flags]
    public enum NodeOwnershipFlags {
       Default     = 0,

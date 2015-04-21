@@ -44,7 +44,7 @@
     </Reference>
     <Reference Include="libwarty, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\libwarty.proxies-api.0.0.21\lib\net45\libwarty.dll</HintPath>
+      <HintPath>packages\libwarty.0.0.18\lib\portable-net45+netcore45+MonoAndroid1+MonoTouch1\libwarty.dll</HintPath>
     </Reference>
     <Reference Include="libwarty.proxies-api, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -72,65 +72,57 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Client\IServiceContext.cs" />
-    <Compile Include="Client\ServiceContext.cs" />
-    <Compile Include="Common\InvocationManagerFactory.cs" />
-    <Compile Include="Common\InvocationManager.cs" />
-    <Compile Include="Common\IInvocationState.cs" />
-    <Compile Include="Common\IInvocationStateFactory.cs" />
-    <Compile Include="Common\InvocationState.cs" />
-    <Compile Include="Client\IServiceClient.cs" />
-    <Compile Include="Client\IServiceClientFactory.cs" />
-    <Compile Include="Client\IServiceContextFactory.cs" />
-    <Compile Include="Client\ServiceClientFactory.cs" />
-    <Compile Include="Common\SomeConnectionContext.cs" />
-    <Compile Include="Common\MyNameIsItzWartyFactory.cs" />
-    <Compile Include="Common\SomeConnectionFeatureBundle.cs" />
-    <Compile Include="Common\ServiceInvokerBundle.cs" />
-    <Compile Include="Server\IServiceConfiguration.cs" />
+    <None Include="Client\IServiceContext.cs" />
+    <None Include="Client\ServiceContext.cs" />
+    <None Include="Common\InvocationManagerFactory.cs" />
+    <None Include="Common\InvocationManager.cs" />
+    <None Include="Common\IInvocationState.cs" />
+    <None Include="Common\IInvocationStateFactory.cs" />
+    <None Include="Common\InvocationState.cs" />
+    <None Include="Client\IServiceClient.cs" />
+    <None Include="Client\IServiceClientFactory.cs" />
+    <None Include="Client\IServiceContextFactory.cs" />
+    <None Include="Client\ServiceClientFactory.cs" />
+    <None Include="Common\SomeConnectionContext.cs" />
+    <None Include="Common\MyNameIsItzWartyFactory.cs" />
+    <Compile Include="INodeConfiguration.cs" />
     <Compile Include="Server\IServiceContext.cs" />
     <Compile Include="Server\IServiceContextFactory.cs" />
-    <Compile Include="Client\IServiceEndpoint.cs" />
-    <Compile Include="Server\IServiceNode.cs" />
-    <Compile Include="Server\IServiceNodeFactory.cs" />
-    <Compile Include="Client\IServiceProxyFactory.cs" />
-    <Compile Include="Client\ServiceClient.cs" />
-    <Compile Include="Client\ServiceInvocationInterceptor.cs" />
-    <Compile Include="Client\ServiceProxyFactory.cs" />
-    <Compile Include="Server\IConnectorFactory.cs" />
+    <None Include="Client\IServiceEndpoint.cs" />
+    <Compile Include="IServiceNode.cs" />
+    <Compile Include="IServiceNodeFactory.cs" />
+    <None Include="Client\IServiceProxyFactory.cs" />
+    <None Include="Client\ServiceClient.cs" />
+    <None Include="Client\ServiceInvocationInterceptor.cs" />
+    <None Include="Client\ServiceProxyFactory.cs" />
     <Compile Include="PortableObjects\X2XServiceInvocation.cs" />
     <Compile Include="PortableObjects\PortableException.cs" />
-    <Compile Include="PortableObjects\X2SHandshake.cs" />
-    <Compile Include="PortableObjects\Role.cs" />
+    <Compile Include="Role.cs" />
     <Compile Include="PortableObjects\DspPofContext.cs" />
     <Compile Include="PortableObjects\G2HServiceBroadcast.cs" />
-    <Compile Include="Server\IConnector.cs" />
-    <Compile Include="Server\IConnectorContext.cs" />
+    <Compile Include="Server\IServiceNodeContext.cs" />
     <Compile Include="PortableObjects\G2HServiceUpdate.cs" />
-    <Compile Include="Server\Phases\GuestPhase.cs" />
-    <Compile Include="Server\Phases\IHostContext.cs" />
-    <Compile Include="Server\Phases\PhaseFactory.cs" />
-    <Compile Include="Server\Phases\IPhase.cs" />
-    <Compile Include="Server\Phases\IPhaseFactory.cs" />
-    <Compile Include="Server\IConnectorWorker.cs" />
-    <Compile Include="Server\IConnectorWorkerFactory.cs" />
-    <Compile Include="Server\Connector.cs" />
-    <Compile Include="Server\ConnectorContext.cs" />
-    <Compile Include="Server\Phases\IndeterminatePhase.cs" />
-    <Compile Include="Server\Phases\HostPhase.cs" />
-    <Compile Include="Server\NodeOwnershipFlags.cs" />
-    <Compile Include="Server\Sessions\HostClientSession.cs" />
-    <Compile Include="Server\Sessions\HostGuestSession.cs" />
+    <Compile Include="Phases\Guest\GuestPhase.cs" />
+    <Compile Include="Phases\Host\IHostContext.cs" />
+    <Compile Include="Phases\PhaseFactory.cs" />
+    <Compile Include="Phases\IPhase.cs" />
+    <Compile Include="Phases\IPhaseFactory.cs" />
+    <Compile Include="Server\ServiceNodeContext.cs" />
+    <Compile Include="Phases\Indeterminate\IndeterminatePhase.cs" />
+    <Compile Include="Phases\Host\HostPhase.cs" />
+    <Compile Include="NodeOwnershipFlags.cs" />
+    <None Include="Server\Sessions\HostClientSession.cs" />
+    <None Include="Server\Sessions\HostGuestSession.cs" />
     <Compile Include="PortableObjects\X2XInvocationResult.cs" />
-    <Compile Include="Server\Sessions\IClientSession.cs" />
-    <Compile Include="Server\Sessions\IGuestSession.cs" />
-    <Compile Include="Server\Sessions\IHostSession.cs" />
-    <Compile Include="Server\Sessions\IHostSessionFactory.cs" />
-    <Compile Include="Server\Sessions\HostSessionBase.cs" />
+    <None Include="Server\Sessions\IClientSession.cs" />
+    <None Include="Server\Sessions\IGuestSession.cs" />
+    <Compile Include="Phases\Host\IHostSession.cs" />
+    <Compile Include="Phases\Host\IHostSessionFactory.cs" />
+    <None Include="Server\Sessions\HostSessionBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Server\ServiceContext.cs" />
-    <Compile Include="Server\ServiceNode.cs" />
-    <Compile Include="Server\ServiceConfiguration.cs" />
+    <Compile Include="NodeConfiguration.cs" />
+    <Compile Include="Utilities\AsyncValueBox.cs" />
     <Compile Include="Utilities\AttributeUtilities.cs" />
   </ItemGroup>
   <ItemGroup>

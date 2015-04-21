@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using Dargon.PortableObjects;
-using Dargon.Services.PortableObjects;
+﻿using Dargon.PortableObjects;
 using Dargon.Services.Server.Phases;
 using ItzWarty.Collections;
 using ItzWarty.IO;
 using ItzWarty.Networking;
 using ItzWarty.Threading;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Dargon.Services.Server.Sessions {
    public abstract class HostSessionBase : IHostSession {

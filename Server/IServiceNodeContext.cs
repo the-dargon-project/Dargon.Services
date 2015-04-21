@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using Dargon.Services.Server.Phases;
+using Dargon.Services.Phases;
 using ItzWarty.Collections;
 
 namespace Dargon.Services.Server {
-   public interface IConnectorContext : IDisposable {
-      IServiceConfiguration ServiceConfiguration { get; }
+   public interface IServiceNodeContext : IDisposable {
+      INodeConfiguration NodeConfiguration { get; }
       IConcurrentDictionary<Guid, IServiceContext> ServiceContextsByGuid { get; }
       IPhase CurrentPhase { get; }
 

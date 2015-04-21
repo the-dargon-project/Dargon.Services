@@ -1,28 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Dargon.Services.Server.Phases;
+using Dargon.Services.Phases;
 using ItzWarty.Collections;
 using NLog;
 
 namespace Dargon.Services.Server {
-   public class ConnectorContext : IConnectorContext {
+   public class ServiceNodeContext : IServiceNodeContext {
       private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
       private readonly ICollectionFactory collectionFactory;
-      private readonly IServiceConfiguration serviceConfiguration;
+      private readonly INodeConfiguration nodeConfiguration;
       private readonly IConcurrentDictionary<Guid, IServiceContext> serviceContextsByGuid;
       private readonly object synchronization = new object();
       private IPhase phase;
       private bool disposed = false;
 
-      public ConnectorContext(ICollectionFactory collectionFactory, IServiceConfiguration serviceConfiguration) {
+      public ServiceNodeContext(ICollectionFactory collectionFactory, INodeConfiguration nodeConfiguration) {
          this.collectionFactory = collectionFactory;
-         this.serviceConfiguration = serviceConfiguration;
+         this.nodeConfiguration = nodeConfiguration;
          this.serviceContextsByGuid = collectionFactory.CreateConcurrentDictionary<Guid, IServiceContext>();
       }
 
-      public IServiceConfiguration ServiceConfiguration { get { return serviceConfiguration; } }
+      public INodeConfiguration NodeConfiguration { get { return nodeConfiguration; } }
       public IConcurrentDictionary<Guid, IServiceContext> ServiceContextsByGuid { get { return serviceContextsByGuid; } }
       public IPhase CurrentPhase { get { return phase; } }
 
@@ -38,14 +38,14 @@ namespace Dargon.Services.Server {
 
       public void HandleServiceRegistered(IServiceContext serviceContext) {
          lock (synchronization) {
-            ServiceContextsByGuid.Add(serviceContext.Guid, serviceContext);
+            serviceContextsByGuid.Add(serviceContext.Guid, serviceContext);
             phase.HandleServiceRegistered(serviceContext);
          }
       }
 
       public void HandleServiceUnregistered(IServiceContext serviceContext) {
          lock (synchronization) {
-            ServiceContextsByGuid.Remove(new KeyValuePair<Guid, IServiceContext>(serviceContext.Guid, serviceContext));
+            serviceContextsByGuid.Remove(new KeyValuePair<Guid, IServiceContext>(serviceContext.Guid, serviceContext));
             phase.HandleServiceUnregistered(serviceContext);
          }
       }

@@ -41,32 +41,51 @@
     <Reference Include="Castle.Core">
       <HintPath>..\packages\NMockito.0.0.6\lib\net45\Castle.Core.dll</HintPath>
     </Reference>
+    <Reference Include="Dargon.PortableObjects.Streams, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Dargon.PortableObjects.Streams.0.0.0-dev\lib\net45\Dargon.PortableObjects.Streams.dll</HintPath>
+    </Reference>
     <Reference Include="Dargon.TestUtilities, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Dargon.TestUtilities.0.0.0\lib\net45\Dargon.TestUtilities.dll</HintPath>
     </Reference>
     <Reference Include="ImpromptuInterface, Version=6.2.2.0, Culture=neutral, PublicKeyToken=0b1781c923b2975b, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\libwarty.proxies-impl.0.0.11\lib\net45\ImpromptuInterface.dll</HintPath>
+      <HintPath>..\packages\libwarty.proxies-impl.0.0.17\lib\net45\ImpromptuInterface.dll</HintPath>
     </Reference>
     <Reference Include="libdargon.utilities">
       <HintPath>..\packages\libdargon.utilities.0.0.3\lib\net45\libdargon.utilities.dll</HintPath>
     </Reference>
     <Reference Include="libdpo, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\libdpo.0.0.11\lib\net45\libdpo.dll</HintPath>
+      <HintPath>..\packages\Dargon.PortableObjects.Streams.0.0.0-dev\lib\net45\libdpo.dll</HintPath>
     </Reference>
     <Reference Include="libwarty, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\libwarty.0.0.15\lib\portable-net45+netcore45+MonoAndroid1+MonoTouch1\libwarty.dll</HintPath>
+      <HintPath>..\packages\libwarty.proxies-impl.0.0.17\lib\net45\libwarty.dll</HintPath>
     </Reference>
     <Reference Include="libwarty.proxies-api, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\libwarty.proxies-impl.0.0.11\lib\net45\libwarty.proxies-api.dll</HintPath>
+      <HintPath>..\packages\libwarty.proxies-impl.0.0.17\lib\net45\libwarty.proxies-api.dll</HintPath>
     </Reference>
     <Reference Include="libwarty.proxies-impl, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\libwarty.proxies-impl.0.0.11\lib\net45\libwarty.proxies-impl.dll</HintPath>
+      <HintPath>..\packages\libwarty.proxies-impl.0.0.17\lib\net45\libwarty.proxies-impl.dll</HintPath>
+    </Reference>
+    <Reference Include="Nito.AsyncEx, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Dargon.PortableObjects.Streams.0.0.0-dev\lib\net45\Nito.AsyncEx.dll</HintPath>
+    </Reference>
+    <Reference Include="Nito.AsyncEx.Concurrent">
+      <HintPath>..\packages\Dargon.PortableObjects.Streams.0.0.0-dev\lib\net45\Nito.AsyncEx.Concurrent.dll</HintPath>
+    </Reference>
+    <Reference Include="Nito.AsyncEx.Enlightenment, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Dargon.PortableObjects.Streams.0.0.0-dev\lib\net45\Nito.AsyncEx.Enlightenment.dll</HintPath>
+    </Reference>
+    <Reference Include="NLog, Version=3.1.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Dargon.PortableObjects.Streams.0.0.0-dev\lib\net45\NLog.dll</HintPath>
     </Reference>
     <Reference Include="NMockito">
       <HintPath>..\packages\NMockito.0.0.6\lib\net45\NMockito.dll</HintPath>
@@ -85,20 +104,20 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
-    <Compile Include="Networking\PortableObjects\C2HServiceInvocationTests.cs" />
-    <Compile Include="Networking\PortableObjects\G2HServiceBroadcastTests.cs" />
-    <Compile Include="Networking\PortableObjects\X2SHandshakeTests.cs" />
+    <None Include="Networking\PortableObjects\C2HServiceInvocationTests.cs" />
+    <None Include="Networking\PortableObjects\G2HServiceBroadcastTests.cs" />
+    <None Include="Networking\PortableObjects\X2SHandshakeTests.cs" />
     <None Include="Networking\Server\ConnectorContextTests.cs" />
     <None Include="Networking\Server\ConnectorTests.cs" />
     <None Include="Networking\Server\ConnectorWorkerTests.cs" />
     <None Include="Networking\Server\Phases\HostPhaseTests.cs" />
     <None Include="Networking\Server\Phases\IndeterminatePhaseTests.cs" />
     <None Include="Networking\Server\Phases\PhaseFactoryTests.cs" />
-    <Compile Include="ServiceClientFT.cs" />
-    <Compile Include="ServiceContextIT.cs" />
-    <Compile Include="ServiceNodeAndClientFT.cs" />
+    <None Include="ServiceClientFT.cs" />
+    <None Include="ServiceContextIT.cs" />
+    <None Include="ServiceNodeAndClientFT.cs" />
     <Compile Include="ServiceNodeFT.cs" />
-    <Compile Include="ServiceNodeTests.cs" />
+    <None Include="ServiceNodeTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

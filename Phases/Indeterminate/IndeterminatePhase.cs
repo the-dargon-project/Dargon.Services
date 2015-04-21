@@ -1,10 +1,10 @@
 using System.Net.Sockets;
-using ItzWarty;
+using Dargon.Services.Server;
 using ItzWarty.Networking;
 using ItzWarty.Threading;
 using NLog;
 
-namespace Dargon.Services.Server.Phases {
+namespace Dargon.Services.Phases.Indeterminate {
    public class IndeterminatePhase : IPhase {
       private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
@@ -13,19 +13,19 @@ namespace Dargon.Services.Server.Phases {
       private readonly IThreadingProxy threadingProxy;
       private readonly INetworkingProxy networkingProxy;
       private readonly IPhaseFactory phaseFactory;
-      private readonly IConnectorContext connectorContext;
+      private readonly IServiceNodeContext serviceNodeContext;
 
-      public IndeterminatePhase(IThreadingProxy threadingProxy, INetworkingProxy networkingProxy, IPhaseFactory phaseFactory, IConnectorContext connectorContext) {
+      public IndeterminatePhase(IThreadingProxy threadingProxy, INetworkingProxy networkingProxy, IPhaseFactory phaseFactory, IServiceNodeContext serviceNodeContext) {
          this.threadingProxy = threadingProxy;
          this.networkingProxy = networkingProxy;
          this.phaseFactory = phaseFactory;
-         this.connectorContext = connectorContext;
+         this.serviceNodeContext = serviceNodeContext;
       }
 
       public void HandleEnter() {
          IListenerSocket listener = null;
          IConnectedSocket client = null;
-         var configuration = connectorContext.ServiceConfiguration;
+         var configuration = serviceNodeContext.NodeConfiguration;
          var connectEndpoint = networkingProxy.CreateLoopbackEndPoint(configuration.Port);
          var hostAllowed = !configuration.NodeOwnershipFlags.HasFlag(NodeOwnershipFlags.GuestOnly);
          var guestAllowed = !configuration.NodeOwnershipFlags.HasFlag(NodeOwnershipFlags.HostOnly);
@@ -41,9 +41,9 @@ namespace Dargon.Services.Server.Phases {
          }
 
          if (listener != null) {
-            connectorContext.Transition(phaseFactory.CreateHostPhase(connectorContext, listener));
+            serviceNodeContext.Transition(phaseFactory.CreateHostPhase(serviceNodeContext, listener));
          } else {
-            connectorContext.Transition(phaseFactory.CreateGuestPhase(connectorContext, client));
+            serviceNodeContext.Transition(phaseFactory.CreateGuestPhase(serviceNodeContext, client));
          }
       }
 
@@ -57,7 +57,7 @@ namespace Dargon.Services.Server.Phases {
          }
       }
 
-      private bool TryCreateHostListener(IServiceConfiguration configuration, out IListenerSocket listener) {
+      private bool TryCreateHostListener(INodeConfiguration configuration, out IListenerSocket listener) {
          try {
             listener = networkingProxy.CreateListenerSocket(configuration.Port);
             return true;

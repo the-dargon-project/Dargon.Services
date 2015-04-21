@@ -1,15 +1,21 @@
-﻿using System;
+﻿using Dargon.Services.Server;
 using ItzWarty;
 using ItzWarty.Collections;
+using System;
 
-namespace Dargon.Services.Server {
+namespace Dargon.Services {
+   public interface IServiceNode : IDisposable {
+      void RegisterService(object serviceImplementation, Type serviceInterface);
+      void UnregisterService(object serviceImplementation, Type serviceInterface);
+   }
+
    public class ServiceNode : IServiceNode {
-      private readonly IConnector connector;
+      private readonly IServiceNodeContext serviceNodeContext;
       private readonly IServiceContextFactory serviceContextFactory;
-      private readonly IConcurrentDictionary<object, IServiceContext> serviceContextsByService; 
+      private readonly IConcurrentDictionary<object, IServiceContext> serviceContextsByService;
 
-      public ServiceNode(ICollectionFactory collectionFactory, IConnector connector, IServiceContextFactory serviceContextFactory) {
-         this.connector = connector;
+      public ServiceNode(ICollectionFactory collectionFactory, IServiceNodeContext serviceNodeContext, IServiceContextFactory serviceContextFactory) {
+         this.serviceNodeContext = serviceNodeContext;
          this.serviceContextFactory = serviceContextFactory;
          this.serviceContextsByService = collectionFactory.CreateConcurrentDictionary<object, IServiceContext>();
       }
@@ -17,7 +23,7 @@ namespace Dargon.Services.Server {
       public void RegisterService(object serviceImplementation, Type serviceInterface) {
          IServiceContext context = null;
          if (serviceContextsByService.TryAdd(serviceImplementation, () => context = serviceContextFactory.Create(serviceImplementation, serviceInterface))) {
-            connector.RegisterService(context);
+            serviceNodeContext.HandleServiceRegistered(context);
          }
       }
 
@@ -25,13 +31,13 @@ namespace Dargon.Services.Server {
          IServiceContext context;
          if (serviceContextsByService.TryGetValue(serviceImplementation, out context)) {
             if (serviceContextsByService.TryRemove(serviceImplementation, context)) {
-               connector.UnregisterService(context);
+               serviceNodeContext.HandleServiceUnregistered(context);
             }
          }
       }
 
       public void Dispose() {
-         connector.Dispose();
+         serviceNodeContext.Dispose();
       }
    }
 }

@@ -1,10 +1,14 @@
-﻿using Dargon.PortableObjects;
-using Dargon.Services.Server.Sessions;
+﻿using System;
+using Dargon.PortableObjects;
+using Dargon.Services.Phases.Guest;
+using Dargon.Services.Phases.Host;
+using Dargon.Services.Phases.Indeterminate;
+using Dargon.Services.Server;
 using ItzWarty.Collections;
 using ItzWarty.Networking;
 using ItzWarty.Threading;
 
-namespace Dargon.Services.Server.Phases {
+namespace Dargon.Services.Phases {
    public class PhaseFactory : IPhaseFactory {
       private readonly ICollectionFactory collectionFactory;
       private readonly IThreadingProxy threadingProxy;
@@ -20,19 +24,19 @@ namespace Dargon.Services.Server.Phases {
          this.pofSerializer = pofSerializer;
       }
 
-      public IPhase CreateIndeterminatePhase(IConnectorContext connectorContext) {
-         var phase = new IndeterminatePhase(threadingProxy, networkingProxy, this, connectorContext);
+      public IPhase CreateIndeterminatePhase(IServiceNodeContext serviceNodeContext) {
+         var phase = new IndeterminatePhase(threadingProxy, networkingProxy, this, serviceNodeContext);
          return phase;
       }
 
-      public IPhase CreateHostPhase(IConnectorContext connectorContext, IListenerSocket listenerSocket) {
-         var hostContext = new HostContext(connectorContext);
-         var phase = new HostPhase(collectionFactory, threadingProxy, networkingProxy, pofSerializer, hostSessionFactory, connectorContext, listenerSocket, hostContext);
+      public IPhase CreateHostPhase(IServiceNodeContext serviceNodeContext, IListenerSocket listenerSocket) {
+         var hostContext = new HostContext(serviceNodeContext);
+         var phase = new HostPhase(collectionFactory, threadingProxy, hostSessionFactory, hostContext, listenerSocket);
          return phase;
       }
 
-      public IPhase CreateGuestPhase(IConnectorContext connectorContext, IConnectedSocket clientSocket) {
-         var phase = new GuestPhase(collectionFactory, threadingProxy, networkingProxy, this, pofSerializer, connectorContext, clientSocket);
+      public IPhase CreateGuestPhase(IServiceNodeContext serviceNodeContext, IConnectedSocket clientSocket) {
+         var phase = new GuestPhase(collectionFactory, threadingProxy, networkingProxy, this, pofSerializer, serviceNodeContext, clientSocket);
          return phase;
       }
    }
