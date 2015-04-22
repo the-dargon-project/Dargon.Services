@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Net.Sockets;
 using Dargon.PortableObjects;
+using Dargon.PortableObjects.Streams;
 using Dargon.Services.PortableObjects;
 using Dargon.Services.Server;
 using ItzWarty.Collections;
@@ -9,79 +11,101 @@ using ItzWarty.Threading;
 
 namespace Dargon.Services.Phases.Guest {
    public class GuestPhase : IPhase {
-      private readonly ICollectionFactory collectionFactory;
-      private readonly IThreadingProxy threadingProxy;
-      private readonly INetworkingProxy networkingProxy;
       private readonly IPhaseFactory phaseFactory;
-      private readonly IPofSerializer pofSerializer;
       private readonly IServiceNodeContext context;
       private readonly IConnectedSocket socket;
-      private readonly IThread readerThread;
+      private readonly PofStream pofStream;
+      private readonly PofStreamWriter pofStreamWriter;
+      private readonly PofDispatcher pofDispatcher;
 
-      public GuestPhase(ICollectionFactory collectionFactory, IThreadingProxy threadingProxy, INetworkingProxy networkingProxy, IPhaseFactory phaseFactory, IPofSerializer pofSerializer, IServiceNodeContext context, IConnectedSocket socket) {
-         this.collectionFactory = collectionFactory;
-         this.threadingProxy = threadingProxy;
-         this.networkingProxy = networkingProxy;
+      public GuestPhase(
+         PofStreamsFactory pofStreamsFactory, 
+         IPhaseFactory phaseFactory, 
+         IPofSerializer pofSerializer, 
+         IServiceNodeContext context, 
+         IConnectedSocket socket
+      ) : this(pofStreamsFactory,
+               phaseFactory,
+               context,
+               socket,
+               pofStreamsFactory.CreatePofStream(socket.Stream)
+      ) { }
+
+      public GuestPhase(
+         PofStreamsFactory pofStreamsFactory,
+         IPhaseFactory phaseFactory, 
+         IServiceNodeContext context, 
+         IConnectedSocket socket, 
+         PofStream pofStream
+      ) : this(
+         phaseFactory,
+         context,
+         socket,
+         pofStream,
+         pofStream.Writer,
+         pofStreamsFactory.CreateDispatcher(pofStream)
+      ) { }
+
+      private GuestPhase(IPhaseFactory phaseFactory, IServiceNodeContext context, IConnectedSocket socket, PofStream pofStream, PofStreamWriter pofStreamWriter, PofDispatcher pofDispatcher) {
          this.phaseFactory = phaseFactory;
-         this.pofSerializer = pofSerializer;
          this.context = context;
          this.socket = socket;
-         this.readerThread = threadingProxy.CreateThread(ReaderThreadEntryPoint, new ThreadCreationOptions { IsBackground = true });
+         this.pofStream = pofStream;
+         this.pofStreamWriter = pofStreamWriter;
+         this.pofDispatcher = pofDispatcher;
+      }
+
+      public void Initialize() {
+         Debug.WriteLine("Guest init");
+         pofDispatcher.RegisterHandler<X2XServiceInvocation>(HandleX2XServiceInvocation);
+         pofDispatcher.RegisterShutdownHandler(HandleDispatcherShutdown);
+         pofDispatcher.Start();
       }
 
       public void HandleEnter() {
          var servicesGuids = new HashSet<Guid>(context.ServiceContextsByGuid.Keys);
-         pofSerializer.Serialize(socket.GetWriter(), new G2HServiceBroadcast(servicesGuids));
-
-         readerThread.Start();
+         pofStreamWriter.WriteAsync(new G2HServiceBroadcast(servicesGuids));
       }
 
-      private void ReaderThreadEntryPoint() {
+      private void HandleX2XServiceInvocation(X2XServiceInvocation x) {
          try {
-            while (true) {
-               var message = pofSerializer.Deserialize(socket.GetReader());
-               if (message is X2XServiceInvocation) {
-                  ProcessH2GServiceInvocation((X2XServiceInvocation)message);
+            IServiceContext serviceContext;
+            object payload;
+            if (!context.ServiceContextsByGuid.TryGetValue(x.ServiceGuid, out serviceContext)) {
+               payload = new PortableException(new InvalidOperationException("Service Not Found"));
+            } else {
+               try {
+                  payload = serviceContext.HandleInvocation(x.MethodName, x.MethodArguments);
+               } catch (Exception e) {
+                  payload = new PortableException(e);
                }
             }
-         } catch (SocketException e) {
-            context.Transition(phaseFactory.CreateIndeterminatePhase(context));
+            pofStreamWriter.WriteAsync(new X2XInvocationResult(x.InvocationId, payload));
+         } catch (Exception e) {
+            Debug.WriteLine(e);
          }
       }
 
-      private void ProcessH2GServiceInvocation(X2XServiceInvocation x) {
-         IServiceContext serviceContext;
-         object payload;
-         if (!context.ServiceContextsByGuid.TryGetValue(x.ServiceGuid, out serviceContext)) {
-            payload = new PortableException(new InvalidOperationException("Service Not Found"));
-         } else {
-            try {
-               payload = serviceContext.HandleInvocation(x.MethodName, x.MethodArguments);
-            } catch (Exception e) {
-               payload = new PortableException(e);
-            }
-         }
-         var result = new X2XInvocationResult(x.InvocationId, payload);
-         pofSerializer.Serialize(socket.GetWriter(), result);
-      }
-
-      public void Dispose() {
+      private void HandleDispatcherShutdown() {
+         context.Transition(phaseFactory.CreateIndeterminatePhase(context));
       }
 
       public void HandleServiceRegistered(IServiceContext serviceContext) {
          var addedServices = new HashSet<Guid>();
          var removedServices = new HashSet<Guid>();
          addedServices.Add(serviceContext.Guid);
-         var serviceUpdate = new G2HServiceUpdate(addedServices, removedServices);
-         pofSerializer.Serialize(socket.GetWriter(), serviceUpdate);
+         pofStreamWriter.WriteAsync(new G2HServiceUpdate(addedServices, removedServices));
+//         pofSerializer.Serialize(socket.GetWriter(), serviceUpdate);
       }
 
       public void HandleServiceUnregistered(IServiceContext serviceContext) {
          var addedServices = new HashSet<Guid>();
          var removedServices = new HashSet<Guid>();
          removedServices.Add(serviceContext.Guid);
-         var serviceUpdate = new G2HServiceUpdate(addedServices, removedServices);
-         pofSerializer.Serialize(socket.GetWriter(), serviceUpdate);
+         pofStreamWriter.WriteAsync(new G2HServiceUpdate(addedServices, removedServices));
+      }
+
+      public void Dispose() {
       }
    }
 }

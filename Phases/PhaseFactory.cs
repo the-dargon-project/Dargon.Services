@@ -1,5 +1,6 @@
 ﻿using System;
 using Dargon.PortableObjects;
+using Dargon.PortableObjects.Streams;
 using Dargon.Services.Phases.Guest;
 using Dargon.Services.Phases.Host;
 using Dargon.Services.Phases.Indeterminate;
@@ -13,13 +14,15 @@ namespace Dargon.Services.Phases {
       private readonly ICollectionFactory collectionFactory;
       private readonly IThreadingProxy threadingProxy;
       private readonly INetworkingProxy networkingProxy;
+      private readonly PofStreamsFactory pofStreamsFactory;
       private readonly IHostSessionFactory hostSessionFactory;
       private readonly IPofSerializer pofSerializer;
 
-      public PhaseFactory(ICollectionFactory collectionFactory, IThreadingProxy threadingProxy, INetworkingProxy networkingProxy, IHostSessionFactory hostSessionFactory, IPofSerializer pofSerializer) {
+      public PhaseFactory(ICollectionFactory collectionFactory, IThreadingProxy threadingProxy, INetworkingProxy networkingProxy, PofStreamsFactory pofStreamsFactory, IHostSessionFactory hostSessionFactory, IPofSerializer pofSerializer) {
          this.collectionFactory = collectionFactory;
          this.threadingProxy = threadingProxy;
          this.networkingProxy = networkingProxy;
+         this.pofStreamsFactory = pofStreamsFactory;
          this.hostSessionFactory = hostSessionFactory;
          this.pofSerializer = pofSerializer;
       }
@@ -36,7 +39,8 @@ namespace Dargon.Services.Phases {
       }
 
       public IPhase CreateGuestPhase(IServiceNodeContext serviceNodeContext, IConnectedSocket clientSocket) {
-         var phase = new GuestPhase(collectionFactory, threadingProxy, networkingProxy, this, pofSerializer, serviceNodeContext, clientSocket);
+         var phase = new GuestPhase(pofStreamsFactory, this, pofSerializer, serviceNodeContext, clientSocket);
+         phase.Initialize();
          return phase;
       }
    }

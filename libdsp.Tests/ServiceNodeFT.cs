@@ -18,7 +18,6 @@ using Xunit;
 
 namespace Dargon.Services {
    public class ServiceNodeFT : NMockitoInstance {
-      private readonly ISynchronizationFactory synchronizationFactory;
       private readonly ITcpEndPointFactory tcpEndPointFactory;
       private readonly IPofSerializer pofSerializer;
       private readonly IServiceNodeFactory serviceNodeFactory;
@@ -33,7 +32,7 @@ namespace Dargon.Services {
          var proxyGenerator = new ProxyGenerator();
          ICollectionFactory collectionFactory = new CollectionFactory();
          IThreadingFactory threadingFactory = new ThreadingFactory();
-         synchronizationFactory = new SynchronizationFactory();
+         ISynchronizationFactory synchronizationFactory = new SynchronizationFactory();
          IThreadingProxy threadingProxy = new ThreadingProxy(threadingFactory, synchronizationFactory);
          IDnsProxy dnsProxy = new DnsProxy();
          tcpEndPointFactory = new TcpEndPointFactory(dnsProxy);
@@ -46,13 +45,8 @@ namespace Dargon.Services {
          pofSerializer = new PofSerializer(pofContext);
          PofStreamsFactory pofStreamsFactory = new PofStreamsFactoryImpl(threadingProxy, streamFactory, pofSerializer);
          IHostSessionFactory hostSessionFactory = new HostSessionFactory(threadingProxy, collectionFactory, pofSerializer, pofStreamsFactory);
-         IPhaseFactory phaseFactory = new PhaseFactory(collectionFactory, threadingProxy, networkingProxy, hostSessionFactory, pofSerializer);
+         IPhaseFactory phaseFactory = new PhaseFactory(collectionFactory, threadingProxy, networkingProxy, pofStreamsFactory, hostSessionFactory, pofSerializer);
          serviceNodeFactory = new ServiceNodeFactory(collectionFactory, serviceContextFactory, phaseFactory);
-         //         IHostSessionFactory hostSessionFactory = new HostSessionFactory(collectionFactory, pofSerializer);
-//         IPhaseFactory phaseFactory = new PhaseFactory(collectionFactory, threadingProxy, networkingProxy, hostSessionFactory, pofSerializer);
-//         IConnectorFactory connectorFactory = new ConnectorFactory(collectionFactory, threadingProxy, networkingProxy, phaseFactory);
-//         IServiceContextFactory serviceContextFactory = new ServiceContextFactory(collectionFactory);
-//         serviceNodeFactory = new ServiceNodeFactory(connectorFactory, serviceContextFactory, collectionFactory);
       }
 
       [Fact]

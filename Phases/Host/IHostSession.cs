@@ -16,7 +16,7 @@ namespace Dargon.Services.Phases.Host {
       Task<RemoteInvocationResult> TryRemoteInvoke(Guid serviceGuid, string methodName, object[] arguments);
    }
 
-   public class HostSession : IHostSession {
+   public class HostSession : IHostSession, IRemoteInvokable {
       private readonly IHostContext hostContext;
       private readonly IConnectedSocket socket;
       private readonly IThread thread;
@@ -80,7 +80,7 @@ namespace Dargon.Services.Phases.Host {
       }
 
       public void Initialize() {
-         pofDispatcher.RegisterHandler<X2XServiceInvocation>(HandleX2XServiceInvocation);
+         pofDispatcher.RegisterHandler<X2XServiceInvocation>((x) => HandleX2XServiceInvocation(x));
          pofDispatcher.RegisterHandler<X2XInvocationResult>(HandleX2XInvocationResult);
          pofDispatcher.RegisterHandler<G2HServiceBroadcast>(HandleG2HServiceBroadcast);
          pofDispatcher.RegisterHandler<G2HServiceUpdate>(HandleG2HServiceUpdate);
@@ -90,9 +90,13 @@ namespace Dargon.Services.Phases.Host {
          pofDispatcher.Start();
       }
 
-      internal void HandleX2XServiceInvocation(X2XServiceInvocation x) {
-         var result = hostContext.Invoke(x.ServiceGuid, x.MethodName, x.MethodArguments);
-         pofStreamWriter.WriteAsync(new X2XInvocationResult(x.InvocationId, result));
+      internal async Task HandleX2XServiceInvocation(X2XServiceInvocation x) {
+         try {
+            var result = await hostContext.Invoke(x.ServiceGuid, x.MethodName, x.MethodArguments);
+            pofStreamWriter.WriteAsync(new X2XInvocationResult(x.InvocationId, result));
+         } catch (Exception e) {
+            Debug.WriteLine(e);
+         }
       }
 
       internal void HandleX2XInvocationResult(X2XInvocationResult x) {
@@ -103,12 +107,26 @@ namespace Dargon.Services.Phases.Host {
       }
 
       internal void HandleG2HServiceBroadcast(G2HServiceBroadcast x) {
-         x.ServiceGuids.ForEach(remotelyHostedServices.Add);
+         HandleServiceUpdateInternal(x.ServiceGuids, null);
       }
 
       internal void HandleG2HServiceUpdate(G2HServiceUpdate x) {
-         x.AddedServiceGuids.ForEach(remotelyHostedServices.Add);
-         x.RemovedServiceGuids.ForEach(guid => remotelyHostedServices.Remove(guid));
+         HandleServiceUpdateInternal(x.AddedServiceGuids, x.RemovedServiceGuids);
+      }
+
+      private void HandleServiceUpdateInternal(IReadOnlySet<Guid> addedServices, IReadOnlySet<Guid> removedServices) {
+         if (addedServices != null) {
+            addedServices.ForEach(remotelyHostedServices.Add);
+         }
+         if (removedServices != null) {
+            removedServices.ForEach(guid => remotelyHostedServices.Remove(guid));
+         }
+
+         if (remotelyHostedServices.Count != 0) {
+            hostContext.AddRemoteInvokable(this);
+         } else {
+            hostContext.RemoveRemoteInvokable(this);
+         }
       }
 
       public async Task<RemoteInvocationResult> TryRemoteInvoke(Guid serviceGuid, string methodName, object[] arguments) {
@@ -117,7 +135,7 @@ namespace Dargon.Services.Phases.Host {
          } else {
             var invocationId = availableInvocationIds.TakeUniqueID();
             var asyncValueBox = invocationResponseBoxesById.GetOrAdd(invocationId, (id) => new AsyncValueBoxImpl());
-            await pofStreamWriter.WriteAsync(new X2XServiceInvocation());
+            await pofStreamWriter.WriteAsync(new X2XServiceInvocation(invocationId, serviceGuid, methodName, arguments));
             var returnValue = await asyncValueBox.GetResultAsync();
             var removed = invocationResponseBoxesById.Remove(new KeyValuePair<uint, AsyncValueBox>(invocationId, asyncValueBox));
             Trace.Assert(removed, "Failed to remove AsyncValueBox from dict");
@@ -135,15 +153,5 @@ namespace Dargon.Services.Phases.Host {
          pofStream.Dispose();
          socket.Dispose();
       }
-   }
-
-   public class RemoteInvocationResult {
-      public RemoteInvocationResult(bool success, object returnValue) {
-         Success = success;
-         ReturnValue = returnValue;
-      }
-
-      public bool Success { get; private set; }
-      public object ReturnValue { get; private set; }
    }
 }
