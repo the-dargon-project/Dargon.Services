@@ -115,14 +115,9 @@
     <Compile Include="Phases\Indeterminate\IndeterminatePhase.cs" />
     <Compile Include="Phases\Host\HostPhase.cs" />
     <Compile Include="NodeOwnershipFlags.cs" />
-    <None Include="Server\Sessions\HostClientSession.cs" />
-    <None Include="Server\Sessions\HostGuestSession.cs" />
     <Compile Include="PortableObjects\X2XInvocationResult.cs" />
-    <None Include="Server\Sessions\IClientSession.cs" />
-    <None Include="Server\Sessions\IGuestSession.cs" />
     <Compile Include="Phases\Host\IHostSession.cs" />
     <Compile Include="Phases\Host\IHostSessionFactory.cs" />
-    <None Include="Server\Sessions\HostSessionBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Server\InvokableServiceContextImpl.cs" />
     <Compile Include="NodeConfiguration.cs" />
