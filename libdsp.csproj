@@ -92,8 +92,7 @@
     <Compile Include="ServiceUnavailableException.cs" />
     <Compile Include="INodeConfiguration.cs" />
     <Compile Include="Phases\Host\RemoteInvocationResult.cs" />
-    <Compile Include="Server\IServiceContext.cs" />
-    <Compile Include="Server\IServiceContextFactory.cs" />
+    <Compile Include="Server\InvokableServiceContextFactory.cs" />
     <None Include="Client\IServiceEndpoint.cs" />
     <Compile Include="IServiceNode.cs" />
     <Compile Include="IServiceNodeFactory.cs" />
@@ -106,7 +105,6 @@
     <Compile Include="Role.cs" />
     <Compile Include="PortableObjects\DspPofContext.cs" />
     <Compile Include="PortableObjects\G2HServiceBroadcast.cs" />
-    <Compile Include="Server\IServiceNodeContext.cs" />
     <Compile Include="PortableObjects\G2HServiceUpdate.cs" />
     <Compile Include="Phases\Guest\GuestPhase.cs" />
     <Compile Include="Phases\Host\IHostContext.cs" />
@@ -126,7 +124,7 @@
     <Compile Include="Phases\Host\IHostSessionFactory.cs" />
     <None Include="Server\Sessions\HostSessionBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Server\ServiceContext.cs" />
+    <Compile Include="Server\InvokableServiceContextImpl.cs" />
     <Compile Include="NodeConfiguration.cs" />
     <Compile Include="Utilities\AsyncValueBox.cs" />
     <Compile Include="Utilities\AttributeUtilities.cs" />

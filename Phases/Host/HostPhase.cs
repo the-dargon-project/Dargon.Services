@@ -1,13 +1,12 @@
-﻿using System;
-using System.Diagnostics;
-using System.Linq;
-using System.Net.Sockets;
-using Dargon.Services.PortableObjects;
-using Dargon.Services.Server;
+﻿using Dargon.Services.Server;
 using ItzWarty.Collections;
 using ItzWarty.Networking;
 using ItzWarty.Threading;
 using NLog;
+using System;
+using System.Diagnostics;
+using System.Linq;
+using System.Net.Sockets;
 
 namespace Dargon.Services.Phases.Host {
    public class HostPhase : IPhase {
@@ -67,11 +66,11 @@ namespace Dargon.Services.Phases.Host {
          Debug.WriteLine("Exiting Host Phase SessionThreadEntryPoint");
       }
 
-      public void HandleServiceRegistered(IServiceContext serviceContext) {
+      public void HandleServiceRegistered(InvokableServiceContext invokableServiceContext) {
          // does nothing
       }
 
-      public void HandleServiceUnregistered(IServiceContext serviceContext) {
+      public void HandleServiceUnregistered(InvokableServiceContext invokableServiceContext) {
          // does nothing
       }
 

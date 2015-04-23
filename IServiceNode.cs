@@ -11,24 +11,24 @@ namespace Dargon.Services {
 
    public class ServiceNode : IServiceNode {
       private readonly IServiceNodeContext serviceNodeContext;
-      private readonly IServiceContextFactory serviceContextFactory;
-      private readonly IConcurrentDictionary<object, IServiceContext> serviceContextsByService;
+      private readonly InvokableServiceContextFactory invokableServiceContextFactory;
+      private readonly IConcurrentDictionary<object, InvokableServiceContext> serviceContextsByService;
 
-      public ServiceNode(ICollectionFactory collectionFactory, IServiceNodeContext serviceNodeContext, IServiceContextFactory serviceContextFactory) {
+      public ServiceNode(ICollectionFactory collectionFactory, IServiceNodeContext serviceNodeContext, InvokableServiceContextFactory invokableServiceContextFactory) {
          this.serviceNodeContext = serviceNodeContext;
-         this.serviceContextFactory = serviceContextFactory;
-         this.serviceContextsByService = collectionFactory.CreateConcurrentDictionary<object, IServiceContext>();
+         this.invokableServiceContextFactory = invokableServiceContextFactory;
+         this.serviceContextsByService = collectionFactory.CreateConcurrentDictionary<object, InvokableServiceContext>();
       }
 
       public void RegisterService(object serviceImplementation, Type serviceInterface) {
-         IServiceContext context = null;
-         if (serviceContextsByService.TryAdd(serviceImplementation, () => context = serviceContextFactory.Create(serviceImplementation, serviceInterface))) {
+         InvokableServiceContext context = null;
+         if (serviceContextsByService.TryAdd(serviceImplementation, () => context = invokableServiceContextFactory.Create(serviceImplementation, serviceInterface))) {
             serviceNodeContext.HandleServiceRegistered(context);
          }
       }
 
       public void UnregisterService(object serviceImplementation, Type serviceInterface) {
-         IServiceContext context;
+         InvokableServiceContext context;
          if (serviceContextsByService.TryGetValue(serviceImplementation, out context)) {
             if (serviceContextsByService.TryRemove(serviceImplementation, context)) {
                serviceNodeContext.HandleServiceUnregistered(context);

@@ -67,11 +67,11 @@ namespace Dargon.Services.Phases.Indeterminate {
          }
       }
 
-      public void HandleServiceRegistered(IServiceContext serviceContext) {
+      public void HandleServiceRegistered(InvokableServiceContext invokableServiceContext) {
          // does nothing
       }
 
-      public void HandleServiceUnregistered(IServiceContext serviceContext) {
+      public void HandleServiceUnregistered(InvokableServiceContext invokableServiceContext) {
          // does nothing
       }
 

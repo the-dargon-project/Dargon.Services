@@ -9,12 +9,12 @@ namespace Dargon.Services {
 
    public class ServiceNodeFactory : IServiceNodeFactory {
       private readonly ICollectionFactory collectionFactory;
-      private readonly IServiceContextFactory serviceContextFactory;
+      private readonly InvokableServiceContextFactory invokableServiceContextFactory;
       private readonly IPhaseFactory phaseFactory;
 
-      public ServiceNodeFactory(ICollectionFactory collectionFactory, IServiceContextFactory serviceContextFactory, IPhaseFactory phaseFactory) {
+      public ServiceNodeFactory(ICollectionFactory collectionFactory, InvokableServiceContextFactory invokableServiceContextFactory, IPhaseFactory phaseFactory) {
          this.collectionFactory = collectionFactory;
-         this.serviceContextFactory = serviceContextFactory;
+         this.invokableServiceContextFactory = invokableServiceContextFactory;
          this.phaseFactory = phaseFactory;
       }
 
@@ -22,7 +22,7 @@ namespace Dargon.Services {
          IServiceNodeContext serviceNodeContext = new ServiceNodeContext(collectionFactory, nodeConfiguration);
          IPhase initialPhase = phaseFactory.CreateIndeterminatePhase(serviceNodeContext);
          serviceNodeContext.Transition(initialPhase);
-         return new ServiceNode(collectionFactory, serviceNodeContext, serviceContextFactory);
+         return new ServiceNode(collectionFactory, serviceNodeContext, invokableServiceContextFactory);
       }
    }
 }

@@ -63,45 +63,38 @@ namespace Dargon.Services.Phases.Guest {
       }
 
       public void HandleEnter() {
-         var servicesGuids = new HashSet<Guid>(context.ServiceContextsByGuid.Keys);
+         var servicesGuids = new HashSet<Guid>(context.EnumerateServiceGuids());
          pofStreamWriter.WriteAsync(new G2HServiceBroadcast(servicesGuids));
       }
 
       private void HandleX2XServiceInvocation(X2XServiceInvocation x) {
+         object result;
          try {
-            IServiceContext serviceContext;
-            object payload;
-            if (!context.ServiceContextsByGuid.TryGetValue(x.ServiceGuid, out serviceContext)) {
-               payload = new PortableException(new InvalidOperationException("Service Not Found"));
-            } else {
-               try {
-                  payload = serviceContext.HandleInvocation(x.MethodName, x.MethodArguments);
-               } catch (Exception e) {
-                  payload = new PortableException(e);
-               }
+            if (!context.TryInvoke(x.ServiceGuid, x.MethodName, x.MethodArguments, out result)) {
+               result = new PortableException(new ServiceUnavailableException(x.ServiceGuid, x.MethodName));
             }
-            pofStreamWriter.WriteAsync(new X2XInvocationResult(x.InvocationId, payload));
          } catch (Exception e) {
-            Debug.WriteLine(e);
+            result = new PortableException(e);
          }
+         pofStreamWriter.WriteAsync(new X2XInvocationResult(x.InvocationId, result));
       }
 
       private void HandleDispatcherShutdown() {
          context.Transition(phaseFactory.CreateIndeterminatePhase(context));
       }
 
-      public void HandleServiceRegistered(IServiceContext serviceContext) {
+      public void HandleServiceRegistered(InvokableServiceContext invokableServiceContext) {
          var addedServices = new HashSet<Guid>();
          var removedServices = new HashSet<Guid>();
-         addedServices.Add(serviceContext.Guid);
+         addedServices.Add(invokableServiceContext.Guid);
          pofStreamWriter.WriteAsync(new G2HServiceUpdate(addedServices, removedServices));
 //         pofSerializer.Serialize(socket.GetWriter(), serviceUpdate);
       }
 
-      public void HandleServiceUnregistered(IServiceContext serviceContext) {
+      public void HandleServiceUnregistered(InvokableServiceContext invokableServiceContext) {
          var addedServices = new HashSet<Guid>();
          var removedServices = new HashSet<Guid>();
-         removedServices.Add(serviceContext.Guid);
+         removedServices.Add(invokableServiceContext.Guid);
          pofStreamWriter.WriteAsync(new G2HServiceUpdate(addedServices, removedServices));
       }
 

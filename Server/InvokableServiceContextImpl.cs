@@ -1,18 +1,23 @@
-using System;
-using System.Reflection;
 using Dargon.Services.Utilities;
 using ItzWarty;
 using ItzWarty.Collections;
+using System;
+using System.Reflection;
 
 namespace Dargon.Services.Server {
-   public class ServiceContext : IServiceContext {
+   public interface InvokableServiceContext {
+      Guid Guid { get; }
+      object HandleInvocation(string action, object[] arguments);
+   }
+
+   public class InvokableServiceContextImpl : InvokableServiceContext {
       private readonly ICollectionFactory collectionFactory;
       private readonly object serviceImplementation;
       private readonly Type serviceInterface;
       private readonly Guid guid;
       private readonly IMultiValueDictionary<string, MethodInfo> methodsByName;
 
-      public ServiceContext(ICollectionFactory collectionFactory, object serviceImplementation, Type serviceInterface) {
+      public InvokableServiceContextImpl(ICollectionFactory collectionFactory, object serviceImplementation, Type serviceInterface) {
          this.collectionFactory = collectionFactory;
          this.serviceImplementation = serviceImplementation;
          this.serviceInterface = serviceInterface;
@@ -29,8 +34,6 @@ namespace Dargon.Services.Server {
          }
       }
 
-      public IMultiValueDictionary<string, MethodInfo> MethodsByName { get { return methodsByName; } } 
-
       public Guid Guid { get { return guid; } }
 
       public object HandleInvocation(string action, object[] arguments) {
@@ -39,7 +42,7 @@ namespace Dargon.Services.Server {
             foreach (var candidate in candidates) {
                var parameters = candidate.GetParameters();
                if (parameters.Length != arguments.Length) {
-                  break;
+                  continue;
                }
                return candidate.Invoke(serviceImplementation, arguments);
             }

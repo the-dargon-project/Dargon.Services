@@ -56,12 +56,12 @@ namespace Dargon.Services {
          ISocketFactory socketFactory = new SocketFactory(tcpEndPointFactory, networkingInternalFactory);
          networkingProxy = new NetworkingProxy(socketFactory, tcpEndPointFactory);
          IPofContext pofContext = new DspPofContext();
-         IServiceContextFactory serviceContextFactory = new ServiceContextFactory(collectionFactory);
+         InvokableServiceContextFactory invokableServiceContextFactory = new InvokableServiceContextFactoryImpl(collectionFactory);
          pofSerializer = new PofSerializer(pofContext);
          PofStreamsFactory pofStreamsFactory = new PofStreamsFactoryImpl(threadingProxy, streamFactory, pofSerializer);
          IHostSessionFactory hostSessionFactory = new HostSessionFactory(threadingProxy, collectionFactory, pofSerializer, pofStreamsFactory);
          IPhaseFactory phaseFactory = new PhaseFactory(collectionFactory, threadingProxy, networkingProxy, pofStreamsFactory, hostSessionFactory, pofSerializer);
-         serviceNodeFactory = new ServiceNodeFactory(collectionFactory, serviceContextFactory, phaseFactory);
+         serviceNodeFactory = new ServiceNodeFactory(collectionFactory, invokableServiceContextFactory, phaseFactory);
       }
 
       [Fact]

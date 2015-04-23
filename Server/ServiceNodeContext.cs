@@ -6,24 +6,34 @@ using ItzWarty.Collections;
 using NLog;
 
 namespace Dargon.Services.Server {
+   public interface IServiceNodeContext : IDisposable {
+      INodeConfiguration NodeConfiguration { get; }
+      IPhase CurrentPhase { get; }
+
+      bool TryInvoke(Guid serviceGuid, string methodName, object[] methodArguments, out object result);
+      IEnumerable<Guid> EnumerateServiceGuids();
+
+      void Transition(IPhase phase);
+
+      void HandleServiceRegistered(InvokableServiceContext invokableServiceContext);
+      void HandleServiceUnregistered(InvokableServiceContext invokableServiceContext);
+   }
+
    public class ServiceNodeContext : IServiceNodeContext {
       private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
-      private readonly ICollectionFactory collectionFactory;
       private readonly INodeConfiguration nodeConfiguration;
-      private readonly IConcurrentDictionary<Guid, IServiceContext> serviceContextsByGuid;
+      private readonly IConcurrentDictionary<Guid, InvokableServiceContext> serviceContextsByGuid;
       private readonly object synchronization = new object();
       private IPhase phase;
       private bool disposed = false;
 
       public ServiceNodeContext(ICollectionFactory collectionFactory, INodeConfiguration nodeConfiguration) {
-         this.collectionFactory = collectionFactory;
          this.nodeConfiguration = nodeConfiguration;
-         this.serviceContextsByGuid = collectionFactory.CreateConcurrentDictionary<Guid, IServiceContext>();
+         this.serviceContextsByGuid = collectionFactory.CreateConcurrentDictionary<Guid, InvokableServiceContext>();
       }
 
       public INodeConfiguration NodeConfiguration { get { return nodeConfiguration; } }
-      public IConcurrentDictionary<Guid, IServiceContext> ServiceContextsByGuid { get { return serviceContextsByGuid; } }
       public IPhase CurrentPhase { get { return phase; } }
 
       public void Transition(IPhase phase) {
@@ -36,17 +46,32 @@ namespace Dargon.Services.Server {
          }
       }
 
-      public void HandleServiceRegistered(IServiceContext serviceContext) {
-         lock (synchronization) {
-            serviceContextsByGuid.Add(serviceContext.Guid, serviceContext);
-            phase.HandleServiceRegistered(serviceContext);
+      public IEnumerable<Guid> EnumerateServiceGuids() {
+         return serviceContextsByGuid.Keys;
+      }
+
+      public bool TryInvoke(Guid serviceGuid, string methodName, object[] methodArguments, out object result) {
+         InvokableServiceContext invokableServiceContext;
+         if (!serviceContextsByGuid.TryGetValue(serviceGuid, out invokableServiceContext)) {
+            result = null;
+            return false;
+         } else {
+            result = invokableServiceContext.HandleInvocation(methodName, methodArguments);
+            return true;
          }
       }
 
-      public void HandleServiceUnregistered(IServiceContext serviceContext) {
+      public void HandleServiceRegistered(InvokableServiceContext invokableServiceContext) {
          lock (synchronization) {
-            serviceContextsByGuid.Remove(new KeyValuePair<Guid, IServiceContext>(serviceContext.Guid, serviceContext));
-            phase.HandleServiceUnregistered(serviceContext);
+            serviceContextsByGuid.Add(invokableServiceContext.Guid, invokableServiceContext);
+            phase.HandleServiceRegistered(invokableServiceContext);
+         }
+      }
+
+      public void HandleServiceUnregistered(InvokableServiceContext invokableServiceContext) {
+         lock (synchronization) {
+            serviceContextsByGuid.Remove(new KeyValuePair<Guid, InvokableServiceContext>(invokableServiceContext.Guid, invokableServiceContext));
+            phase.HandleServiceUnregistered(invokableServiceContext);
          }
       }
 

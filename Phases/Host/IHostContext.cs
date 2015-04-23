@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Dargon.Services.PortableObjects;
 using Dargon.Services.Server;
 using ItzWarty.Collections;
 
@@ -33,18 +34,27 @@ namespace Dargon.Services.Phases.Host {
       }
 
       public async Task<object> Invoke(Guid serviceGuid, string methodName, object[] methodArguments) {
-         IServiceContext serviceContext;
-         if (hostServiceNodeContext.ServiceContextsByGuid.TryGetValue(serviceGuid, out serviceContext)) {
-            return serviceContext.HandleInvocation(methodName, methodArguments);
-         } else {
-            foreach (var remoteInvokable in remoteInvokables) {
-               var result = await remoteInvokable.TryRemoteInvoke(serviceGuid, methodName, methodArguments);
-               if (result.Success) {
-                  return result.ReturnValue;
+         object result;
+         try {
+            if (!hostServiceNodeContext.TryInvoke(serviceGuid, methodName, methodArguments, out result)) {
+               bool invocationSuccessful = false;
+               foreach (var remoteInvokable in remoteInvokables) {
+                  var invocation = await remoteInvokable.TryRemoteInvoke(serviceGuid, methodName, methodArguments);
+                  if (invocation.Success) {
+                     result = invocation.ReturnValue;
+                     invocationSuccessful = true;
+                     break;
+                  }
+               }
+
+               if (!invocationSuccessful) {
+                  throw new ServiceUnavailableException(serviceGuid, methodName);
                }
             }
-            throw new ServiceUnavailableException(serviceGuid, methodName);
+         } catch (Exception e) {
+            result = new PortableException(e);
          }
+         return result;
       }
 
       public void AddRemoteInvokable(IRemoteInvokable remoteInvokable) {
