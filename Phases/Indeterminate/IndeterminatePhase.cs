@@ -13,37 +13,40 @@ namespace Dargon.Services.Phases.Indeterminate {
       private readonly IThreadingProxy threadingProxy;
       private readonly INetworkingProxy networkingProxy;
       private readonly IPhaseFactory phaseFactory;
+      private readonly IClusteringConfiguration clusteringConfiguration;
       private readonly LocalServiceContainer localServiceContainer;
+      private readonly ClusteringPhaseManager clusteringPhaseManager;
 
-      public IndeterminatePhase(IThreadingProxy threadingProxy, INetworkingProxy networkingProxy, IPhaseFactory phaseFactory, LocalServiceContainer localServiceContainer) {
+      public IndeterminatePhase(IThreadingProxy threadingProxy, INetworkingProxy networkingProxy, IPhaseFactory phaseFactory, IClusteringConfiguration clusteringConfiguration, LocalServiceContainer localServiceContainer, ClusteringPhaseManager clusteringPhaseManager) {
          this.threadingProxy = threadingProxy;
          this.networkingProxy = networkingProxy;
          this.phaseFactory = phaseFactory;
+         this.clusteringConfiguration = clusteringConfiguration;
          this.localServiceContainer = localServiceContainer;
+         this.clusteringPhaseManager = clusteringPhaseManager;
       }
 
       public void HandleEnter() {
          IListenerSocket listener = null;
          IConnectedSocket client = null;
-         var configuration = localServiceContainer.ClusteringConfiguration;
-         var connectEndpoint = networkingProxy.CreateLoopbackEndPoint(configuration.Port);
-         var hostAllowed = !configuration.ClusteringRoleFlags.HasFlag(ClusteringRoleFlags.GuestOnly);
-         var guestAllowed = !configuration.ClusteringRoleFlags.HasFlag(ClusteringRoleFlags.HostOnly);
+         var connectEndpoint = networkingProxy.CreateLoopbackEndPoint(clusteringConfiguration.Port);
+         var hostAllowed = !clusteringConfiguration.ClusteringRoleFlags.HasFlag(ClusteringRoleFlags.GuestOnly);
+         var guestAllowed = !clusteringConfiguration.ClusteringRoleFlags.HasFlag(ClusteringRoleFlags.HostOnly);
          while (listener == null && client == null) {
-            if (hostAllowed && TryCreateHostListener(configuration, out listener)) {
+            if (hostAllowed && TryCreateHostListener(clusteringConfiguration, out listener)) {
                break;
             }
             if (guestAllowed && TryCreateGuestSocket(connectEndpoint, out client)) {
                break;
             }
-            logger.Warn("Unable to either listen/connect to port " + configuration.Port);
+            logger.Warn("Unable to either listen/connect to port " + clusteringConfiguration.Port);
             threadingProxy.Sleep(kRetryInterval);
          }
 
          if (listener != null) {
-            localServiceContainer.Transition(phaseFactory.CreateHostPhase(localServiceContainer, listener));
+            clusteringPhaseManager.Transition(phaseFactory.CreateHostPhase(localServiceContainer, listener));
          } else {
-            localServiceContainer.Transition(phaseFactory.CreateGuestPhase(localServiceContainer, client));
+            clusteringPhaseManager.Transition(phaseFactory.CreateGuestPhase(localServiceContainer, client));
          }
       }
 

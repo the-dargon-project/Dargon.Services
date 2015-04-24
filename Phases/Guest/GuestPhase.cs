@@ -12,45 +12,42 @@ using ItzWarty.Threading;
 namespace Dargon.Services.Phases.Guest {
    public class GuestPhase : IPhase {
       private readonly IPhaseFactory phaseFactory;
-      private readonly LocalServiceContainer context;
-      private readonly IConnectedSocket socket;
-      private readonly PofStream pofStream;
+      private readonly LocalServiceContainer localServiceContainer;
+      private readonly ClusteringPhaseManager clusteringPhaseManager;
       private readonly PofStreamWriter pofStreamWriter;
       private readonly PofDispatcher pofDispatcher;
 
       public GuestPhase(
          PofStreamsFactory pofStreamsFactory, 
          IPhaseFactory phaseFactory, 
-         IPofSerializer pofSerializer, 
-         LocalServiceContainer context, 
+         LocalServiceContainer localServiceContainer,
+         ClusteringPhaseManager clusteringPhaseManager,
          IConnectedSocket socket
       ) : this(pofStreamsFactory,
                phaseFactory,
-               context,
-               socket,
+               localServiceContainer,
+               clusteringPhaseManager,
                pofStreamsFactory.CreatePofStream(socket.Stream)
       ) { }
 
-      public GuestPhase(
+      internal GuestPhase(
          PofStreamsFactory pofStreamsFactory,
          IPhaseFactory phaseFactory, 
-         LocalServiceContainer context, 
-         IConnectedSocket socket, 
+         LocalServiceContainer localServiceContainer, 
+         ClusteringPhaseManager clusteringPhaseManager,
          PofStream pofStream
       ) : this(
          phaseFactory,
-         context,
-         socket,
-         pofStream,
+         localServiceContainer,
+         clusteringPhaseManager,
          pofStream.Writer,
          pofStreamsFactory.CreateDispatcher(pofStream)
       ) { }
 
-      private GuestPhase(IPhaseFactory phaseFactory, LocalServiceContainer context, IConnectedSocket socket, PofStream pofStream, PofStreamWriter pofStreamWriter, PofDispatcher pofDispatcher) {
+      internal GuestPhase(IPhaseFactory phaseFactory, LocalServiceContainer localServiceContainer, ClusteringPhaseManager clusteringPhaseManager, PofStreamWriter pofStreamWriter, PofDispatcher pofDispatcher) {
          this.phaseFactory = phaseFactory;
-         this.context = context;
-         this.socket = socket;
-         this.pofStream = pofStream;
+         this.localServiceContainer = localServiceContainer;
+         this.clusteringPhaseManager = clusteringPhaseManager;
          this.pofStreamWriter = pofStreamWriter;
          this.pofDispatcher = pofDispatcher;
       }
@@ -63,14 +60,14 @@ namespace Dargon.Services.Phases.Guest {
       }
 
       public void HandleEnter() {
-         var servicesGuids = new HashSet<Guid>(context.EnumerateServiceGuids());
+         var servicesGuids = new HashSet<Guid>(localServiceContainer.EnumerateServiceGuids());
          pofStreamWriter.WriteAsync(new G2HServiceBroadcast(servicesGuids));
       }
 
       private void HandleX2XServiceInvocation(X2XServiceInvocation x) {
          object result;
          try {
-            if (!context.TryInvoke(x.ServiceGuid, x.MethodName, x.MethodArguments, out result)) {
+            if (!localServiceContainer.TryInvoke(x.ServiceGuid, x.MethodName, x.MethodArguments, out result)) {
                result = new PortableException(new ServiceUnavailableException(x.ServiceGuid, x.MethodName));
             }
          } catch (Exception e) {
@@ -80,7 +77,7 @@ namespace Dargon.Services.Phases.Guest {
       }
 
       private void HandleDispatcherShutdown() {
-         context.Transition(phaseFactory.CreateIndeterminatePhase(context));
+         clusteringPhaseManager.Transition(phaseFactory.CreateIndeterminatePhase(localServiceContainer));
       }
 
       public void HandleServiceRegistered(InvokableServiceContext invokableServiceContext) {
@@ -99,6 +96,9 @@ namespace Dargon.Services.Phases.Guest {
       }
 
       public void Dispose() {
+         pofDispatcher.Dispose();
+         pofStreamWriter.Dispose();
+         clusteringPhaseManager.Dispose();
       }
    }
 }

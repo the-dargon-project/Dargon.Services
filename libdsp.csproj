@@ -37,11 +37,11 @@
     </Reference>
     <Reference Include="Dargon.PortableObjects.Streams, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\Dargon.PortableObjects.Streams.0.0.1-dev\lib\net45\Dargon.PortableObjects.Streams.dll</HintPath>
+      <HintPath>packages\Dargon.PortableObjects.Streams.0.0.2-dev\lib\net45\Dargon.PortableObjects.Streams.dll</HintPath>
     </Reference>
     <Reference Include="libdpo, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\Dargon.PortableObjects.Streams.0.0.1-dev\lib\net45\libdpo.dll</HintPath>
+      <HintPath>packages\Dargon.PortableObjects.Streams.0.0.2-dev\lib\net45\libdpo.dll</HintPath>
     </Reference>
     <Reference Include="libwarty, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -53,19 +53,19 @@
     </Reference>
     <Reference Include="Nito.AsyncEx, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\Dargon.PortableObjects.Streams.0.0.1-dev\lib\net45\Nito.AsyncEx.dll</HintPath>
+      <HintPath>packages\Dargon.PortableObjects.Streams.0.0.2-dev\lib\net45\Nito.AsyncEx.dll</HintPath>
     </Reference>
-    <Reference Include="Nito.AsyncEx.Concurrent, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\Dargon.PortableObjects.Streams.0.0.1-dev\lib\net45\Nito.AsyncEx.Concurrent.dll</HintPath>
+    <Reference Include="Nito.AsyncEx.Concurrent">
+      <HintPath>packages\Dargon.PortableObjects.Streams.0.0.2-dev\lib\net45\Nito.AsyncEx.Concurrent.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Nito.AsyncEx.Enlightenment, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\Dargon.PortableObjects.Streams.0.0.1-dev\lib\net45\Nito.AsyncEx.Enlightenment.dll</HintPath>
+      <HintPath>packages\Dargon.PortableObjects.Streams.0.0.2-dev\lib\net45\Nito.AsyncEx.Enlightenment.dll</HintPath>
     </Reference>
     <Reference Include="NLog, Version=3.1.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\Dargon.PortableObjects.Streams.0.0.1-dev\lib\net45\NLog.dll</HintPath>
+      <HintPath>packages\Dargon.PortableObjects.Streams.0.0.2-dev\lib\net45\NLog.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -89,6 +89,7 @@
     <None Include="Client\ServiceClientFactory.cs" />
     <None Include="Common\SomeConnectionContext.cs" />
     <None Include="Common\MyNameIsItzWartyFactory.cs" />
+    <Compile Include="Phases\ClusteringPhaseManager.cs" />
     <Compile Include="ServiceUnavailableException.cs" />
     <Compile Include="IClusteringConfiguration.cs" />
     <Compile Include="Phases\Host\RemoteInvocationResult.cs" />

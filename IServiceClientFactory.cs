@@ -1,6 +1,10 @@
-﻿using Dargon.Services.Phases;
+﻿using Dargon.PortableObjects.Streams;
+using Dargon.Services.Phases;
+using Dargon.Services.Phases.Host;
 using Dargon.Services.Server;
 using ItzWarty.Collections;
+using ItzWarty.Networking;
+using ItzWarty.Threading;
 
 namespace Dargon.Services {
    public interface IServiceClientFactory {
@@ -9,20 +13,28 @@ namespace Dargon.Services {
 
    public class ServiceClientFactory : IServiceClientFactory {
       private readonly ICollectionFactory collectionFactory;
+      private readonly IThreadingProxy threadingProxy;
+      private readonly INetworkingProxy networkingProxy;
+      private readonly PofStreamsFactory pofStreamsFactory;
+      private readonly IHostSessionFactory hostSessionFactory;
       private readonly InvokableServiceContextFactory invokableServiceContextFactory;
-      private readonly IPhaseFactory phaseFactory;
 
-      public ServiceClientFactory(ICollectionFactory collectionFactory, InvokableServiceContextFactory invokableServiceContextFactory, IPhaseFactory phaseFactory) {
+      public ServiceClientFactory(ICollectionFactory collectionFactory, IThreadingProxy threadingProxy, INetworkingProxy networkingProxy, PofStreamsFactory pofStreamsFactory, IHostSessionFactory hostSessionFactory, InvokableServiceContextFactory invokableServiceContextFactory) {
          this.collectionFactory = collectionFactory;
+         this.threadingProxy = threadingProxy;
+         this.networkingProxy = networkingProxy;
+         this.pofStreamsFactory = pofStreamsFactory;
+         this.hostSessionFactory = hostSessionFactory;
          this.invokableServiceContextFactory = invokableServiceContextFactory;
-         this.phaseFactory = phaseFactory;
       }
 
       public IServiceClient CreateOrJoin(IClusteringConfiguration clusteringConfiguration) {
-         LocalServiceContainer localServiceContainer = new LocalServiceContainerImpl(collectionFactory, clusteringConfiguration);
+         LocalServiceContainer localServiceContainer = new LocalServiceContainerImpl(collectionFactory);
+         ClusteringPhaseManager clusteringPhaseManager = new ClusteringPhaseManagerImpl();
+         IPhaseFactory phaseFactory = new PhaseFactory(collectionFactory, threadingProxy, networkingProxy, pofStreamsFactory, hostSessionFactory, clusteringConfiguration, clusteringPhaseManager);
          IPhase initialPhase = phaseFactory.CreateIndeterminatePhase(localServiceContainer);
-         localServiceContainer.Transition(initialPhase);
-         return new ServiceClient(collectionFactory, localServiceContainer, invokableServiceContextFactory);
+         clusteringPhaseManager.Transition(initialPhase);
+         return new ServiceClient(collectionFactory, localServiceContainer, clusteringPhaseManager, invokableServiceContextFactory);
       }
    }
 }

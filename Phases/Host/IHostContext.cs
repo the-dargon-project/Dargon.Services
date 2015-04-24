@@ -18,25 +18,25 @@ namespace Dargon.Services.Phases.Host {
 
    public class HostContext : IHostContext {
       public IConcurrentSet<IRemoteInvokable> RemoteInvokables { get; set; }
-      private readonly LocalServiceContainer hostServiceNodeContext;
+      private readonly LocalServiceContainer localServiceContainer;
       private readonly IConcurrentSet<IRemoteInvokable> remoteInvokables;
 
       public HostContext(
-         LocalServiceContainer hostServiceNodeContext
+         LocalServiceContainer localServiceContainer
       ) : this(
-         hostServiceNodeContext, 
+         localServiceContainer, 
          new ConcurrentSet<IRemoteInvokable>()
       ) {}
 
-      public HostContext(LocalServiceContainer hostServiceNodeContext, IConcurrentSet<IRemoteInvokable> remoteInvokables) {
-         this.hostServiceNodeContext = hostServiceNodeContext;
+      public HostContext(LocalServiceContainer localServiceContainer, IConcurrentSet<IRemoteInvokable> remoteInvokables) {
+         this.localServiceContainer = localServiceContainer;
          this.remoteInvokables = remoteInvokables;
       }
 
       public async Task<object> Invoke(Guid serviceGuid, string methodName, object[] methodArguments) {
          object result;
          try {
-            if (!hostServiceNodeContext.TryInvoke(serviceGuid, methodName, methodArguments, out result)) {
+            if (!localServiceContainer.TryInvoke(serviceGuid, methodName, methodArguments, out result)) {
                bool invocationSuccessful = false;
                foreach (var remoteInvokable in remoteInvokables) {
                   var invocation = await remoteInvokable.TryRemoteInvoke(serviceGuid, methodName, methodArguments);

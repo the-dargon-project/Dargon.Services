@@ -60,8 +60,7 @@ namespace Dargon.Services {
          pofSerializer = new PofSerializer(pofContext);
          PofStreamsFactory pofStreamsFactory = new PofStreamsFactoryImpl(threadingProxy, streamFactory, pofSerializer);
          IHostSessionFactory hostSessionFactory = new HostSessionFactory(threadingProxy, collectionFactory, pofSerializer, pofStreamsFactory);
-         IPhaseFactory phaseFactory = new PhaseFactory(collectionFactory, threadingProxy, networkingProxy, pofStreamsFactory, hostSessionFactory, pofSerializer);
-         serviceClientFactory = new ServiceClientFactory(collectionFactory, invokableServiceContextFactory, phaseFactory);
+         serviceClientFactory = new ServiceClientFactory(collectionFactory, threadingProxy, networkingProxy, pofStreamsFactory, hostSessionFactory, invokableServiceContextFactory);
       }
 
       [Fact]
