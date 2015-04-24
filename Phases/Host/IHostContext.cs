@@ -18,17 +18,17 @@ namespace Dargon.Services.Phases.Host {
 
    public class HostContext : IHostContext {
       public IConcurrentSet<IRemoteInvokable> RemoteInvokables { get; set; }
-      private readonly IServiceNodeContext hostServiceNodeContext;
+      private readonly LocalServiceContainer hostServiceNodeContext;
       private readonly IConcurrentSet<IRemoteInvokable> remoteInvokables;
 
       public HostContext(
-         IServiceNodeContext hostServiceNodeContext
+         LocalServiceContainer hostServiceNodeContext
       ) : this(
          hostServiceNodeContext, 
          new ConcurrentSet<IRemoteInvokable>()
       ) {}
 
-      public HostContext(IServiceNodeContext hostServiceNodeContext, IConcurrentSet<IRemoteInvokable> remoteInvokables) {
+      public HostContext(LocalServiceContainer hostServiceNodeContext, IConcurrentSet<IRemoteInvokable> remoteInvokables) {
          this.hostServiceNodeContext = hostServiceNodeContext;
          this.remoteInvokables = remoteInvokables;
       }

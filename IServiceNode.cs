@@ -10,12 +10,12 @@ namespace Dargon.Services {
    }
 
    public class ServiceNode : IServiceNode {
-      private readonly IServiceNodeContext serviceNodeContext;
+      private readonly LocalServiceContainer localServiceContainer;
       private readonly InvokableServiceContextFactory invokableServiceContextFactory;
       private readonly IConcurrentDictionary<object, InvokableServiceContext> serviceContextsByService;
 
-      public ServiceNode(ICollectionFactory collectionFactory, IServiceNodeContext serviceNodeContext, InvokableServiceContextFactory invokableServiceContextFactory) {
-         this.serviceNodeContext = serviceNodeContext;
+      public ServiceNode(ICollectionFactory collectionFactory, LocalServiceContainer localServiceContainer, InvokableServiceContextFactory invokableServiceContextFactory) {
+         this.localServiceContainer = localServiceContainer;
          this.invokableServiceContextFactory = invokableServiceContextFactory;
          this.serviceContextsByService = collectionFactory.CreateConcurrentDictionary<object, InvokableServiceContext>();
       }
@@ -23,7 +23,7 @@ namespace Dargon.Services {
       public void RegisterService(object serviceImplementation, Type serviceInterface) {
          InvokableServiceContext context = null;
          if (serviceContextsByService.TryAdd(serviceImplementation, () => context = invokableServiceContextFactory.Create(serviceImplementation, serviceInterface))) {
-            serviceNodeContext.HandleServiceRegistered(context);
+            localServiceContainer.HandleServiceRegistered(context);
          }
       }
 
@@ -31,13 +31,13 @@ namespace Dargon.Services {
          InvokableServiceContext context;
          if (serviceContextsByService.TryGetValue(serviceImplementation, out context)) {
             if (serviceContextsByService.TryRemove(serviceImplementation, context)) {
-               serviceNodeContext.HandleServiceUnregistered(context);
+               localServiceContainer.HandleServiceUnregistered(context);
             }
          }
       }
 
       public void Dispose() {
-         serviceNodeContext.Dispose();
+         localServiceContainer.Dispose();
       }
    }
 }

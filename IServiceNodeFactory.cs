@@ -19,10 +19,10 @@ namespace Dargon.Services {
       }
 
       public IServiceNode CreateOrJoin(INodeConfiguration nodeConfiguration) {
-         IServiceNodeContext serviceNodeContext = new ServiceNodeContext(collectionFactory, nodeConfiguration);
-         IPhase initialPhase = phaseFactory.CreateIndeterminatePhase(serviceNodeContext);
-         serviceNodeContext.Transition(initialPhase);
-         return new ServiceNode(collectionFactory, serviceNodeContext, invokableServiceContextFactory);
+         LocalServiceContainer localServiceContainer = new LocalServiceContainerImpl(collectionFactory, nodeConfiguration);
+         IPhase initialPhase = phaseFactory.CreateIndeterminatePhase(localServiceContainer);
+         localServiceContainer.Transition(initialPhase);
+         return new ServiceNode(collectionFactory, localServiceContainer, invokableServiceContextFactory);
       }
    }
 }

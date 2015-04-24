@@ -12,7 +12,7 @@ using ItzWarty.Threading;
 namespace Dargon.Services.Phases.Guest {
    public class GuestPhase : IPhase {
       private readonly IPhaseFactory phaseFactory;
-      private readonly IServiceNodeContext context;
+      private readonly LocalServiceContainer context;
       private readonly IConnectedSocket socket;
       private readonly PofStream pofStream;
       private readonly PofStreamWriter pofStreamWriter;
@@ -22,7 +22,7 @@ namespace Dargon.Services.Phases.Guest {
          PofStreamsFactory pofStreamsFactory, 
          IPhaseFactory phaseFactory, 
          IPofSerializer pofSerializer, 
-         IServiceNodeContext context, 
+         LocalServiceContainer context, 
          IConnectedSocket socket
       ) : this(pofStreamsFactory,
                phaseFactory,
@@ -34,7 +34,7 @@ namespace Dargon.Services.Phases.Guest {
       public GuestPhase(
          PofStreamsFactory pofStreamsFactory,
          IPhaseFactory phaseFactory, 
-         IServiceNodeContext context, 
+         LocalServiceContainer context, 
          IConnectedSocket socket, 
          PofStream pofStream
       ) : this(
@@ -46,7 +46,7 @@ namespace Dargon.Services.Phases.Guest {
          pofStreamsFactory.CreateDispatcher(pofStream)
       ) { }
 
-      private GuestPhase(IPhaseFactory phaseFactory, IServiceNodeContext context, IConnectedSocket socket, PofStream pofStream, PofStreamWriter pofStreamWriter, PofDispatcher pofDispatcher) {
+      private GuestPhase(IPhaseFactory phaseFactory, LocalServiceContainer context, IConnectedSocket socket, PofStream pofStream, PofStreamWriter pofStreamWriter, PofDispatcher pofDispatcher) {
          this.phaseFactory = phaseFactory;
          this.context = context;
          this.socket = socket;

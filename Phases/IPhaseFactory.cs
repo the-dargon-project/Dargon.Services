@@ -3,8 +3,8 @@ using ItzWarty.Networking;
 
 namespace Dargon.Services.Phases {
    public interface IPhaseFactory {
-      IPhase CreateIndeterminatePhase(IServiceNodeContext serviceNodeContext);
-      IPhase CreateHostPhase(IServiceNodeContext serviceNodeContext, IListenerSocket listenerSocket);
-      IPhase CreateGuestPhase(IServiceNodeContext serviceNodeContext, IConnectedSocket clientSocket);
+      IPhase CreateIndeterminatePhase(LocalServiceContainer localServiceContainer);
+      IPhase CreateHostPhase(LocalServiceContainer localServiceContainer, IListenerSocket listenerSocket);
+      IPhase CreateGuestPhase(LocalServiceContainer localServiceContainer, IConnectedSocket clientSocket);
    }
 }

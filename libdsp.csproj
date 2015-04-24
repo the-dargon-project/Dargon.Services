@@ -111,7 +111,7 @@
     <Compile Include="Phases\PhaseFactory.cs" />
     <Compile Include="Phases\IPhase.cs" />
     <Compile Include="Phases\IPhaseFactory.cs" />
-    <Compile Include="Server\ServiceNodeContext.cs" />
+    <Compile Include="Server\LocalServiceContainer.cs" />
     <Compile Include="Phases\Indeterminate\IndeterminatePhase.cs" />
     <Compile Include="Phases\Host\HostPhase.cs" />
     <Compile Include="NodeOwnershipFlags.cs" />

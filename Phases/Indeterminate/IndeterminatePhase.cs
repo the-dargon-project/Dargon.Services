@@ -13,19 +13,19 @@ namespace Dargon.Services.Phases.Indeterminate {
       private readonly IThreadingProxy threadingProxy;
       private readonly INetworkingProxy networkingProxy;
       private readonly IPhaseFactory phaseFactory;
-      private readonly IServiceNodeContext serviceNodeContext;
+      private readonly LocalServiceContainer localServiceContainer;
 
-      public IndeterminatePhase(IThreadingProxy threadingProxy, INetworkingProxy networkingProxy, IPhaseFactory phaseFactory, IServiceNodeContext serviceNodeContext) {
+      public IndeterminatePhase(IThreadingProxy threadingProxy, INetworkingProxy networkingProxy, IPhaseFactory phaseFactory, LocalServiceContainer localServiceContainer) {
          this.threadingProxy = threadingProxy;
          this.networkingProxy = networkingProxy;
          this.phaseFactory = phaseFactory;
-         this.serviceNodeContext = serviceNodeContext;
+         this.localServiceContainer = localServiceContainer;
       }
 
       public void HandleEnter() {
          IListenerSocket listener = null;
          IConnectedSocket client = null;
-         var configuration = serviceNodeContext.NodeConfiguration;
+         var configuration = localServiceContainer.NodeConfiguration;
          var connectEndpoint = networkingProxy.CreateLoopbackEndPoint(configuration.Port);
          var hostAllowed = !configuration.NodeOwnershipFlags.HasFlag(NodeOwnershipFlags.GuestOnly);
          var guestAllowed = !configuration.NodeOwnershipFlags.HasFlag(NodeOwnershipFlags.HostOnly);
@@ -41,9 +41,9 @@ namespace Dargon.Services.Phases.Indeterminate {
          }
 
          if (listener != null) {
-            serviceNodeContext.Transition(phaseFactory.CreateHostPhase(serviceNodeContext, listener));
+            localServiceContainer.Transition(phaseFactory.CreateHostPhase(localServiceContainer, listener));
          } else {
-            serviceNodeContext.Transition(phaseFactory.CreateGuestPhase(serviceNodeContext, client));
+            localServiceContainer.Transition(phaseFactory.CreateGuestPhase(localServiceContainer, client));
          }
       }
 

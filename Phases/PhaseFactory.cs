@@ -27,19 +27,19 @@ namespace Dargon.Services.Phases {
          this.pofSerializer = pofSerializer;
       }
 
-      public IPhase CreateIndeterminatePhase(IServiceNodeContext serviceNodeContext) {
-         var phase = new IndeterminatePhase(threadingProxy, networkingProxy, this, serviceNodeContext);
+      public IPhase CreateIndeterminatePhase(LocalServiceContainer localServiceContainer) {
+         var phase = new IndeterminatePhase(threadingProxy, networkingProxy, this, localServiceContainer);
          return phase;
       }
 
-      public IPhase CreateHostPhase(IServiceNodeContext serviceNodeContext, IListenerSocket listenerSocket) {
-         var hostContext = new HostContext(serviceNodeContext);
+      public IPhase CreateHostPhase(LocalServiceContainer localServiceContainer, IListenerSocket listenerSocket) {
+         var hostContext = new HostContext(localServiceContainer);
          var phase = new HostPhase(collectionFactory, threadingProxy, hostSessionFactory, hostContext, listenerSocket);
          return phase;
       }
 
-      public IPhase CreateGuestPhase(IServiceNodeContext serviceNodeContext, IConnectedSocket clientSocket) {
-         var phase = new GuestPhase(pofStreamsFactory, this, pofSerializer, serviceNodeContext, clientSocket);
+      public IPhase CreateGuestPhase(LocalServiceContainer localServiceContainer, IConnectedSocket clientSocket) {
+         var phase = new GuestPhase(pofStreamsFactory, this, pofSerializer, localServiceContainer, clientSocket);
          phase.Initialize();
          return phase;
       }

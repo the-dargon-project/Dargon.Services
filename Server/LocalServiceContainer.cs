@@ -6,7 +6,7 @@ using ItzWarty.Collections;
 using NLog;
 
 namespace Dargon.Services.Server {
-   public interface IServiceNodeContext : IDisposable {
+   public interface LocalServiceContainer : IDisposable {
       INodeConfiguration NodeConfiguration { get; }
       IPhase CurrentPhase { get; }
 
@@ -19,7 +19,7 @@ namespace Dargon.Services.Server {
       void HandleServiceUnregistered(InvokableServiceContext invokableServiceContext);
    }
 
-   public class ServiceNodeContext : IServiceNodeContext {
+   public class LocalServiceContainerImpl : LocalServiceContainer {
       private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
       private readonly INodeConfiguration nodeConfiguration;
@@ -28,7 +28,7 @@ namespace Dargon.Services.Server {
       private IPhase phase;
       private bool disposed = false;
 
-      public ServiceNodeContext(ICollectionFactory collectionFactory, INodeConfiguration nodeConfiguration) {
+      public LocalServiceContainerImpl(ICollectionFactory collectionFactory, INodeConfiguration nodeConfiguration) {
          this.nodeConfiguration = nodeConfiguration;
          this.serviceContextsByGuid = collectionFactory.CreateConcurrentDictionary<Guid, InvokableServiceContext>();
       }
