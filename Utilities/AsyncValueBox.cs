@@ -1,34 +1,72 @@
-﻿using Nito.AsyncEx;
+﻿using ItzWarty.Threading;
+using System;
+using System.Runtime.ExceptionServices;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Dargon.Services.Utilities {
    public interface AsyncValueBox {
-      void Set(object value);
+      void SetResult(object value);
+      void SetException(Exception value);
       Task<object> GetResultAsync();
+      Task<object> GetResultAsync(ICancellationToken cancellationToken);
    }
 
    public class AsyncValueBoxImpl : AsyncValueBox {
-      private AsyncCountdownEvent countdown;
-      private object value;
+      private readonly object synchronization = new object();
+
+      // Hack: Seems like Nito AsyncEx doesn't have a manual reset event w/ async waiting?
+      private readonly SemaphoreSlim countdown;
+      private object result;
+      private bool isExceptionThrown = false;
+      private bool isResultSet = false;
 
       public AsyncValueBoxImpl() {
-         this.countdown = new AsyncCountdownEvent(1);
-         this.value = null;
+         this.countdown = new SemaphoreSlim(0);
+         this.result = null;
       }
 
-      public AsyncValueBoxImpl(object value) {
-         this.countdown = new AsyncCountdownEvent(0);
-         this.value = value;
+      public void SetResult(object value) {
+         lock (synchronization) {
+            if (!isResultSet) {
+               result = value;
+               isExceptionThrown = false;
+               isResultSet = true;
+               Thread.MemoryBarrier();
+               countdown.Release(int.MaxValue);
+            }
+         }
       }
 
-      public void Set(object value) {
-         this.value = value;
-         countdown.Signal();
+      public void SetException(Exception ex) {
+         lock (synchronization) {
+            if (!isResultSet) {
+               result = ex;
+               isExceptionThrown = true;
+               isResultSet = true;
+               Thread.MemoryBarrier();
+               countdown.Release(int.MaxValue);
+            }
+         }
       }
 
       public async Task<object> GetResultAsync() {
          await countdown.WaitAsync();
-         return value;
+         return GetResultHelper();
+      }
+
+      public async Task<object> GetResultAsync(ICancellationToken cancellationToken) {
+         await countdown.WaitAsync(cancellationToken.__InnerToken);
+         return GetResultHelper();
+      }
+
+      private object GetResultHelper() {
+         if (isExceptionThrown) {
+            ExceptionDispatchInfo.Capture((Exception)result).Throw();
+            throw new Exception("Unreachable code.");
+         } else {
+            return result;
+         }
       }
    }
 }

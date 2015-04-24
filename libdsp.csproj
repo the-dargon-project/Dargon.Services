@@ -76,31 +76,37 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Client\IServiceContext.cs" />
-    <None Include="Client\ServiceContext.cs" />
-    <None Include="Common\InvocationManagerFactory.cs" />
-    <None Include="Common\InvocationManager.cs" />
-    <None Include="Common\IInvocationState.cs" />
-    <None Include="Common\IInvocationStateFactory.cs" />
-    <None Include="Common\InvocationState.cs" />
-    <None Include="Client\IServiceClient.cs" />
-    <None Include="Client\IServiceClientFactory.cs" />
-    <None Include="Client\IServiceContextFactory.cs" />
-    <None Include="Client\ServiceClientFactory.cs" />
-    <None Include="Common\SomeConnectionContext.cs" />
-    <None Include="Common\MyNameIsItzWartyFactory.cs" />
+    <None Include="_old\Client\IServiceContext.cs" />
+    <None Include="_old\Client\ServiceContext.cs" />
+    <None Include="_old\Common\InvocationManagerFactory.cs" />
+    <None Include="_old\Common\InvocationManager.cs" />
+    <None Include="_old\Common\IInvocationState.cs" />
+    <None Include="_old\Common\IInvocationStateFactory.cs" />
+    <None Include="_old\Common\InvocationState.cs" />
+    <None Include="_old\Client\IServiceClient.cs" />
+    <None Include="_old\Client\IServiceClientFactory.cs" />
+    <None Include="_old\Client\IServiceContextFactory.cs" />
+    <None Include="_old\Client\ServiceClientFactory.cs" />
+    <None Include="_old\Common\SomeConnectionContext.cs" />
+    <None Include="_old\Common\MyNameIsItzWartyFactory.cs" />
+    <Compile Include="Client\InvocationResultTranslator.cs" />
+    <Compile Include="Client\RemoteServiceInvocationValidator.cs" />
+    <Compile Include="Client\RemoteServiceInvocationValidatorFactory.cs" />
+    <Compile Include="Client\RemoteServiceInvokerFactory.cs" />
+    <Compile Include="Client\RemoteServiceProxyFactory.cs" />
+    <Compile Include="Client\RemoteServiceProxyInvocationInterceptor.cs" />
     <Compile Include="Clustering\ClusteringPhaseManager.cs" />
     <Compile Include="ServiceUnavailableException.cs" />
     <Compile Include="IClusteringConfiguration.cs" />
     <Compile Include="Clustering\Host\RemoteInvocationResult.cs" />
     <Compile Include="Server\InvokableServiceContextFactory.cs" />
-    <None Include="Client\IServiceEndpoint.cs" />
+    <None Include="_old\Client\IServiceEndpoint.cs" />
     <Compile Include="IServiceClient.cs" />
     <Compile Include="IServiceClientFactory.cs" />
-    <None Include="Client\IServiceProxyFactory.cs" />
-    <None Include="Client\ServiceClient.cs" />
-    <None Include="Client\ServiceInvocationInterceptor.cs" />
-    <None Include="Client\ServiceProxyFactory.cs" />
+    <None Include="_old\Client\IServiceProxyFactory.cs" />
+    <None Include="_old\Client\ServiceClient.cs" />
+    <None Include="_old\Client\ServiceInvocationInterceptor.cs" />
+    <None Include="_old\Client\ServiceProxyFactory.cs" />
     <Compile Include="PortableObjects\X2XServiceInvocation.cs" />
     <Compile Include="PortableObjects\PortableException.cs" />
     <Compile Include="ClusteringRole.cs" />
@@ -126,6 +132,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

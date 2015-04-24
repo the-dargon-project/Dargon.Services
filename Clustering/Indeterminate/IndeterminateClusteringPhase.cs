@@ -1,7 +1,11 @@
+using System;
 using System.Net.Sockets;
+using System.Threading;
+using System.Threading.Tasks;
 using Dargon.Services.Server;
 using ItzWarty.Networking;
 using ItzWarty.Threading;
+using Nito.AsyncEx;
 using NLog;
 
 namespace Dargon.Services.Clustering.Indeterminate {
@@ -16,6 +20,7 @@ namespace Dargon.Services.Clustering.Indeterminate {
       private readonly IClusteringConfiguration clusteringConfiguration;
       private readonly LocalServiceContainer localServiceContainer;
       private readonly ClusteringPhaseManager clusteringPhaseManager;
+      private readonly SemaphoreSlim phaseTransitionedLatch = new SemaphoreSlim(0, int.MaxValue);
 
       public IndeterminateClusteringPhase(IThreadingProxy threadingProxy, INetworkingProxy networkingProxy, ClusteringPhaseFactory clusteringPhaseFactory, IClusteringConfiguration clusteringConfiguration, LocalServiceContainer localServiceContainer, ClusteringPhaseManager clusteringPhaseManager) {
          this.threadingProxy = threadingProxy;
@@ -48,6 +53,7 @@ namespace Dargon.Services.Clustering.Indeterminate {
          } else {
             clusteringPhaseManager.Transition(clusteringPhaseFactory.CreateGuestPhase(localServiceContainer, client));
          }
+         phaseTransitionedLatch.Release(int.MaxValue);
       }
 
       private bool TryCreateGuestSocket(ITcpEndPoint connectEndpoint, out IConnectedSocket client) {
@@ -76,6 +82,11 @@ namespace Dargon.Services.Clustering.Indeterminate {
 
       public void HandleServiceUnregistered(InvokableServiceContext invokableServiceContext) {
          // does nothing
+      }
+
+      public async Task<object> InvokeServiceCall(Guid serviceGuid, string methodName, object[] methodArguments) {
+         await phaseTransitionedLatch.WaitAsync();
+         return await clusteringPhaseManager.InvokeServiceCall(serviceGuid, methodName, methodArguments);
       }
 
       public void Dispose() {

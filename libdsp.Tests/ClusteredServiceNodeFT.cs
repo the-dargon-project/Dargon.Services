@@ -51,7 +51,7 @@ namespace Dargon.Services {
          pofSerializer = new PofSerializer(pofContext);
          PofStreamsFactory pofStreamsFactory = new PofStreamsFactoryImpl(threadingProxy, streamFactory, pofSerializer);
          IHostSessionFactory hostSessionFactory = new HostSessionFactory(threadingProxy, collectionFactory, pofSerializer, pofStreamsFactory);
-         serviceClientFactory = new ServiceClientFactory(collectionFactory, threadingProxy, networkingProxy, pofStreamsFactory, hostSessionFactory, invokableServiceContextFactory);
+         serviceClientFactory = new ServiceClientFactory(proxyGenerator, collectionFactory, threadingProxy, networkingProxy, pofStreamsFactory, hostSessionFactory, invokableServiceContextFactory);
       }
 
       [Fact]
@@ -73,10 +73,32 @@ namespace Dargon.Services {
          Thread.Sleep(500);
 
          log("Running client logic.");
-         RunClientLogic();
+         RunImmitatedClientLogic();
+
+         log("Using remote service proxy of host node:");
+         RunHostClientLogic(serviceNode1);
+
+//         log("Using remote service proxy of guest node 1:");
+//         RunHostClientLogic(serviceNode2);
+//
+//         log("Using remote service proxy of guest node 2:");
+//         RunHostClientLogic(serviceNode3);
       }
 
-      private void RunClientLogic() {
+      private void RunHostClientLogic(IServiceClient node) {
+         Action<string> log = (x) => Debug.WriteLine("  N: " + x);
+
+         log("Test Versioning Service");
+         AssertEquals(node.GetService<IVersioningService>().GetVersion(), kVersioningServiceVersion);
+
+         log("Test Login Service");
+         AssertEquals(node.GetService<ILoginService>().GetStatus(), kLoginServiceStatus);
+
+         log("Test Queue Service");
+         AssertEquals(node.GetService<IQueueService>().GetWaitTimeMillis(), kQueueServiceWaitTimeMillis);
+      }
+
+      private void RunImmitatedClientLogic() {
          Action<string> log = (x) => Debug.WriteLine("C: " + x);
          log("Enter Client Thread.");
 

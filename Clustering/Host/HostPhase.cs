@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Net.Sockets;
+using System.Threading.Tasks;
 using Dargon.Services.Server;
 using ItzWarty.Collections;
 using ItzWarty.Networking;
@@ -72,6 +73,10 @@ namespace Dargon.Services.Clustering.Host {
 
       public void HandleServiceUnregistered(InvokableServiceContext invokableServiceContext) {
          // does nothing
+      }
+
+      public Task<object> InvokeServiceCall(Guid serviceGuid, string methodName, object[] methodArguments) {
+         return hostContext.Invoke(serviceGuid, methodName, methodArguments);
       }
 
       public void Dispose() {

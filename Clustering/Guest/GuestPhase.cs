@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using Dargon.PortableObjects.Streams;
 using Dargon.Services.PortableObjects;
 using Dargon.Services.Server;
@@ -90,6 +91,10 @@ namespace Dargon.Services.Clustering.Guest {
          var removedServices = new HashSet<Guid>();
          removedServices.Add(invokableServiceContext.Guid);
          pofStreamWriter.WriteAsync(new G2HServiceUpdate(addedServices, removedServices));
+      }
+
+      public Task<object> InvokeServiceCall(Guid serviceGuid, string methodName, object[] methodArguments) {
+         throw new NotImplementedException();
       }
 
       public void Dispose() {

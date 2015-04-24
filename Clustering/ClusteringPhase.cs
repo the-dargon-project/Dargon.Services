@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Dargon.Services.Server;
 
 namespace Dargon.Services.Clustering {
@@ -6,5 +7,7 @@ namespace Dargon.Services.Clustering {
       void HandleEnter();
       void HandleServiceRegistered(InvokableServiceContext invokableServiceContext);
       void HandleServiceUnregistered(InvokableServiceContext invokableServiceContext);
+
+      Task<object> InvokeServiceCall(Guid serviceGuid, string methodName, object[] methodArguments);
    }
 }
