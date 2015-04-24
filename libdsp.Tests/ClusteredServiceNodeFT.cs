@@ -78,11 +78,11 @@ namespace Dargon.Services {
          log("Using remote service proxy of host node:");
          RunHostClientLogic(serviceNode1);
 
-//         log("Using remote service proxy of guest node 1:");
-//         RunHostClientLogic(serviceNode2);
-//
-//         log("Using remote service proxy of guest node 2:");
-//         RunHostClientLogic(serviceNode3);
+         log("Using remote service proxy of guest node 1:");
+         RunHostClientLogic(serviceNode2);
+
+         log("Using remote service proxy of guest node 2:");
+         RunHostClientLogic(serviceNode3);
       }
 
       private void RunHostClientLogic(IServiceClient node) {

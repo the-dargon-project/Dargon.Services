@@ -44,7 +44,7 @@ namespace Dargon.Services.Clustering {
       }
 
       public ClusteringPhase CreateGuestPhase(LocalServiceContainer localServiceContainer, IConnectedSocket clientSocket) {
-         var phase = new GuestPhase(pofStreamsFactory, this, localServiceContainer, clusteringPhaseManager, clientSocket);
+         var phase = new GuestPhase(collectionFactory, pofStreamsFactory, this, localServiceContainer, clusteringPhaseManager, clientSocket);
          phase.Initialize();
          return phase;
       }
