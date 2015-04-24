@@ -12,8 +12,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading;
 using Dargon.PortableObjects.Streams;
-using Dargon.Services.Phases;
-using Dargon.Services.Phases.Host;
+using Dargon.Services.Clustering.Host;
 using Xunit;
 
 namespace Dargon.Services {

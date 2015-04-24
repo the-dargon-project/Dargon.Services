@@ -1,13 +1,13 @@
 ﻿using Dargon.PortableObjects.Streams;
-using Dargon.Services.Phases.Guest;
-using Dargon.Services.Phases.Host;
-using Dargon.Services.Phases.Indeterminate;
+using Dargon.Services.Clustering.Guest;
+using Dargon.Services.Clustering.Host;
+using Dargon.Services.Clustering.Indeterminate;
 using Dargon.Services.Server;
 using ItzWarty.Collections;
 using ItzWarty.Networking;
 using ItzWarty.Threading;
 
-namespace Dargon.Services.Phases {
+namespace Dargon.Services.Clustering {
    public interface ClusteringPhaseFactory {
       ClusteringPhase CreateIndeterminatePhase(LocalServiceContainer localServiceContainer);
       ClusteringPhase CreateHostPhase(LocalServiceContainer localServiceContainer, IListenerSocket listenerSocket);

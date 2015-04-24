@@ -1,12 +1,12 @@
-﻿using Dargon.PortableObjects.Streams;
+﻿using System;
+using System.Diagnostics;
+using Dargon.PortableObjects.Streams;
 using Dargon.Services.PortableObjects;
 using Dargon.Services.Server;
 using ItzWarty.Collections;
 using ItzWarty.Networking;
-using System;
-using System.Diagnostics;
 
-namespace Dargon.Services.Phases.Guest {
+namespace Dargon.Services.Clustering.Guest {
    public class GuestPhase : ClusteringPhase {
       private readonly ClusteringPhaseFactory clusteringPhaseFactory;
       private readonly LocalServiceContainer localServiceContainer;

@@ -1,10 +1,10 @@
+using System.Net.Sockets;
 using Dargon.Services.Server;
 using ItzWarty.Networking;
 using ItzWarty.Threading;
 using NLog;
-using System.Net.Sockets;
 
-namespace Dargon.Services.Phases.Indeterminate {
+namespace Dargon.Services.Clustering.Indeterminate {
    public class IndeterminateClusteringPhase : ClusteringPhase {
       private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 

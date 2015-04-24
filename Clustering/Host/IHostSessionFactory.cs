@@ -1,11 +1,10 @@
-﻿using System;
-using Dargon.PortableObjects;
+﻿using Dargon.PortableObjects;
 using Dargon.PortableObjects.Streams;
 using ItzWarty.Collections;
 using ItzWarty.Networking;
 using ItzWarty.Threading;
 
-namespace Dargon.Services.Phases.Host {
+namespace Dargon.Services.Clustering.Host {
    public interface IHostSessionFactory {
       IHostSession Create(IThread thread, IHostContext hostContext, IConnectedSocket socket);
    }

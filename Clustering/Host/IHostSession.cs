@@ -1,16 +1,16 @@
-﻿using Castle.Core.Internal;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Threading.Tasks;
+using Castle.Core.Internal;
 using Dargon.PortableObjects.Streams;
 using Dargon.Services.PortableObjects;
 using Dargon.Services.Utilities;
 using ItzWarty.Collections;
 using ItzWarty.Networking;
 using ItzWarty.Threading;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Threading.Tasks;
 
-namespace Dargon.Services.Phases.Host {
+namespace Dargon.Services.Clustering.Host {
    public interface IHostSession : IDisposable {
       void Start();
       Task<RemoteInvocationResult> TryRemoteInvoke(Guid serviceGuid, string methodName, object[] arguments);

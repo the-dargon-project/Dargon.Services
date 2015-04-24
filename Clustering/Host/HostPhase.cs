@@ -1,14 +1,14 @@
-﻿using Dargon.Services.Server;
+﻿using System;
+using System.Diagnostics;
+using System.Linq;
+using System.Net.Sockets;
+using Dargon.Services.Server;
 using ItzWarty.Collections;
 using ItzWarty.Networking;
 using ItzWarty.Threading;
 using NLog;
-using System;
-using System.Diagnostics;
-using System.Linq;
-using System.Net.Sockets;
 
-namespace Dargon.Services.Phases.Host {
+namespace Dargon.Services.Clustering.Host {
    public class HostPhase : ClusteringPhase {
       private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 

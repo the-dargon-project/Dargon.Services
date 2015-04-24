@@ -1,8 +1,8 @@
-﻿using Dargon.Services.Phases;
-using Dargon.Services.Server;
+﻿using Dargon.Services.Server;
 using ItzWarty;
 using ItzWarty.Collections;
 using System;
+using Dargon.Services.Clustering;
 
 namespace Dargon.Services {
    public interface IServiceClient : IDisposable {

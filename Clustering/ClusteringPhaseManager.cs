@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Dargon.Services.Server;
 
-namespace Dargon.Services.Phases {
+namespace Dargon.Services.Clustering {
    public interface ClusteringPhaseManager : IDisposable {
       void Transition(ClusteringPhase nextClusteringPhase);
       void HandleServiceRegistered(InvokableServiceContext invokableServiceContext);
