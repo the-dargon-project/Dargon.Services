@@ -31,9 +31,9 @@ namespace Dargon.Services {
       public IServiceClient CreateOrJoin(IClusteringConfiguration clusteringConfiguration) {
          LocalServiceContainer localServiceContainer = new LocalServiceContainerImpl(collectionFactory);
          ClusteringPhaseManager clusteringPhaseManager = new ClusteringPhaseManagerImpl();
-         IPhaseFactory phaseFactory = new PhaseFactory(collectionFactory, threadingProxy, networkingProxy, pofStreamsFactory, hostSessionFactory, clusteringConfiguration, clusteringPhaseManager);
-         IPhase initialPhase = phaseFactory.CreateIndeterminatePhase(localServiceContainer);
-         clusteringPhaseManager.Transition(initialPhase);
+         ClusteringPhaseFactory clusteringPhaseFactory = new ClusteringPhaseFactoryImpl(collectionFactory, threadingProxy, networkingProxy, pofStreamsFactory, hostSessionFactory, clusteringConfiguration, clusteringPhaseManager);
+         ClusteringPhase initialClusteringPhase = clusteringPhaseFactory.CreateIndeterminatePhase(localServiceContainer);
+         clusteringPhaseManager.Transition(initialClusteringPhase);
          return new ServiceClient(collectionFactory, localServiceContainer, clusteringPhaseManager, invokableServiceContextFactory);
       }
    }

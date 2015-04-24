@@ -1,29 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Castle.DynamicProxy;
+﻿using Castle.DynamicProxy;
 using Dargon.PortableObjects;
 using Dargon.PortableObjects.Streams;
-using Dargon.Services.Phases;
 using Dargon.Services.Phases.Host;
 using Dargon.Services.PortableObjects;
 using Dargon.Services.Server;
+using ItzWarty;
 using ItzWarty.Collections;
 using ItzWarty.IO;
 using ItzWarty.Networking;
 using ItzWarty.Threading;
-using Xunit;
-using System.Runtime.InteropServices;
-using ItzWarty;
-using NLog;
-using NLog.Config;
-using NLog.Targets;
-using NLog.Targets.Wrappers;
 using NMockito;
+using System;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
+using System.Threading;
+using Xunit;
 
 namespace Dargon.Services {
    public class ClusteredServiceNodeFT : NMockitoInstance {

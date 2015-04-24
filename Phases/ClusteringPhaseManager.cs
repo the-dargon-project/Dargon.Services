@@ -8,7 +8,7 @@ using Dargon.Services.Server;
 
 namespace Dargon.Services.Phases {
    public interface ClusteringPhaseManager : IDisposable {
-      void Transition(IPhase nextPhase);
+      void Transition(ClusteringPhase nextClusteringPhase);
       void HandleServiceRegistered(InvokableServiceContext invokableServiceContext);
       void HandleServiceUnregistered(InvokableServiceContext invokableServiceContext);
    }
@@ -16,27 +16,27 @@ namespace Dargon.Services.Phases {
    public class ClusteringPhaseManagerImpl : ClusteringPhaseManager {
       private readonly object synchronization = new object();
       private bool disposed = false;
-      private IPhase currentPhase = null;
+      private ClusteringPhase currentClusteringPhase = null;
 
-      public void Transition(IPhase nextPhase) {
+      public void Transition(ClusteringPhase nextClusteringPhase) {
          lock (synchronization) {
             ThrowIfDisposed();
 
-            Debug.WriteLine("Transition from phase " + (currentPhase == null ? "null" : currentPhase.ToString()) + " to " + (nextPhase == null ? "null" : nextPhase.ToString()));
-            currentPhase = nextPhase;
-            currentPhase.HandleEnter();
+            Debug.WriteLine("Transition from phase " + (currentClusteringPhase == null ? "null" : currentClusteringPhase.ToString()) + " to " + (nextClusteringPhase == null ? "null" : nextClusteringPhase.ToString()));
+            currentClusteringPhase = nextClusteringPhase;
+            currentClusteringPhase.HandleEnter();
          }
       }
 
       public void HandleServiceRegistered(InvokableServiceContext invokableServiceContext) {
          lock (synchronization) {
-            currentPhase.HandleServiceRegistered(invokableServiceContext);
+            currentClusteringPhase.HandleServiceRegistered(invokableServiceContext);
          }
       }
 
       public void HandleServiceUnregistered(InvokableServiceContext invokableServiceContext) {
          lock (synchronization) {
-            currentPhase.HandleServiceUnregistered(invokableServiceContext);
+            currentClusteringPhase.HandleServiceUnregistered(invokableServiceContext);
          }
       }
 
@@ -44,7 +44,7 @@ namespace Dargon.Services.Phases {
          lock (synchronization) {
             if (!disposed) {
                disposed = true;
-               currentPhase.Dispose();
+               currentClusteringPhase.Dispose();
             }
          }
       }

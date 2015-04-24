@@ -9,7 +9,7 @@ using System.Linq;
 using System.Net.Sockets;
 
 namespace Dargon.Services.Phases.Host {
-   public class HostPhase : IPhase {
+   public class HostPhase : ClusteringPhase {
       private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
       private readonly IThreadingProxy threadingProxy;

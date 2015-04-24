@@ -1,26 +1,26 @@
-using System.Net.Sockets;
 using Dargon.Services.Server;
 using ItzWarty.Networking;
 using ItzWarty.Threading;
 using NLog;
+using System.Net.Sockets;
 
 namespace Dargon.Services.Phases.Indeterminate {
-   public class IndeterminatePhase : IPhase {
+   public class IndeterminateClusteringPhase : ClusteringPhase {
       private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
       private const int kRetryInterval = 1000;
 
       private readonly IThreadingProxy threadingProxy;
       private readonly INetworkingProxy networkingProxy;
-      private readonly IPhaseFactory phaseFactory;
+      private readonly ClusteringPhaseFactory clusteringPhaseFactory;
       private readonly IClusteringConfiguration clusteringConfiguration;
       private readonly LocalServiceContainer localServiceContainer;
       private readonly ClusteringPhaseManager clusteringPhaseManager;
 
-      public IndeterminatePhase(IThreadingProxy threadingProxy, INetworkingProxy networkingProxy, IPhaseFactory phaseFactory, IClusteringConfiguration clusteringConfiguration, LocalServiceContainer localServiceContainer, ClusteringPhaseManager clusteringPhaseManager) {
+      public IndeterminateClusteringPhase(IThreadingProxy threadingProxy, INetworkingProxy networkingProxy, ClusteringPhaseFactory clusteringPhaseFactory, IClusteringConfiguration clusteringConfiguration, LocalServiceContainer localServiceContainer, ClusteringPhaseManager clusteringPhaseManager) {
          this.threadingProxy = threadingProxy;
          this.networkingProxy = networkingProxy;
-         this.phaseFactory = phaseFactory;
+         this.clusteringPhaseFactory = clusteringPhaseFactory;
          this.clusteringConfiguration = clusteringConfiguration;
          this.localServiceContainer = localServiceContainer;
          this.clusteringPhaseManager = clusteringPhaseManager;
@@ -44,9 +44,9 @@ namespace Dargon.Services.Phases.Indeterminate {
          }
 
          if (listener != null) {
-            clusteringPhaseManager.Transition(phaseFactory.CreateHostPhase(localServiceContainer, listener));
+            clusteringPhaseManager.Transition(clusteringPhaseFactory.CreateHostPhase(localServiceContainer, listener));
          } else {
-            clusteringPhaseManager.Transition(phaseFactory.CreateGuestPhase(localServiceContainer, client));
+            clusteringPhaseManager.Transition(clusteringPhaseFactory.CreateGuestPhase(localServiceContainer, client));
          }
       }
 

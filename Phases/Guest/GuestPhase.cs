@@ -1,17 +1,14 @@
-﻿using System;
-using System.Diagnostics;
-using System.Net.Sockets;
-using Dargon.PortableObjects;
-using Dargon.PortableObjects.Streams;
+﻿using Dargon.PortableObjects.Streams;
 using Dargon.Services.PortableObjects;
 using Dargon.Services.Server;
 using ItzWarty.Collections;
 using ItzWarty.Networking;
-using ItzWarty.Threading;
+using System;
+using System.Diagnostics;
 
 namespace Dargon.Services.Phases.Guest {
-   public class GuestPhase : IPhase {
-      private readonly IPhaseFactory phaseFactory;
+   public class GuestPhase : ClusteringPhase {
+      private readonly ClusteringPhaseFactory clusteringPhaseFactory;
       private readonly LocalServiceContainer localServiceContainer;
       private readonly ClusteringPhaseManager clusteringPhaseManager;
       private readonly PofStreamWriter pofStreamWriter;
@@ -19,12 +16,12 @@ namespace Dargon.Services.Phases.Guest {
 
       public GuestPhase(
          PofStreamsFactory pofStreamsFactory, 
-         IPhaseFactory phaseFactory, 
+         ClusteringPhaseFactory clusteringPhaseFactory, 
          LocalServiceContainer localServiceContainer,
          ClusteringPhaseManager clusteringPhaseManager,
          IConnectedSocket socket
       ) : this(pofStreamsFactory,
-               phaseFactory,
+               clusteringPhaseFactory,
                localServiceContainer,
                clusteringPhaseManager,
                pofStreamsFactory.CreatePofStream(socket.Stream)
@@ -32,20 +29,20 @@ namespace Dargon.Services.Phases.Guest {
 
       internal GuestPhase(
          PofStreamsFactory pofStreamsFactory,
-         IPhaseFactory phaseFactory, 
+         ClusteringPhaseFactory clusteringPhaseFactory, 
          LocalServiceContainer localServiceContainer, 
          ClusteringPhaseManager clusteringPhaseManager,
          PofStream pofStream
       ) : this(
-         phaseFactory,
+         clusteringPhaseFactory,
          localServiceContainer,
          clusteringPhaseManager,
          pofStream.Writer,
          pofStreamsFactory.CreateDispatcher(pofStream)
       ) { }
 
-      internal GuestPhase(IPhaseFactory phaseFactory, LocalServiceContainer localServiceContainer, ClusteringPhaseManager clusteringPhaseManager, PofStreamWriter pofStreamWriter, PofDispatcher pofDispatcher) {
-         this.phaseFactory = phaseFactory;
+      internal GuestPhase(ClusteringPhaseFactory clusteringPhaseFactory, LocalServiceContainer localServiceContainer, ClusteringPhaseManager clusteringPhaseManager, PofStreamWriter pofStreamWriter, PofDispatcher pofDispatcher) {
+         this.clusteringPhaseFactory = clusteringPhaseFactory;
          this.localServiceContainer = localServiceContainer;
          this.clusteringPhaseManager = clusteringPhaseManager;
          this.pofStreamWriter = pofStreamWriter;
@@ -77,7 +74,7 @@ namespace Dargon.Services.Phases.Guest {
       }
 
       private void HandleDispatcherShutdown() {
-         clusteringPhaseManager.Transition(phaseFactory.CreateIndeterminatePhase(localServiceContainer));
+         clusteringPhaseManager.Transition(clusteringPhaseFactory.CreateIndeterminatePhase(localServiceContainer));
       }
 
       public void HandleServiceRegistered(InvokableServiceContext invokableServiceContext) {

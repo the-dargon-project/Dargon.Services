@@ -18,10 +18,8 @@ namespace Dargon.Services.Phases.Host {
 
    public class HostSession : IHostSession, IRemoteInvokable {
       private readonly IHostContext hostContext;
-      private readonly IConnectedSocket socket;
       private readonly IThread thread;
       private readonly ICancellationTokenSource cancellationTokenSource;
-      private readonly PofStream pofStream;
       private readonly PofStreamWriter pofStreamWriter;
       private readonly PofDispatcher pofDispatcher;
       private readonly IConcurrentSet<Guid> remotelyHostedServices;
@@ -39,7 +37,6 @@ namespace Dargon.Services.Phases.Host {
          collectionFactory,
          pofStreamsFactory,
          hostContext,
-         socket,
          thread,
          threadingProxy.CreateCancellationTokenSource(),
          pofStreamsFactory.CreatePofStream(socket.Stream)
@@ -49,16 +46,13 @@ namespace Dargon.Services.Phases.Host {
          ICollectionFactory collectionFactory,
          PofStreamsFactory pofStreamsFactory,
          IHostContext hostContext,
-         IConnectedSocket socket,
          IThread thread,
          ICancellationTokenSource cancellationTokenSource,
          PofStream pofStream
       ) : this(
          hostContext,
-         socket,
          thread,
          cancellationTokenSource,
-         pofStream,
          pofStream.Writer,
          pofStreamsFactory.CreateDispatcher(pofStream),
          collectionFactory.CreateConcurrentSet<Guid>(),
@@ -66,12 +60,10 @@ namespace Dargon.Services.Phases.Host {
          collectionFactory.CreateConcurrentDictionary<uint, AsyncValueBox>()
       ) { }
 
-      public HostSession(IHostContext hostContext, IConnectedSocket socket, IThread thread, ICancellationTokenSource cancellationTokenSource, PofStream pofStream, PofStreamWriter pofStreamWriter, PofDispatcher pofDispatcher, IConcurrentSet<Guid> remotelyHostedServices, IUniqueIdentificationSet availableInvocationIds, IConcurrentDictionary<uint, AsyncValueBox> invocationResponseBoxesById) {
+      public HostSession(IHostContext hostContext, IThread thread, ICancellationTokenSource cancellationTokenSource, PofStreamWriter pofStreamWriter, PofDispatcher pofDispatcher, IConcurrentSet<Guid> remotelyHostedServices, IUniqueIdentificationSet availableInvocationIds, IConcurrentDictionary<uint, AsyncValueBox> invocationResponseBoxesById) {
          this.hostContext = hostContext;
-         this.socket = socket;
          this.thread = thread;
          this.cancellationTokenSource = cancellationTokenSource;
-         this.pofStream = pofStream;
          this.pofStreamWriter = pofStreamWriter;
          this.pofDispatcher = pofDispatcher;
          this.remotelyHostedServices = remotelyHostedServices;
@@ -150,8 +142,6 @@ namespace Dargon.Services.Phases.Host {
 
          pofDispatcher.Dispose();
          pofStreamWriter.Dispose();
-         pofStream.Dispose();
-         socket.Dispose();
       }
    }
 }

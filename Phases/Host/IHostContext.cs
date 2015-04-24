@@ -1,9 +1,8 @@
-﻿using System;
-using System.Diagnostics;
-using System.Threading.Tasks;
-using Dargon.Services.PortableObjects;
+﻿using Dargon.Services.PortableObjects;
 using Dargon.Services.Server;
 using ItzWarty.Collections;
+using System;
+using System.Threading.Tasks;
 
 namespace Dargon.Services.Phases.Host {
    public interface IHostContext : IDisposable {

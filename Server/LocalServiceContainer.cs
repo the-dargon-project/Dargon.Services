@@ -1,9 +1,8 @@
-﻿using ItzWarty.Collections;
+﻿using ItzWarty;
+using ItzWarty.Collections;
 using NLog;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using ItzWarty;
 
 namespace Dargon.Services.Server {
    public interface LocalServiceContainer {

@@ -1,8 +1,8 @@
-﻿using System;
-using Dargon.Services.Server;
+﻿using Dargon.Services.Server;
+using System;
 
 namespace Dargon.Services.Phases {
-   public interface IPhase : IDisposable {
+   public interface ClusteringPhase : IDisposable {
       void HandleEnter();
       void HandleServiceRegistered(InvokableServiceContext invokableServiceContext);
       void HandleServiceUnregistered(InvokableServiceContext invokableServiceContext);
