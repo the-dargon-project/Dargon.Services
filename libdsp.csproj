@@ -94,8 +94,8 @@
     <Compile Include="Phases\Host\RemoteInvocationResult.cs" />
     <Compile Include="Server\InvokableServiceContextFactory.cs" />
     <None Include="Client\IServiceEndpoint.cs" />
-    <Compile Include="IServiceNode.cs" />
-    <Compile Include="IServiceNodeFactory.cs" />
+    <Compile Include="IServiceClient.cs" />
+    <Compile Include="IServiceClientFactory.cs" />
     <None Include="Client\IServiceProxyFactory.cs" />
     <None Include="Client\ServiceClient.cs" />
     <None Include="Client\ServiceInvocationInterceptor.cs" />

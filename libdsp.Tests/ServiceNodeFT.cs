@@ -20,7 +20,7 @@ namespace Dargon.Services {
    public class ServiceNodeFT : NMockitoInstance {
       private readonly ITcpEndPointFactory tcpEndPointFactory;
       private readonly IPofSerializer pofSerializer;
-      private readonly IServiceNodeFactory serviceNodeFactory;
+      private readonly IServiceClientFactory serviceClientFactory;
       private readonly INetworkingProxy networkingProxy;
       private const int kTestPort = 20001;
       private const int kHeartBeatIntervalMilliseconds = 30000;
@@ -46,7 +46,7 @@ namespace Dargon.Services {
          PofStreamsFactory pofStreamsFactory = new PofStreamsFactoryImpl(threadingProxy, streamFactory, pofSerializer);
          IHostSessionFactory hostSessionFactory = new HostSessionFactory(threadingProxy, collectionFactory, pofSerializer, pofStreamsFactory);
          IPhaseFactory phaseFactory = new PhaseFactory(collectionFactory, threadingProxy, networkingProxy, pofStreamsFactory, hostSessionFactory, pofSerializer);
-         serviceNodeFactory = new ServiceNodeFactory(collectionFactory, invokableServiceContextFactory, phaseFactory);
+         serviceClientFactory = new ServiceClientFactory(collectionFactory, invokableServiceContextFactory, phaseFactory);
       }
 
       [Fact]
@@ -54,7 +54,7 @@ namespace Dargon.Services {
          Action<string> log = (x) => Debug.WriteLine("S: " + x);
 
          log("Spawning Service Node.");
-         var serviceNode = serviceNodeFactory.CreateOrJoin(nodeConfiguration);
+         var serviceNode = serviceClientFactory.CreateOrJoin(nodeConfiguration);
          var versioningService = new VersioningService();
 
          log("Registering Versioning Service to Service Node.");

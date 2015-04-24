@@ -29,7 +29,7 @@ namespace Dargon.Services {
    public class ClusteredServiceNodeFT : NMockitoInstance {
       private readonly ITcpEndPointFactory tcpEndPointFactory;
       private readonly IPofSerializer pofSerializer;
-      private readonly IServiceNodeFactory serviceNodeFactory;
+      private readonly IServiceClientFactory serviceClientFactory;
       private readonly INetworkingProxy networkingProxy;
 
       private const int kTestPort = 20001;
@@ -61,22 +61,22 @@ namespace Dargon.Services {
          PofStreamsFactory pofStreamsFactory = new PofStreamsFactoryImpl(threadingProxy, streamFactory, pofSerializer);
          IHostSessionFactory hostSessionFactory = new HostSessionFactory(threadingProxy, collectionFactory, pofSerializer, pofStreamsFactory);
          IPhaseFactory phaseFactory = new PhaseFactory(collectionFactory, threadingProxy, networkingProxy, pofStreamsFactory, hostSessionFactory, pofSerializer);
-         serviceNodeFactory = new ServiceNodeFactory(collectionFactory, invokableServiceContextFactory, phaseFactory);
+         serviceClientFactory = new ServiceClientFactory(collectionFactory, invokableServiceContextFactory, phaseFactory);
       }
 
       [Fact]
       public void Run() {
          Action<string> log = (x) => Debug.WriteLine("T: " + x);
          log("Spawning Service Node 1.");
-         var serviceNode1 = serviceNodeFactory.CreateOrJoin(nodeConfiguration);
+         var serviceNode1 = serviceClientFactory.CreateOrJoin(nodeConfiguration);
          serviceNode1.RegisterService(new VersioningService(), typeof(IVersioningService));
 
          log("Spawning Service Node 2.");
-         var serviceNode2 = serviceNodeFactory.CreateOrJoin(nodeConfiguration);
+         var serviceNode2 = serviceClientFactory.CreateOrJoin(nodeConfiguration);
          serviceNode2.RegisterService(new LoginService(), typeof(ILoginService));
 
          log("Spawning Service Node 3.");
-         var serviceNode3 = serviceNodeFactory.CreateOrJoin(nodeConfiguration);
+         var serviceNode3 = serviceClientFactory.CreateOrJoin(nodeConfiguration);
          serviceNode3.RegisterService(new QueueService(), typeof(IQueueService));
 
          // Give 500ms for nodes to discover services.

@@ -4,17 +4,17 @@ using ItzWarty.Collections;
 using System;
 
 namespace Dargon.Services {
-   public interface IServiceNode : IDisposable {
+   public interface IServiceClient : IDisposable {
       void RegisterService(object serviceImplementation, Type serviceInterface);
       void UnregisterService(object serviceImplementation, Type serviceInterface);
    }
 
-   public class ServiceNode : IServiceNode {
+   public class ServiceClient : IServiceClient {
       private readonly LocalServiceContainer localServiceContainer;
       private readonly InvokableServiceContextFactory invokableServiceContextFactory;
       private readonly IConcurrentDictionary<object, InvokableServiceContext> serviceContextsByService;
 
-      public ServiceNode(ICollectionFactory collectionFactory, LocalServiceContainer localServiceContainer, InvokableServiceContextFactory invokableServiceContextFactory) {
+      public ServiceClient(ICollectionFactory collectionFactory, LocalServiceContainer localServiceContainer, InvokableServiceContextFactory invokableServiceContextFactory) {
          this.localServiceContainer = localServiceContainer;
          this.invokableServiceContextFactory = invokableServiceContextFactory;
          this.serviceContextsByService = collectionFactory.CreateConcurrentDictionary<object, InvokableServiceContext>();
