@@ -26,7 +26,7 @@ namespace Dargon.Services {
       private const int kHeartBeatIntervalMilliseconds = 30000;
       private const string kVersioningServiceGuid = "1D98294F-FA5A-472F-91F7-2A96CF973531";
       private const string kVersioningServiceVersion = "123.343.5-asdf";
-      private readonly INodeConfiguration nodeConfiguration = new NodeConfiguration(kTestPort, kHeartBeatIntervalMilliseconds);
+      private readonly IClusteringConfiguration clusteringConfiguration = new ClusteringConfiguration(kTestPort, kHeartBeatIntervalMilliseconds);
 
       public ServiceNodeFT() {
          var proxyGenerator = new ProxyGenerator();
@@ -54,7 +54,7 @@ namespace Dargon.Services {
          Action<string> log = (x) => Debug.WriteLine("S: " + x);
 
          log("Spawning Service Node.");
-         var serviceNode = serviceClientFactory.CreateOrJoin(nodeConfiguration);
+         var serviceNode = serviceClientFactory.CreateOrJoin(clusteringConfiguration);
          var versioningService = new VersioningService();
 
          log("Registering Versioning Service to Service Node.");

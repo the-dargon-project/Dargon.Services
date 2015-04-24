@@ -4,7 +4,7 @@ using ItzWarty.Collections;
 
 namespace Dargon.Services {
    public interface IServiceClientFactory {
-      IServiceClient CreateOrJoin(INodeConfiguration nodeConfiguration);
+      IServiceClient CreateOrJoin(IClusteringConfiguration clusteringConfiguration);
    }
 
    public class ServiceClientFactory : IServiceClientFactory {
@@ -18,8 +18,8 @@ namespace Dargon.Services {
          this.phaseFactory = phaseFactory;
       }
 
-      public IServiceClient CreateOrJoin(INodeConfiguration nodeConfiguration) {
-         LocalServiceContainer localServiceContainer = new LocalServiceContainerImpl(collectionFactory, nodeConfiguration);
+      public IServiceClient CreateOrJoin(IClusteringConfiguration clusteringConfiguration) {
+         LocalServiceContainer localServiceContainer = new LocalServiceContainerImpl(collectionFactory, clusteringConfiguration);
          IPhase initialPhase = phaseFactory.CreateIndeterminatePhase(localServiceContainer);
          localServiceContainer.Transition(initialPhase);
          return new ServiceClient(collectionFactory, localServiceContainer, invokableServiceContextFactory);

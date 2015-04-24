@@ -7,7 +7,7 @@ using NLog;
 
 namespace Dargon.Services.Server {
    public interface LocalServiceContainer : IDisposable {
-      INodeConfiguration NodeConfiguration { get; }
+      IClusteringConfiguration ClusteringConfiguration { get; }
       IPhase CurrentPhase { get; }
 
       bool TryInvoke(Guid serviceGuid, string methodName, object[] methodArguments, out object result);
@@ -22,18 +22,18 @@ namespace Dargon.Services.Server {
    public class LocalServiceContainerImpl : LocalServiceContainer {
       private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
-      private readonly INodeConfiguration nodeConfiguration;
+      private readonly IClusteringConfiguration clusteringConfiguration;
       private readonly IConcurrentDictionary<Guid, InvokableServiceContext> serviceContextsByGuid;
       private readonly object synchronization = new object();
       private IPhase phase;
       private bool disposed = false;
 
-      public LocalServiceContainerImpl(ICollectionFactory collectionFactory, INodeConfiguration nodeConfiguration) {
-         this.nodeConfiguration = nodeConfiguration;
+      public LocalServiceContainerImpl(ICollectionFactory collectionFactory, IClusteringConfiguration clusteringConfiguration) {
+         this.clusteringConfiguration = clusteringConfiguration;
          this.serviceContextsByGuid = collectionFactory.CreateConcurrentDictionary<Guid, InvokableServiceContext>();
       }
 
-      public INodeConfiguration NodeConfiguration { get { return nodeConfiguration; } }
+      public IClusteringConfiguration ClusteringConfiguration { get { return clusteringConfiguration; } }
       public IPhase CurrentPhase { get { return phase; } }
 
       public void Transition(IPhase phase) {

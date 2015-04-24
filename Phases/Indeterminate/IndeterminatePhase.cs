@@ -25,10 +25,10 @@ namespace Dargon.Services.Phases.Indeterminate {
       public void HandleEnter() {
          IListenerSocket listener = null;
          IConnectedSocket client = null;
-         var configuration = localServiceContainer.NodeConfiguration;
+         var configuration = localServiceContainer.ClusteringConfiguration;
          var connectEndpoint = networkingProxy.CreateLoopbackEndPoint(configuration.Port);
-         var hostAllowed = !configuration.NodeOwnershipFlags.HasFlag(NodeOwnershipFlags.GuestOnly);
-         var guestAllowed = !configuration.NodeOwnershipFlags.HasFlag(NodeOwnershipFlags.HostOnly);
+         var hostAllowed = !configuration.ClusteringRoleFlags.HasFlag(ClusteringRoleFlags.GuestOnly);
+         var guestAllowed = !configuration.ClusteringRoleFlags.HasFlag(ClusteringRoleFlags.HostOnly);
          while (listener == null && client == null) {
             if (hostAllowed && TryCreateHostListener(configuration, out listener)) {
                break;
@@ -57,7 +57,7 @@ namespace Dargon.Services.Phases.Indeterminate {
          }
       }
 
-      private bool TryCreateHostListener(INodeConfiguration configuration, out IListenerSocket listener) {
+      private bool TryCreateHostListener(IClusteringConfiguration configuration, out IListenerSocket listener) {
          try {
             listener = networkingProxy.CreateListenerSocket(configuration.Port);
             return true;

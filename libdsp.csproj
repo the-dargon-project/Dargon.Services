@@ -90,7 +90,7 @@
     <None Include="Common\SomeConnectionContext.cs" />
     <None Include="Common\MyNameIsItzWartyFactory.cs" />
     <Compile Include="ServiceUnavailableException.cs" />
-    <Compile Include="INodeConfiguration.cs" />
+    <Compile Include="IClusteringConfiguration.cs" />
     <Compile Include="Phases\Host\RemoteInvocationResult.cs" />
     <Compile Include="Server\InvokableServiceContextFactory.cs" />
     <None Include="Client\IServiceEndpoint.cs" />
@@ -102,7 +102,7 @@
     <None Include="Client\ServiceProxyFactory.cs" />
     <Compile Include="PortableObjects\X2XServiceInvocation.cs" />
     <Compile Include="PortableObjects\PortableException.cs" />
-    <Compile Include="Role.cs" />
+    <Compile Include="ClusteringRole.cs" />
     <Compile Include="PortableObjects\DspPofContext.cs" />
     <Compile Include="PortableObjects\G2HServiceBroadcast.cs" />
     <Compile Include="PortableObjects\G2HServiceUpdate.cs" />
@@ -114,13 +114,12 @@
     <Compile Include="Server\LocalServiceContainer.cs" />
     <Compile Include="Phases\Indeterminate\IndeterminatePhase.cs" />
     <Compile Include="Phases\Host\HostPhase.cs" />
-    <Compile Include="NodeOwnershipFlags.cs" />
+    <Compile Include="ClusteringRoleFlags.cs" />
     <Compile Include="PortableObjects\X2XInvocationResult.cs" />
     <Compile Include="Phases\Host\IHostSession.cs" />
     <Compile Include="Phases\Host\IHostSessionFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Server\InvokableServiceContextImpl.cs" />
-    <Compile Include="NodeConfiguration.cs" />
     <Compile Include="Utilities\AsyncValueBox.cs" />
     <Compile Include="Utilities\AttributeUtilities.cs" />
   </ItemGroup>

@@ -34,7 +34,7 @@ namespace Dargon.Services {
 
       private const int kTestPort = 20001;
       private const int kHeartBeatIntervalMilliseconds = 30000;
-      private readonly INodeConfiguration nodeConfiguration = new NodeConfiguration(kTestPort, kHeartBeatIntervalMilliseconds);
+      private readonly IClusteringConfiguration clusteringConfiguration = new ClusteringConfiguration(kTestPort, kHeartBeatIntervalMilliseconds);
 
       private const string kVersioningServiceGuid = "1D98294F-FA5A-472F-91F7-2A96CF973531";
       private const string kVersioningServiceVersion = "123.343.5-asdf";
@@ -68,15 +68,15 @@ namespace Dargon.Services {
       public void Run() {
          Action<string> log = (x) => Debug.WriteLine("T: " + x);
          log("Spawning Service Node 1.");
-         var serviceNode1 = serviceClientFactory.CreateOrJoin(nodeConfiguration);
+         var serviceNode1 = serviceClientFactory.CreateOrJoin(clusteringConfiguration);
          serviceNode1.RegisterService(new VersioningService(), typeof(IVersioningService));
 
          log("Spawning Service Node 2.");
-         var serviceNode2 = serviceClientFactory.CreateOrJoin(nodeConfiguration);
+         var serviceNode2 = serviceClientFactory.CreateOrJoin(clusteringConfiguration);
          serviceNode2.RegisterService(new LoginService(), typeof(ILoginService));
 
          log("Spawning Service Node 3.");
-         var serviceNode3 = serviceClientFactory.CreateOrJoin(nodeConfiguration);
+         var serviceNode3 = serviceClientFactory.CreateOrJoin(clusteringConfiguration);
          serviceNode3.RegisterService(new QueueService(), typeof(IQueueService));
 
          // Give 500ms for nodes to discover services.

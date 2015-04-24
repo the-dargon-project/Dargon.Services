@@ -1,5 +1,5 @@
 ﻿namespace Dargon.Services {
-   public enum Role : byte {
+   public enum ClusteringRole : byte {
       Undefined   = 0,
       Guest       = 1,
       Server      = 2
