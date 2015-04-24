@@ -2,7 +2,7 @@ using System;
 using Dargon.PortableObjects;
 
 namespace Dargon.Services.PortableObjects {
-   public class X2XInvocationResult : IPortableObject, IEquatable<X2XInvocationResult> {
+   internal class X2XInvocationResult : IPortableObject, IEquatable<X2XInvocationResult> {
       private uint invocationId;
       private object payload;
 

@@ -3,7 +3,7 @@ using Dargon.PortableObjects;
 using ItzWarty.Collections;
 
 namespace Dargon.Services.PortableObjects {
-   public class G2HServiceUpdate : IPortableObject {
+   internal class G2HServiceUpdate : IPortableObject {
       private IReadOnlySet<Guid> addedServiceGuids;
       private IReadOnlySet<Guid> removedServiceGuids;
 

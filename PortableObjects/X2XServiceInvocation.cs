@@ -3,7 +3,7 @@ using System.Linq;
 using Dargon.PortableObjects;
 
 namespace Dargon.Services.PortableObjects {
-   public class X2XServiceInvocation : IPortableObject, IEquatable<X2XServiceInvocation> {
+   internal class X2XServiceInvocation : IPortableObject, IEquatable<X2XServiceInvocation> {
       private uint invocationId;
       private Guid serviceGuid;
       private string methodName;
