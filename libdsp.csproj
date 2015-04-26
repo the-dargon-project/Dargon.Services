@@ -76,19 +76,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="_old\Client\IServiceContext.cs" />
-    <None Include="_old\Client\ServiceContext.cs" />
-    <None Include="_old\Common\InvocationManagerFactory.cs" />
-    <None Include="_old\Common\InvocationManager.cs" />
-    <None Include="_old\Common\IInvocationState.cs" />
-    <None Include="_old\Common\IInvocationStateFactory.cs" />
-    <None Include="_old\Common\InvocationState.cs" />
-    <None Include="_old\Client\IServiceClient.cs" />
-    <None Include="_old\Client\IServiceClientFactory.cs" />
-    <None Include="_old\Client\IServiceContextFactory.cs" />
-    <None Include="_old\Client\ServiceClientFactory.cs" />
-    <None Include="_old\Common\SomeConnectionContext.cs" />
-    <None Include="_old\Common\MyNameIsItzWartyFactory.cs" />
     <Compile Include="Client\InvocationResultTranslator.cs" />
     <Compile Include="Client\RemoteServiceInvocationValidator.cs" />
     <Compile Include="Client\RemoteServiceInvocationValidatorFactory.cs" />
@@ -100,13 +87,8 @@
     <Compile Include="IClusteringConfiguration.cs" />
     <Compile Include="Clustering\Host\RemoteInvocationResult.cs" />
     <Compile Include="Server\InvokableServiceContextFactory.cs" />
-    <None Include="_old\Client\IServiceEndpoint.cs" />
     <Compile Include="IServiceClient.cs" />
     <Compile Include="IServiceClientFactory.cs" />
-    <None Include="_old\Client\IServiceProxyFactory.cs" />
-    <None Include="_old\Client\ServiceClient.cs" />
-    <None Include="_old\Client\ServiceInvocationInterceptor.cs" />
-    <None Include="_old\Client\ServiceProxyFactory.cs" />
     <Compile Include="PortableObjects\X2XServiceInvocation.cs" />
     <Compile Include="PortableObjects\PortableException.cs" />
     <Compile Include="ClusteringRole.cs" />
