@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Dargon.Services</RootNamespace>
-    <AssemblyName>libdsp</AssemblyName>
+    <AssemblyName>Dargon.Services</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">.\</SolutionDir>
@@ -35,33 +35,30 @@
     <Reference Include="Castle.Core">
       <HintPath>packages\Castle.Core.3.3.3\lib\net45\Castle.Core.dll</HintPath>
     </Reference>
+    <Reference Include="Dargon.PortableObjects">
+      <HintPath>packages\Dargon.PortableObjects.0.1.0\lib\net45\Dargon.PortableObjects.dll</HintPath>
+    </Reference>
     <Reference Include="Dargon.PortableObjects.Streams, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\Dargon.PortableObjects.Streams.0.0.2-dev\lib\net45\Dargon.PortableObjects.Streams.dll</HintPath>
+      <HintPath>packages\Dargon.PortableObjects.Streams.0.1.0\lib\net45\Dargon.PortableObjects.Streams.dll</HintPath>
     </Reference>
-    <Reference Include="libdpo, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\Dargon.PortableObjects.Streams.0.0.2-dev\lib\net45\libdpo.dll</HintPath>
+    <Reference Include="ItzWarty.Commons">
+      <HintPath>packages\ItzWarty.Commons.0.1.1\lib\portable-net45+netcore45+MonoAndroid1+MonoTouch1\ItzWarty.Commons.dll</HintPath>
     </Reference>
-    <Reference Include="libwarty, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\libwarty.0.0.18\lib\portable-net45+netcore45+MonoAndroid1+MonoTouch1\libwarty.dll</HintPath>
-    </Reference>
-    <Reference Include="libwarty.proxies-api, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\libwarty.proxies-api.0.0.21\lib\net45\libwarty.proxies-api.dll</HintPath>
+    <Reference Include="ItzWarty.Proxies.Api">
+      <HintPath>packages\ItzWarty.Proxies.Api.0.1.0\lib\net45\ItzWarty.Proxies.Api.dll</HintPath>
     </Reference>
     <Reference Include="Nito.AsyncEx, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\Dargon.PortableObjects.Streams.0.0.2-dev\lib\net45\Nito.AsyncEx.dll</HintPath>
+      <HintPath>packages\Nito.AsyncEx.3.0.0\lib\net45\Nito.AsyncEx.dll</HintPath>
     </Reference>
-    <Reference Include="Nito.AsyncEx.Concurrent">
-      <HintPath>packages\Dargon.PortableObjects.Streams.0.0.2-dev\lib\net45\Nito.AsyncEx.Concurrent.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Nito.AsyncEx.Concurrent, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\Nito.AsyncEx.3.0.0\lib\net45\Nito.AsyncEx.Concurrent.dll</HintPath>
     </Reference>
     <Reference Include="Nito.AsyncEx.Enlightenment, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\Dargon.PortableObjects.Streams.0.0.2-dev\lib\net45\Nito.AsyncEx.Enlightenment.dll</HintPath>
+      <HintPath>packages\Nito.AsyncEx.3.0.0\lib\net45\Nito.AsyncEx.Enlightenment.dll</HintPath>
     </Reference>
     <Reference Include="NLog, Version=3.1.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
