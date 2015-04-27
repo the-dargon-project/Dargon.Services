@@ -1,6 +1,7 @@
 ﻿using Castle.DynamicProxy;
 using Dargon.PortableObjects;
 using Dargon.PortableObjects.Streams;
+using Dargon.Services.Clustering.Host;
 using Dargon.Services.PortableObjects;
 using Dargon.Services.Server;
 using ItzWarty;
@@ -13,7 +14,6 @@ using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading;
-using Dargon.Services.Clustering.Host;
 using Xunit;
 
 namespace Dargon.Services {
@@ -33,6 +33,8 @@ namespace Dargon.Services {
       private const string kLoginServiceStatus = "Okay";
       private const string kQueueServiceGuid = "69EE0CAF-B105-492C-9DF2-851F6207264C";
       private const string kQueueServiceWaitTimeMillis = "12345";
+      private const string kShopServiceGuid = "EFBE6150-CC18-441C-9757-23C41823F8C3";
+      private const string kShopServiceStatus = "Okay";
 
       public ClusteredServiceNodeFT() {
          var proxyGenerator = new ProxyGenerator();
@@ -64,6 +66,7 @@ namespace Dargon.Services {
          log("Spawning Service Node 2.");
          var serviceNode2 = serviceClientFactory.CreateOrJoin(clusteringConfiguration);
          serviceNode2.RegisterService(new LoginService(), typeof(ILoginService));
+         serviceNode2.RegisterService(new ShopService(), typeof(IShopService));
 
          log("Spawning Service Node 3.");
          var serviceNode3 = serviceClientFactory.CreateOrJoin(clusteringConfiguration);
@@ -93,6 +96,9 @@ namespace Dargon.Services {
 
          log("Test Login Service");
          AssertEquals(node.GetService<ILoginService>().GetStatus(), kLoginServiceStatus);
+
+         log("Test Shop Service");
+         AssertEquals(node.GetService<IShopService>().GetStatus(), kShopServiceStatus);
 
          log("Test Queue Service");
          AssertEquals(node.GetService<IQueueService>().GetWaitTimeMillis(), kQueueServiceWaitTimeMillis);
@@ -193,6 +199,18 @@ namespace Dargon.Services {
          public string GetWaitTimeMillis() {
             Debug.WriteLine("QueueService: Invoked GetWaitTimeMillis()!");
             return kQueueServiceWaitTimeMillis;
+         }
+      }
+
+      [Guid(kShopServiceGuid)]
+      public interface IShopService {
+         string GetStatus();
+      }
+
+      public class ShopService : IShopService {
+         public string GetStatus() {
+            Debug.WriteLine("ShopService: Invoked GetStatus()!");
+            return kShopServiceStatus;
          }
       }
    }

@@ -57,11 +57,11 @@ namespace Dargon.Services.Clustering.Host {
       }
 
       public void AddRemoteInvokable(IRemoteInvokable remoteInvokable) {
-         remoteInvokables.Add(remoteInvokable);
+         remoteInvokables.TryAdd(remoteInvokable);
       }
 
       public void RemoveRemoteInvokable(IRemoteInvokable remoteInvokable) {
-         remoteInvokables.Remove(remoteInvokable);
+         remoteInvokables.TryRemove(remoteInvokable);
       }
 
       public void Dispose() {
