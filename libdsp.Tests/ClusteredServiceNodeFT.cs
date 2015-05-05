@@ -75,9 +75,6 @@ namespace Dargon.Services {
          // Give 500ms for nodes to discover services.
          Thread.Sleep(500);
 
-         log("Running client logic.");
-         RunImmitatedClientLogic();
-
          log("Using remote service proxy of host node:");
          RunHostClientLogic(serviceNode1);
 
@@ -102,68 +99,6 @@ namespace Dargon.Services {
 
          log("Test Queue Service");
          AssertEquals(node.GetService<IQueueService>().GetWaitTimeMillis(), kQueueServiceWaitTimeMillis);
-      }
-
-      private void RunImmitatedClientLogic() {
-         Action<string> log = (x) => Debug.WriteLine("C: " + x);
-         log("Enter Client Thread.");
-
-         var endpoint = tcpEndPointFactory.CreateLoopbackEndPoint(kTestPort);
-         var client = networkingProxy.CreateConnectedSocket(endpoint);
-         log("Connected to host node.");
-
-         var stopwatch = new Stopwatch();
-         stopwatch.Start();
-
-         TestInvokeHostNode1(client, log);
-         TestInvokeGuestNode1(client, log);
-         TestInvokeGuestNode2(client, log);
-
-         log("Test Invocations completed after {0} ms.".F(stopwatch.ElapsedMilliseconds));
-
-         log("Signaled Thread Completion.");
-      }
-
-      private void TestInvokeHostNode1(IConnectedSocket client, Action<string> log) {
-         const int invocationId = 0;
-         const string methodName = "GetVersion";
-         var methodArguments = new object[0];
-         var invocation = new X2XServiceInvocation(invocationId, Guid.Parse(kVersioningServiceGuid), methodName, methodArguments);
-         pofSerializer.Serialize(client.GetWriter().__Writer, invocation);
-         log("Sent versioning service invocation to server.");
-
-         log("Awaiting versioning service invocation result from server.");
-         var invocationResult = pofSerializer.Deserialize<X2XInvocationResult>(client.GetReader().__Reader);
-         AssertEquals(kVersioningServiceVersion, invocationResult.Payload);
-         log("Received and validated versioning service invocation result from server!");
-      }
-
-      private void TestInvokeGuestNode1(IConnectedSocket client, Action<string> log) {
-         const int invocationId = 1;
-         const string methodName = "GetStatus";
-         var methodArguments = new object[0];
-         var invocation = new X2XServiceInvocation(invocationId, Guid.Parse(kLoginServiceGuid), methodName, methodArguments);
-         pofSerializer.Serialize(client.GetWriter().__Writer, invocation);
-         log("Sent versioning service invocation to server.");
-
-         log("Awaiting versioning service invocation result from server.");
-         var invocationResult = pofSerializer.Deserialize<X2XInvocationResult>(client.GetReader().__Reader);
-         AssertEquals(kLoginServiceStatus, invocationResult.Payload);
-         log("Received and validated versioning service invocation result from server!");
-      }
-
-      private void TestInvokeGuestNode2(IConnectedSocket client, Action<string> log) {
-         const int invocationId = 2;
-         const string methodName = "GetWaitTimeMillis";
-         var methodArguments = new object[0];
-         var invocation = new X2XServiceInvocation(invocationId, Guid.Parse(kQueueServiceGuid), methodName, methodArguments);
-         pofSerializer.Serialize(client.GetWriter().__Writer, invocation);
-         log("Sent queue service invocation to server.");
-
-         log("Awaiting queue service invocation result from server.");
-         var invocationResult = pofSerializer.Deserialize<X2XInvocationResult>(client.GetReader().__Reader);
-         AssertEquals(kQueueServiceWaitTimeMillis, invocationResult.Payload);
-         log("Received and validated queue service invocation result from server!");
       }
 
       [Guid(kVersioningServiceGuid)]
