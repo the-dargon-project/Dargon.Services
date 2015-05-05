@@ -1,8 +1,7 @@
 using System;
-using System.Collections;
 using Dargon.PortableObjects;
 
-namespace Dargon.Services.PortableObjects {
+namespace Dargon.Services.Messaging {
    public class PortableException : Exception, IPortableObject, IEquatable<PortableException> {
       private string type;
       private string message;

@@ -1,6 +1,6 @@
 ﻿using Dargon.PortableObjects;
 
-namespace Dargon.Services.PortableObjects {
+namespace Dargon.Services.Messaging {
    public class DspPofContext : PofContext {
       public const int kPofIdentifierOffset = 0;
 

@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Castle.Core.Internal;
 using Dargon.PortableObjects.Streams;
-using Dargon.Services.PortableObjects;
+using Dargon.Services.Messaging;
 using Dargon.Services.Utilities;
 using ItzWarty.Collections;
 using ItzWarty.Networking;

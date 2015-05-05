@@ -2,7 +2,7 @@
 using Dargon.PortableObjects;
 using ItzWarty.Collections;
 
-namespace Dargon.Services.PortableObjects {
+namespace Dargon.Services.Messaging {
    internal class G2HServiceBroadcast : IPortableObject, IEquatable<G2HServiceBroadcast> {           
       private IReadOnlySet<Guid> serviceGuids;
 

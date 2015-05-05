@@ -1,6 +1,5 @@
 ﻿using Castle.DynamicProxy;
 using Dargon.PortableObjects;
-using Dargon.Services.PortableObjects;
 using Dargon.Services.Server;
 using ItzWarty.Collections;
 using ItzWarty.IO;
@@ -13,6 +12,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using Dargon.PortableObjects.Streams;
 using Dargon.Services.Clustering.Host;
+using Dargon.Services.Messaging;
 using Xunit;
 
 namespace Dargon.Services {

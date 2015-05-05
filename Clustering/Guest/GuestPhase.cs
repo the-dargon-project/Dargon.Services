@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Dargon.PortableObjects.Streams;
 using Dargon.Services.Clustering.Host;
-using Dargon.Services.PortableObjects;
+using Dargon.Services.Messaging;
 using Dargon.Services.Server;
 using Dargon.Services.Utilities;
 using ItzWarty;

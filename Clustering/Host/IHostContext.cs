@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Dargon.Services.PortableObjects;
+using Dargon.Services.Messaging;
 using Dargon.Services.Server;
 using ItzWarty.Collections;
 

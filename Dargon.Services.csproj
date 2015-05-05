@@ -86,12 +86,12 @@
     <Compile Include="Server\InvokableServiceContextFactory.cs" />
     <Compile Include="IServiceClient.cs" />
     <Compile Include="IServiceClientFactory.cs" />
-    <Compile Include="PortableObjects\X2XServiceInvocation.cs" />
-    <Compile Include="PortableObjects\PortableException.cs" />
+    <Compile Include="Messaging\X2XServiceInvocation.cs" />
+    <Compile Include="Messaging\PortableException.cs" />
     <Compile Include="ClusteringRole.cs" />
-    <Compile Include="PortableObjects\DspPofContext.cs" />
-    <Compile Include="PortableObjects\G2HServiceBroadcast.cs" />
-    <Compile Include="PortableObjects\G2HServiceUpdate.cs" />
+    <Compile Include="Messaging\DspPofContext.cs" />
+    <Compile Include="Messaging\G2HServiceBroadcast.cs" />
+    <Compile Include="Messaging\G2HServiceUpdate.cs" />
     <Compile Include="Clustering\Guest\GuestPhase.cs" />
     <Compile Include="Clustering\Host\IHostContext.cs" />
     <Compile Include="Clustering\ClusteringPhase.cs" />
@@ -100,7 +100,7 @@
     <Compile Include="Clustering\Indeterminate\IndeterminateClusteringPhase.cs" />
     <Compile Include="Clustering\Host\HostPhase.cs" />
     <Compile Include="ClusteringRoleFlags.cs" />
-    <Compile Include="PortableObjects\X2XInvocationResult.cs" />
+    <Compile Include="Messaging\X2XInvocationResult.cs" />
     <Compile Include="Clustering\Host\IHostSession.cs" />
     <Compile Include="Clustering\Host\IHostSessionFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
