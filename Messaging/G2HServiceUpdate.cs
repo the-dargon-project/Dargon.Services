@@ -17,8 +17,8 @@ namespace Dargon.Services.Messaging {
          this.removedServiceGuids = removedServiceGuids;
       }
 
-      public IReadOnlySet<Guid> AddedServiceGuids { get { return addedServiceGuids; } }
-      public IReadOnlySet<Guid> RemovedServiceGuids { get { return removedServiceGuids; } }
+      public IReadOnlySet<Guid> AddedServiceGuids => addedServiceGuids;
+      public IReadOnlySet<Guid> RemovedServiceGuids => removedServiceGuids;
 
       public void Serialize(IPofWriter writer) {
          writer.WriteCollection(0, addedServiceGuids);

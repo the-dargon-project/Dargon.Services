@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Threading.Tasks;
-using Dargon.PortableObjects.Streams;
-using Dargon.Services.Clustering.Host;
+﻿using Dargon.PortableObjects.Streams;
 using Dargon.Services.Messaging;
 using Dargon.Services.Server;
 using Dargon.Services.Utilities;
 using ItzWarty;
 using ItzWarty.Collections;
 using ItzWarty.Networking;
+using System;
+using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace Dargon.Services.Clustering.Guest {
    public class GuestPhase : ClusteringPhase {
@@ -102,17 +100,15 @@ namespace Dargon.Services.Clustering.Guest {
       }
 
       public void HandleServiceRegistered(InvokableServiceContext invokableServiceContext) {
-         var addedServices = new ItzWarty.Collections.HashSet<Guid>();
+         var addedServices = new ItzWarty.Collections.HashSet<Guid> { invokableServiceContext.Guid };
          var removedServices = new ItzWarty.Collections.HashSet<Guid>();
-         addedServices.Add(invokableServiceContext.Guid);
          pofStreamWriter.WriteAsync(new G2HServiceUpdate(addedServices, removedServices));
 //         pofSerializer.Serialize(socket.GetWriter(), serviceUpdate);
       }
 
       public void HandleServiceUnregistered(InvokableServiceContext invokableServiceContext) {
          var addedServices = new ItzWarty.Collections.HashSet<Guid>();
-         var removedServices = new ItzWarty.Collections.HashSet<Guid>();
-         removedServices.Add(invokableServiceContext.Guid);
+         var removedServices = new ItzWarty.Collections.HashSet<Guid> { invokableServiceContext.Guid };
          pofStreamWriter.WriteAsync(new G2HServiceUpdate(addedServices, removedServices));
       }
 

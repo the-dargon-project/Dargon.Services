@@ -39,10 +39,7 @@ namespace Dargon.Services.Server {
       public void Register(InvokableServiceContext invokableServiceContext) {
          lock (synchronization) {
             if (serviceContextsByGuid.TryAdd(invokableServiceContext.Guid, invokableServiceContext)) {
-               var capture = ServiceRegistered;
-               if (capture != null) {
-                  capture.Invoke(invokableServiceContext);
-               }
+               ServiceRegistered?.Invoke(invokableServiceContext);
             }
          }
       }
@@ -51,10 +48,7 @@ namespace Dargon.Services.Server {
          lock (synchronization) {
             var kvp = invokableServiceContext.Guid.PairValue(invokableServiceContext);
             if (serviceContextsByGuid.Remove(kvp)) {
-               var capture = ServiceUnregistered;
-               if (capture != null) {
-                  capture.Invoke(invokableServiceContext);
-               }
+               ServiceUnregistered?.Invoke(invokableServiceContext);
             }
          }
       }

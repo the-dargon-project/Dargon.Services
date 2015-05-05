@@ -1,5 +1,4 @@
-﻿using Castle.DynamicProxy;
-using System;
+﻿using System;
 using System.Collections;
 
 namespace Dargon.Services.Client {

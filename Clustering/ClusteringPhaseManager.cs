@@ -1,9 +1,9 @@
-﻿using System;
+﻿using Dargon.Services.Server;
+using ItzWarty;
+using System;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using Dargon.Services.Server;
-using Nito.AsyncEx;
 
 namespace Dargon.Services.Clustering {
    public interface ClusteringPhaseManager : IDisposable {
@@ -20,11 +20,13 @@ namespace Dargon.Services.Clustering {
       private ClusteringPhase currentClusteringPhase = null;
 
       public void Transition(ClusteringPhase nextClusteringPhase) {
+         nextClusteringPhase.ThrowIfNull("nextClusteringPhase");
+
          synchronization.EnterWriteLock();
          try {
             ThrowIfDisposed();
 
-            Debug.WriteLine("Transition from phase " + (currentClusteringPhase == null ? "null" : currentClusteringPhase.ToString()) + " to " + (nextClusteringPhase == null ? "null" : nextClusteringPhase.ToString()));
+            Debug.WriteLine("Transition from phase " + (currentClusteringPhase?.ToString() ?? "null") + " to " + (nextClusteringPhase?.ToString() ?? "null"));
             currentClusteringPhase = nextClusteringPhase;
             currentClusteringPhase.HandleEnter();
          } finally {

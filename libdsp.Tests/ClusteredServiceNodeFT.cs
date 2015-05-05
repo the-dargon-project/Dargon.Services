@@ -2,8 +2,8 @@
 using Dargon.PortableObjects;
 using Dargon.PortableObjects.Streams;
 using Dargon.Services.Clustering.Host;
+using Dargon.Services.Messaging;
 using Dargon.Services.Server;
-using ItzWarty;
 using ItzWarty.Collections;
 using ItzWarty.IO;
 using ItzWarty.Networking;
@@ -13,15 +13,11 @@ using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading;
-using Dargon.Services.Messaging;
 using Xunit;
 
 namespace Dargon.Services {
    public class ClusteredServiceNodeFT : NMockitoInstance {
-      private readonly ITcpEndPointFactory tcpEndPointFactory;
-      private readonly IPofSerializer pofSerializer;
       private readonly IServiceClientFactory serviceClientFactory;
-      private readonly INetworkingProxy networkingProxy;
 
       private const int kTestPort = 20001;
       private const int kHeartBeatIntervalMilliseconds = 30000;
@@ -43,14 +39,14 @@ namespace Dargon.Services {
          ISynchronizationFactory synchronizationFactory = new SynchronizationFactory();
          IThreadingProxy threadingProxy = new ThreadingProxy(threadingFactory, synchronizationFactory);
          IDnsProxy dnsProxy = new DnsProxy();
-         tcpEndPointFactory = new TcpEndPointFactory(dnsProxy);
+         ITcpEndPointFactory tcpEndPointFactory = new TcpEndPointFactory(dnsProxy);
          IStreamFactory streamFactory = new StreamFactory();
          INetworkingInternalFactory networkingInternalFactory = new NetworkingInternalFactory(threadingProxy, streamFactory);
          ISocketFactory socketFactory = new SocketFactory(tcpEndPointFactory, networkingInternalFactory);
-         networkingProxy = new NetworkingProxy(socketFactory, tcpEndPointFactory);
+         INetworkingProxy networkingProxy = new NetworkingProxy(socketFactory, tcpEndPointFactory);
          IPofContext pofContext = new DspPofContext();
          InvokableServiceContextFactory invokableServiceContextFactory = new InvokableServiceContextFactoryImpl(collectionFactory);
-         pofSerializer = new PofSerializer(pofContext);
+         IPofSerializer pofSerializer = new PofSerializer(pofContext);
          PofStreamsFactory pofStreamsFactory = new PofStreamsFactoryImpl(threadingProxy, streamFactory, pofSerializer);
          IHostSessionFactory hostSessionFactory = new HostSessionFactory(threadingProxy, collectionFactory, pofSerializer, pofStreamsFactory);
          serviceClientFactory = new ServiceClientFactory(proxyGenerator, collectionFactory, threadingProxy, networkingProxy, pofStreamsFactory, hostSessionFactory, invokableServiceContextFactory);
@@ -58,7 +54,7 @@ namespace Dargon.Services {
 
       [Fact]
       public void Run() {
-         Action<string> log = (x) => Debug.WriteLine("T: " + x);
+         Action<string> log = x => Debug.WriteLine("T: " + x);
          log("Spawning Service Node 1.");
          var serviceNode1 = serviceClientFactory.CreateOrJoin(clusteringConfiguration);
          serviceNode1.RegisterService(new VersioningService(), typeof(IVersioningService));
@@ -86,7 +82,7 @@ namespace Dargon.Services {
       }
 
       private void RunHostClientLogic(IServiceClient node) {
-         Action<string> log = (x) => Debug.WriteLine("  N: " + x);
+         Action<string> log = x => Debug.WriteLine("  N: " + x);
 
          log("Test Versioning Service");
          AssertEquals(node.GetService<IVersioningService>().GetVersion(), kVersioningServiceVersion);

@@ -11,14 +11,12 @@ namespace Dargon.Services.Server {
    }
 
    public class InvokableServiceContextImpl : InvokableServiceContext {
-      private readonly ICollectionFactory collectionFactory;
       private readonly object serviceImplementation;
       private readonly Type serviceInterface;
       private readonly Guid guid;
       private readonly IMultiValueDictionary<string, MethodInfo> methodsByName;
 
       public InvokableServiceContextImpl(ICollectionFactory collectionFactory, object serviceImplementation, Type serviceInterface) {
-         this.collectionFactory = collectionFactory;
          this.serviceImplementation = serviceImplementation;
          this.serviceInterface = serviceInterface;
 
@@ -34,7 +32,7 @@ namespace Dargon.Services.Server {
          }
       }
 
-      public Guid Guid { get { return guid; } }
+      public Guid Guid => guid;
 
       public object HandleInvocation(string action, object[] arguments) {
          HashSet<MethodInfo> candidates;

@@ -1,6 +1,5 @@
-﻿using System;
-using System.Runtime.Remoting.Messaging;
-using ItzWarty.Collections;
+﻿using ItzWarty.Collections;
+using System;
 
 namespace Dargon.Services.Server {
    public interface InvokableServiceContextFactory {

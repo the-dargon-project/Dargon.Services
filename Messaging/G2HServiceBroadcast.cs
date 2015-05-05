@@ -12,7 +12,7 @@ namespace Dargon.Services.Messaging {
          this.serviceGuids = serviceGuids;
       }
 
-      public IReadOnlySet<Guid> ServiceGuids { get { return serviceGuids; } } 
+      public IReadOnlySet<Guid> ServiceGuids => serviceGuids;
 
       public void Serialize(IPofWriter writer) {
          writer.WriteCollection(0, serviceGuids);

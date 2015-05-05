@@ -1,12 +1,11 @@
+using Dargon.Services.Server;
+using ItzWarty.Networking;
+using ItzWarty.Threading;
+using NLog;
 using System;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
-using Dargon.Services.Server;
-using ItzWarty.Networking;
-using ItzWarty.Threading;
-using Nito.AsyncEx;
-using NLog;
 
 namespace Dargon.Services.Clustering.Indeterminate {
    public class IndeterminateClusteringPhase : ClusteringPhase {

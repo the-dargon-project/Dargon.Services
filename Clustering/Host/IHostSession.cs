@@ -1,14 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Threading.Tasks;
-using Castle.Core.Internal;
-using Dargon.PortableObjects.Streams;
+﻿using Dargon.PortableObjects.Streams;
 using Dargon.Services.Messaging;
 using Dargon.Services.Utilities;
+using ItzWarty;
 using ItzWarty.Collections;
 using ItzWarty.Networking;
 using ItzWarty.Threading;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace Dargon.Services.Clustering.Host {
    public interface IHostSession : IDisposable {
@@ -72,7 +72,7 @@ namespace Dargon.Services.Clustering.Host {
       }
 
       public void Initialize() {
-         pofDispatcher.RegisterHandler<X2XServiceInvocation>((x) => HandleX2XServiceInvocation(x));
+         pofDispatcher.RegisterHandler<X2XServiceInvocation>(x => HandleX2XServiceInvocation(x));
          pofDispatcher.RegisterHandler<X2XInvocationResult>(HandleX2XInvocationResult);
          pofDispatcher.RegisterHandler<G2HServiceBroadcast>(HandleG2HServiceBroadcast);
          pofDispatcher.RegisterHandler<G2HServiceUpdate>(HandleG2HServiceUpdate);
@@ -85,7 +85,7 @@ namespace Dargon.Services.Clustering.Host {
       internal async Task HandleX2XServiceInvocation(X2XServiceInvocation x) {
          try {
             var result = await hostContext.Invoke(x.ServiceGuid, x.MethodName, x.MethodArguments);
-            pofStreamWriter.WriteAsync(new X2XInvocationResult(x.InvocationId, result));
+            var writeTask = pofStreamWriter.WriteAsync(new X2XInvocationResult(x.InvocationId, result));
          } catch (Exception e) {
             Debug.WriteLine(e);
          }
@@ -107,12 +107,8 @@ namespace Dargon.Services.Clustering.Host {
       }
 
       private void HandleServiceUpdateInternal(IReadOnlySet<Guid> addedServices, IReadOnlySet<Guid> removedServices) {
-         if (addedServices != null) {
-            addedServices.ForEach(remotelyHostedServices.Add);
-         }
-         if (removedServices != null) {
-            removedServices.ForEach(guid => remotelyHostedServices.Remove(guid));
-         }
+         addedServices?.ForEach(remotelyHostedServices.Add);
+         removedServices?.ForEach(guid => remotelyHostedServices.Remove(guid));
 
          if (remotelyHostedServices.Count != 0) {
             hostContext.AddRemoteInvokable(this);
@@ -126,7 +122,7 @@ namespace Dargon.Services.Clustering.Host {
             return new RemoteInvocationResult(false, null);
          } else {
             var invocationId = availableInvocationIds.TakeUniqueID();
-            var asyncValueBox = invocationResponseBoxesById.GetOrAdd(invocationId, (id) => new AsyncValueBoxImpl());
+            var asyncValueBox = invocationResponseBoxesById.GetOrAdd(invocationId, id => new AsyncValueBoxImpl());
             await pofStreamWriter.WriteAsync(new X2XServiceInvocation(invocationId, serviceGuid, methodName, arguments));
             var returnValue = await asyncValueBox.GetResultAsync();
             var removed = invocationResponseBoxesById.Remove(new KeyValuePair<uint, AsyncValueBox>(invocationId, asyncValueBox));

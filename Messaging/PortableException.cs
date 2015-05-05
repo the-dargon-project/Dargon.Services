@@ -16,11 +16,7 @@ namespace Dargon.Services.Messaging {
          this.type = exceptionType;
          this.message = exceptionMessage;
          this.stackTrace = exceptionStackTrace;
-         if (innerException == null) {
-            this.innerException = null;
-         } else {
-            this.innerException = new PortableException(innerException);
-         }
+         this.innerException = innerException == null ? null : new PortableException(innerException);
       }
 
       public void Serialize(IPofWriter writer) {
@@ -37,9 +33,9 @@ namespace Dargon.Services.Messaging {
          innerException = reader.ReadObject<PortableException>(3);
       }
 
-      public override string Message { get { return message; } }
-      public override string StackTrace { get { return stackTrace; } }
-      public new PortableException InnerException { get { return innerException; } }
+      public override string Message => message;
+      public override string StackTrace => stackTrace;
+      public new PortableException InnerException => innerException;
 
       public override bool Equals(object other) {
          return other != null && Equals(other as PortableException);

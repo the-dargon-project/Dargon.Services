@@ -1,8 +1,6 @@
-﻿using Dargon.Services.Utilities;
-using ItzWarty;
+﻿using ItzWarty;
 using ItzWarty.Collections;
 using System;
-using System.Linq;
 using System.Reflection;
 
 namespace Dargon.Services.Client {
