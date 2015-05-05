@@ -47,7 +47,7 @@
     </Reference>
     <Reference Include="Dargon.PortableObjects.Streams, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Dargon.PortableObjects.Streams.0.1.0\lib\net45\Dargon.PortableObjects.Streams.dll</HintPath>
+      <HintPath>..\packages\Dargon.PortableObjects.Streams.0.1.2\lib\net45\Dargon.PortableObjects.Streams.dll</HintPath>
     </Reference>
     <Reference Include="Dargon.TestUtilities, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
