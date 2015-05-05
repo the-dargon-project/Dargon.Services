@@ -26,40 +26,6 @@ namespace Dargon.Services.Clustering.Host {
       private readonly IUniqueIdentificationSet availableInvocationIds;
       private readonly IConcurrentDictionary<uint, AsyncValueBox> invocationResponseBoxesById;
 
-      public HostSession(
-         IThreadingProxy threadingProxy,
-         ICollectionFactory collectionFactory,
-         PofStreamsFactory pofStreamsFactory,
-         IHostContext hostContext,
-         IConnectedSocket socket,
-         IThread thread
-      ) : this(
-         collectionFactory,
-         pofStreamsFactory,
-         hostContext,
-         thread,
-         threadingProxy.CreateCancellationTokenSource(),
-         pofStreamsFactory.CreatePofStream(socket.Stream)
-      ) { }
-
-      public HostSession(
-         ICollectionFactory collectionFactory,
-         PofStreamsFactory pofStreamsFactory,
-         IHostContext hostContext,
-         IThread thread,
-         ICancellationTokenSource cancellationTokenSource,
-         PofStream pofStream
-      ) : this(
-         hostContext,
-         thread,
-         cancellationTokenSource,
-         pofStream.Writer,
-         pofStreamsFactory.CreateDispatcher(pofStream),
-         collectionFactory.CreateConcurrentSet<Guid>(),
-         collectionFactory.CreateUniqueIdentificationSet(true),
-         collectionFactory.CreateConcurrentDictionary<uint, AsyncValueBox>()
-      ) { }
-
       public HostSession(IHostContext hostContext, IThread thread, ICancellationTokenSource cancellationTokenSource, PofStreamWriter pofStreamWriter, PofDispatcher pofDispatcher, IConcurrentSet<Guid> remotelyHostedServices, IUniqueIdentificationSet availableInvocationIds, IConcurrentDictionary<uint, AsyncValueBox> invocationResponseBoxesById) {
          this.hostContext = hostContext;
          this.thread = thread;

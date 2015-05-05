@@ -1,5 +1,7 @@
-﻿using Dargon.PortableObjects;
+﻿using System;
+using Dargon.PortableObjects;
 using Dargon.PortableObjects.Streams;
+using Dargon.Services.Utilities;
 using ItzWarty.Collections;
 using ItzWarty.Networking;
 using ItzWarty.Threading;
@@ -23,7 +25,19 @@ namespace Dargon.Services.Clustering.Host {
       }
 
       public IHostSession Create(IThread thread, IHostContext hostContext, IConnectedSocket socket) {
-         var session = new HostSession(threadingProxy, collectionFactory, pofStreamsFactory, hostContext, socket, thread);
+         var shutdownCancellationTokenSource = threadingProxy.CreateCancellationTokenSource();
+         var pofStream = pofStreamsFactory.CreatePofStream(socket.Stream);
+         var pofDispatcher = pofStreamsFactory.CreateDispatcher(pofStream);
+         var session = new HostSession(
+            hostContext,
+            thread,
+            shutdownCancellationTokenSource,
+            pofStream.Writer,
+            pofDispatcher,
+            collectionFactory.CreateConcurrentSet<Guid>(),
+            collectionFactory.CreateUniqueIdentificationSet(true),
+            collectionFactory.CreateConcurrentDictionary<uint, AsyncValueBox>()
+         );
          session.Initialize();
          return session;
       }
