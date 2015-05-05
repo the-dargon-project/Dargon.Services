@@ -1,6 +1,7 @@
 ﻿using System;
 using Dargon.PortableObjects;
 using Dargon.PortableObjects.Streams;
+using Dargon.Services.Messaging;
 using Dargon.Services.Utilities;
 using ItzWarty.Collections;
 using ItzWarty.Networking;
@@ -28,11 +29,12 @@ namespace Dargon.Services.Clustering.Host {
          var shutdownCancellationTokenSource = threadingProxy.CreateCancellationTokenSource();
          var pofStream = pofStreamsFactory.CreatePofStream(socket.Stream);
          var pofDispatcher = pofStreamsFactory.CreateDispatcher(pofStream);
+         var messageSender = new MessageSenderImpl(pofStream.Writer);
          var session = new HostSession(
             hostContext,
             thread,
             shutdownCancellationTokenSource,
-            pofStream.Writer,
+            messageSender,
             pofDispatcher,
             collectionFactory.CreateConcurrentSet<Guid>(),
             collectionFactory.CreateUniqueIdentificationSet(true),

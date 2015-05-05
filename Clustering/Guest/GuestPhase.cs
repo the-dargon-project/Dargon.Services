@@ -14,16 +14,16 @@ namespace Dargon.Services.Clustering.Guest {
       private readonly ClusteringPhaseFactory clusteringPhaseFactory;
       private readonly LocalServiceContainer localServiceContainer;
       private readonly ClusteringPhaseManager clusteringPhaseManager;
-      private readonly PofStreamWriter pofStreamWriter;
+      private readonly MessageSender messageSender;
       private readonly PofDispatcher pofDispatcher;
       private readonly IUniqueIdentificationSet availableInvocationIds;
       private readonly IConcurrentDictionary<uint, AsyncValueBox> invocationResponseBoxesById;
 
-      public GuestPhase(ClusteringPhaseFactory clusteringPhaseFactory, LocalServiceContainer localServiceContainer, ClusteringPhaseManager clusteringPhaseManager, PofStreamWriter pofStreamWriter, PofDispatcher pofDispatcher, IUniqueIdentificationSet availableInvocationIds, IConcurrentDictionary<uint, AsyncValueBox> invocationResponseBoxesById) {
+      public GuestPhase(ClusteringPhaseFactory clusteringPhaseFactory, LocalServiceContainer localServiceContainer, ClusteringPhaseManager clusteringPhaseManager, MessageSender messageSender, PofDispatcher pofDispatcher, IUniqueIdentificationSet availableInvocationIds, IConcurrentDictionary<uint, AsyncValueBox> invocationResponseBoxesById) {
          this.clusteringPhaseFactory = clusteringPhaseFactory;
          this.localServiceContainer = localServiceContainer;
          this.clusteringPhaseManager = clusteringPhaseManager;
-         this.pofStreamWriter = pofStreamWriter;
+         this.messageSender = messageSender;
          this.pofDispatcher = pofDispatcher;
          this.availableInvocationIds = availableInvocationIds;
          this.invocationResponseBoxesById = invocationResponseBoxesById;
@@ -39,7 +39,7 @@ namespace Dargon.Services.Clustering.Guest {
 
       public void HandleEnter() {
          var servicesGuids = new HashSet<Guid>(localServiceContainer.EnumerateServiceGuids());
-         pofStreamWriter.WriteAsync(new G2HServiceBroadcast(servicesGuids));
+         messageSender.SendServiceBroadcastAsync(servicesGuids);
       }
 
       private void HandleX2XServiceInvocation(X2XServiceInvocation x) {
@@ -51,7 +51,7 @@ namespace Dargon.Services.Clustering.Guest {
          } catch (Exception e) {
             result = new PortableException(e);
          }
-         pofStreamWriter.WriteAsync(new X2XInvocationResult(x.InvocationId, result));
+         messageSender.SendInvocationResultAsync(x.InvocationId, result);
       }
 
       internal void HandleX2XInvocationResult(X2XInvocationResult x) {
@@ -68,14 +68,13 @@ namespace Dargon.Services.Clustering.Guest {
       public void HandleServiceRegistered(InvokableServiceContext invokableServiceContext) {
          var addedServices = new HashSet<Guid> { invokableServiceContext.Guid };
          var removedServices = new HashSet<Guid>();
-         pofStreamWriter.WriteAsync(new G2HServiceUpdate(addedServices, removedServices));
-//         pofSerializer.Serialize(socket.GetWriter(), serviceUpdate);
+         messageSender.SendServiceUpdateAsync(addedServices, removedServices);
       }
 
       public void HandleServiceUnregistered(InvokableServiceContext invokableServiceContext) {
          var addedServices = new HashSet<Guid>();
          var removedServices = new HashSet<Guid> { invokableServiceContext.Guid };
-         pofStreamWriter.WriteAsync(new G2HServiceUpdate(addedServices, removedServices));
+         messageSender.SendServiceUpdateAsync(addedServices, removedServices);
       }
 
       public async Task<object> InvokeServiceCall(Guid serviceGuid, string methodName, object[] methodArguments) {
@@ -86,7 +85,7 @@ namespace Dargon.Services.Clustering.Guest {
             // Code looks different than in host session - if an exception has been thrown
             var invocationId = availableInvocationIds.TakeUniqueID();
             var asyncValueBox = invocationResponseBoxesById.GetOrAdd(invocationId, (id) => new AsyncValueBoxImpl());
-            await pofStreamWriter.WriteAsync(new X2XServiceInvocation(invocationId, serviceGuid, methodName, methodArguments));
+            await messageSender.SendServiceInvocationAsync(invocationId, serviceGuid, methodName, methodArguments);
             var returnValue = await asyncValueBox.GetResultAsync();
             var removed = invocationResponseBoxesById.Remove(invocationId.PairValue(asyncValueBox));
             Trace.Assert(removed, "Failed to remove AsyncValueBox from dict");
@@ -95,8 +94,8 @@ namespace Dargon.Services.Clustering.Guest {
       }
 
       public void Dispose() {
+         messageSender.Dispose();
          pofDispatcher.Dispose();
-         pofStreamWriter.Dispose();
          clusteringPhaseManager.Dispose();
       }
    }

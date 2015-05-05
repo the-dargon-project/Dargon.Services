@@ -2,6 +2,7 @@
 using Dargon.Services.Clustering.Guest;
 using Dargon.Services.Clustering.Host;
 using Dargon.Services.Clustering.Indeterminate;
+using Dargon.Services.Messaging;
 using Dargon.Services.Server;
 using Dargon.Services.Utilities;
 using ItzWarty.Collections;
@@ -47,11 +48,12 @@ namespace Dargon.Services.Clustering {
       public ClusteringPhase CreateGuestPhase(LocalServiceContainer localServiceContainer, IConnectedSocket clientSocket) {
          var pofStream = pofStreamsFactory.CreatePofStream(clientSocket.Stream);
          var pofDispatcher = pofStreamsFactory.CreateDispatcher(pofStream);
+         var messageSender = new MessageSenderImpl(pofStream.Writer);
          var phase = new GuestPhase(
             this, 
             localServiceContainer, 
             clusteringPhaseManager, 
-            pofStream.Writer,
+            messageSender,
             pofDispatcher,
             collectionFactory.CreateUniqueIdentificationSet(true), 
             collectionFactory.CreateConcurrentDictionary<uint, AsyncValueBox>()

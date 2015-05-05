@@ -3,7 +3,6 @@ using Dargon.Services.Messaging;
 using Dargon.Services.Utilities;
 using ItzWarty;
 using ItzWarty.Collections;
-using ItzWarty.Networking;
 using ItzWarty.Threading;
 using System;
 using System.Collections.Generic;
@@ -20,17 +19,17 @@ namespace Dargon.Services.Clustering.Host {
       private readonly IHostContext hostContext;
       private readonly IThread thread;
       private readonly ICancellationTokenSource cancellationTokenSource;
-      private readonly PofStreamWriter pofStreamWriter;
+      private readonly MessageSender messageSender;
       private readonly PofDispatcher pofDispatcher;
       private readonly IConcurrentSet<Guid> remotelyHostedServices;
       private readonly IUniqueIdentificationSet availableInvocationIds;
       private readonly IConcurrentDictionary<uint, AsyncValueBox> invocationResponseBoxesById;
 
-      public HostSession(IHostContext hostContext, IThread thread, ICancellationTokenSource cancellationTokenSource, PofStreamWriter pofStreamWriter, PofDispatcher pofDispatcher, IConcurrentSet<Guid> remotelyHostedServices, IUniqueIdentificationSet availableInvocationIds, IConcurrentDictionary<uint, AsyncValueBox> invocationResponseBoxesById) {
+      public HostSession(IHostContext hostContext, IThread thread, ICancellationTokenSource cancellationTokenSource, MessageSender messageSender, PofDispatcher pofDispatcher, IConcurrentSet<Guid> remotelyHostedServices, IUniqueIdentificationSet availableInvocationIds, IConcurrentDictionary<uint, AsyncValueBox> invocationResponseBoxesById) {
          this.hostContext = hostContext;
          this.thread = thread;
          this.cancellationTokenSource = cancellationTokenSource;
-         this.pofStreamWriter = pofStreamWriter;
+         this.messageSender = messageSender;
          this.pofDispatcher = pofDispatcher;
          this.remotelyHostedServices = remotelyHostedServices;
          this.availableInvocationIds = availableInvocationIds;
@@ -51,7 +50,7 @@ namespace Dargon.Services.Clustering.Host {
       internal async Task HandleX2XServiceInvocation(X2XServiceInvocation x) {
          try {
             var result = await hostContext.Invoke(x.ServiceGuid, x.MethodName, x.MethodArguments);
-            var writeTask = pofStreamWriter.WriteAsync(new X2XInvocationResult(x.InvocationId, result));
+            var sendTask = messageSender.SendInvocationResultAsync(x.InvocationId, result);
          } catch (Exception e) {
             Debug.WriteLine(e);
          }
@@ -89,7 +88,7 @@ namespace Dargon.Services.Clustering.Host {
          } else {
             var invocationId = availableInvocationIds.TakeUniqueID();
             var asyncValueBox = invocationResponseBoxesById.GetOrAdd(invocationId, id => new AsyncValueBoxImpl());
-            await pofStreamWriter.WriteAsync(new X2XServiceInvocation(invocationId, serviceGuid, methodName, arguments));
+            await messageSender.SendServiceInvocationAsync(invocationId, serviceGuid, methodName, arguments);
             var returnValue = await asyncValueBox.GetResultAsync();
             var removed = invocationResponseBoxesById.Remove(new KeyValuePair<uint, AsyncValueBox>(invocationId, asyncValueBox));
             Trace.Assert(removed, "Failed to remove AsyncValueBox from dict");
@@ -103,7 +102,7 @@ namespace Dargon.Services.Clustering.Host {
          thread.Dispose();
 
          pofDispatcher.Dispose();
-         pofStreamWriter.Dispose();
+         messageSender.Dispose();
       }
    }
 }
