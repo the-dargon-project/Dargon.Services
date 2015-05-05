@@ -8,26 +8,26 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Nito.AsyncEx;
 
 namespace Dargon.Services.Clustering.Host {
    public interface IHostSession : IDisposable {
-      void Start();
+      Task StartAndAwaitShutdown();
       Task<RemoteInvocationResult> TryRemoteInvoke(Guid serviceGuid, string methodName, object[] arguments);
    }
 
    public class HostSession : IHostSession, IRemoteInvokable {
       private readonly IHostContext hostContext;
-      private readonly IThread thread;
       private readonly ICancellationTokenSource cancellationTokenSource;
       private readonly MessageSender messageSender;
       private readonly PofDispatcher pofDispatcher;
       private readonly IConcurrentSet<Guid> remotelyHostedServices;
       private readonly IUniqueIdentificationSet availableInvocationIds;
       private readonly IConcurrentDictionary<uint, AsyncValueBox> invocationResponseBoxesById;
+      private readonly AsyncManualResetEvent shutdownLatch = new AsyncManualResetEvent();
 
-      public HostSession(IHostContext hostContext, IThread thread, ICancellationTokenSource cancellationTokenSource, MessageSender messageSender, PofDispatcher pofDispatcher, IConcurrentSet<Guid> remotelyHostedServices, IUniqueIdentificationSet availableInvocationIds, IConcurrentDictionary<uint, AsyncValueBox> invocationResponseBoxesById) {
+      public HostSession(IHostContext hostContext, ICancellationTokenSource cancellationTokenSource, MessageSender messageSender, PofDispatcher pofDispatcher, IConcurrentSet<Guid> remotelyHostedServices, IUniqueIdentificationSet availableInvocationIds, IConcurrentDictionary<uint, AsyncValueBox> invocationResponseBoxesById) {
          this.hostContext = hostContext;
-         this.thread = thread;
          this.cancellationTokenSource = cancellationTokenSource;
          this.messageSender = messageSender;
          this.pofDispatcher = pofDispatcher;
@@ -41,10 +41,16 @@ namespace Dargon.Services.Clustering.Host {
          pofDispatcher.RegisterHandler<X2XInvocationResult>(HandleX2XInvocationResult);
          pofDispatcher.RegisterHandler<G2HServiceBroadcast>(HandleG2HServiceBroadcast);
          pofDispatcher.RegisterHandler<G2HServiceUpdate>(HandleG2HServiceUpdate);
+         pofDispatcher.RegisterShutdownHandler(HandleDispatcherShutdown);
       }
 
-      public void Start() {
+      private void HandleDispatcherShutdown() {
+         shutdownLatch.Set();
+      }
+
+      public async Task StartAndAwaitShutdown() {
          pofDispatcher.Start();
+         await shutdownLatch.WaitAsync();
       }
 
       internal async Task HandleX2XServiceInvocation(X2XServiceInvocation x) {
@@ -98,8 +104,7 @@ namespace Dargon.Services.Clustering.Host {
 
       public void Dispose() {
          cancellationTokenSource.Cancel();
-         thread.Join();
-         thread.Dispose();
+         shutdownLatch.Set();
 
          pofDispatcher.Dispose();
          messageSender.Dispose();

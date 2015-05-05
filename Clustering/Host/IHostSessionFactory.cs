@@ -9,7 +9,7 @@ using ItzWarty.Threading;
 
 namespace Dargon.Services.Clustering.Host {
    public interface IHostSessionFactory {
-      IHostSession Create(IThread thread, IHostContext hostContext, IConnectedSocket socket);
+      IHostSession Create(IHostContext hostContext, IConnectedSocket socket);
    }
 
    public class HostSessionFactory : IHostSessionFactory {
@@ -25,14 +25,13 @@ namespace Dargon.Services.Clustering.Host {
          this.pofStreamsFactory = pofStreamsFactory;
       }
 
-      public IHostSession Create(IThread thread, IHostContext hostContext, IConnectedSocket socket) {
+      public IHostSession Create(IHostContext hostContext, IConnectedSocket socket) {
          var shutdownCancellationTokenSource = threadingProxy.CreateCancellationTokenSource();
          var pofStream = pofStreamsFactory.CreatePofStream(socket.Stream);
          var pofDispatcher = pofStreamsFactory.CreateDispatcher(pofStream);
          var messageSender = new MessageSenderImpl(pofStream.Writer);
          var session = new HostSession(
             hostContext,
-            thread,
             shutdownCancellationTokenSource,
             messageSender,
             pofDispatcher,

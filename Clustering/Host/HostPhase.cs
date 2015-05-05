@@ -41,20 +41,18 @@ namespace Dargon.Services.Clustering.Host {
          Debug.WriteLine("Entering Host Phase ListenerThreadEntryPoint");
          while (!cancellationTokenSource.IsCancellationRequested) {
             var socket = listenerSocket.Accept();
-            IThread thread = null;
-            thread = threadingProxy.CreateThread(() => SessionThreadEntryPoint(socket, thread), new ThreadCreationOptions { IsBackground = true });
-            thread.Start();
+            var asyncTask = ProcessSessionAsync(socket);
          }
          Debug.WriteLine("Exiting Host Phase ListenerThreadEntryPoint");
       }
 
-      internal void SessionThreadEntryPoint(IConnectedSocket socket, IThread thread) {
+      internal async Task ProcessSessionAsync(IConnectedSocket socket) {
          Debug.WriteLine("Entering Host Phase SessionThreadEntryPoint");
          IHostSession session = null;
          try {
-            session = hostSessionFactory.Create(thread, hostContext, socket);
+            session = hostSessionFactory.Create(hostContext, socket);
             sessions.Add(session);
-            session.Start();
+            await session.StartAndAwaitShutdown();
          } catch (SocketException e) {
             logger.Warn(e);
             Debug.WriteLine(e);
