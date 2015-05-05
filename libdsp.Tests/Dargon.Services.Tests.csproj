@@ -103,21 +103,7 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
-    <None Include="Networking\PortableObjects\C2HServiceInvocationTests.cs" />
-    <None Include="Networking\PortableObjects\G2HServiceBroadcastTests.cs" />
-    <None Include="Networking\PortableObjects\X2SHandshakeTests.cs" />
-    <None Include="Networking\Server\ConnectorContextTests.cs" />
-    <None Include="Networking\Server\ConnectorTests.cs" />
-    <None Include="Networking\Server\ConnectorWorkerTests.cs" />
-    <None Include="Networking\Server\Phases\HostPhaseTests.cs" />
-    <None Include="Networking\Server\Phases\IndeterminatePhaseTests.cs" />
-    <None Include="Networking\Server\Phases\PhaseFactoryTests.cs" />
-    <None Include="ServiceClientFT.cs" />
-    <None Include="ServiceContextIT.cs" />
-    <None Include="ServiceNodeAndClientFT.cs" />
     <Compile Include="ClusteredServiceNodeFT.cs" />
-    <Compile Include="ServiceNodeFT.cs" />
-    <None Include="ServiceNodeTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
