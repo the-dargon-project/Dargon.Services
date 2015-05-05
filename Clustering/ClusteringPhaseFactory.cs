@@ -3,6 +3,7 @@ using Dargon.Services.Clustering.Guest;
 using Dargon.Services.Clustering.Host;
 using Dargon.Services.Clustering.Indeterminate;
 using Dargon.Services.Server;
+using Dargon.Services.Utilities;
 using ItzWarty.Collections;
 using ItzWarty.Networking;
 using ItzWarty.Threading;
@@ -44,7 +45,17 @@ namespace Dargon.Services.Clustering {
       }
 
       public ClusteringPhase CreateGuestPhase(LocalServiceContainer localServiceContainer, IConnectedSocket clientSocket) {
-         var phase = new GuestPhase(collectionFactory, pofStreamsFactory, this, localServiceContainer, clusteringPhaseManager, clientSocket);
+         var pofStream = pofStreamsFactory.CreatePofStream(clientSocket.Stream);
+         var pofDispatcher = pofStreamsFactory.CreateDispatcher(pofStream);
+         var phase = new GuestPhase(
+            this, 
+            localServiceContainer, 
+            clusteringPhaseManager, 
+            pofStream.Writer,
+            pofDispatcher,
+            collectionFactory.CreateUniqueIdentificationSet(true), 
+            collectionFactory.CreateConcurrentDictionary<uint, AsyncValueBox>()
+         );
          phase.Initialize();
          return phase;
       }

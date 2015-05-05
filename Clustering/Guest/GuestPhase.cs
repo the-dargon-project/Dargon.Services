@@ -19,41 +19,7 @@ namespace Dargon.Services.Clustering.Guest {
       private readonly IUniqueIdentificationSet availableInvocationIds;
       private readonly IConcurrentDictionary<uint, AsyncValueBox> invocationResponseBoxesById;
 
-      public GuestPhase(
-         ICollectionFactory collectionFactory,
-         PofStreamsFactory pofStreamsFactory, 
-         ClusteringPhaseFactory clusteringPhaseFactory, 
-         LocalServiceContainer localServiceContainer,
-         ClusteringPhaseManager clusteringPhaseManager,
-         IConnectedSocket socket
-      ) : this(pofStreamsFactory,
-               clusteringPhaseFactory,
-               localServiceContainer,
-               clusteringPhaseManager,
-               pofStreamsFactory.CreatePofStream(socket.Stream),
-               collectionFactory.CreateUniqueIdentificationSet(true),
-               collectionFactory.CreateConcurrentDictionary<uint, AsyncValueBox>()
-      ) { }
-
-      internal GuestPhase(
-         PofStreamsFactory pofStreamsFactory,
-         ClusteringPhaseFactory clusteringPhaseFactory, 
-         LocalServiceContainer localServiceContainer, 
-         ClusteringPhaseManager clusteringPhaseManager,
-         PofStream pofStream,
-         IUniqueIdentificationSet availableInvocationIds,
-         IConcurrentDictionary<uint, AsyncValueBox> invocationResponseBoxesById
-      ) : this(
-         clusteringPhaseFactory,
-         localServiceContainer,
-         clusteringPhaseManager,
-         pofStream.Writer,
-         pofStreamsFactory.CreateDispatcher(pofStream),
-         availableInvocationIds,
-         invocationResponseBoxesById
-      ) { }
-
-      internal GuestPhase(ClusteringPhaseFactory clusteringPhaseFactory, LocalServiceContainer localServiceContainer, ClusteringPhaseManager clusteringPhaseManager, PofStreamWriter pofStreamWriter, PofDispatcher pofDispatcher, IUniqueIdentificationSet availableInvocationIds, IConcurrentDictionary<uint, AsyncValueBox> invocationResponseBoxesById) {
+      public GuestPhase(ClusteringPhaseFactory clusteringPhaseFactory, LocalServiceContainer localServiceContainer, ClusteringPhaseManager clusteringPhaseManager, PofStreamWriter pofStreamWriter, PofDispatcher pofDispatcher, IUniqueIdentificationSet availableInvocationIds, IConcurrentDictionary<uint, AsyncValueBox> invocationResponseBoxesById) {
          this.clusteringPhaseFactory = clusteringPhaseFactory;
          this.localServiceContainer = localServiceContainer;
          this.clusteringPhaseManager = clusteringPhaseManager;
@@ -72,7 +38,7 @@ namespace Dargon.Services.Clustering.Guest {
       }
 
       public void HandleEnter() {
-         var servicesGuids = new ItzWarty.Collections.HashSet<Guid>(localServiceContainer.EnumerateServiceGuids());
+         var servicesGuids = new HashSet<Guid>(localServiceContainer.EnumerateServiceGuids());
          pofStreamWriter.WriteAsync(new G2HServiceBroadcast(servicesGuids));
       }
 
@@ -100,15 +66,15 @@ namespace Dargon.Services.Clustering.Guest {
       }
 
       public void HandleServiceRegistered(InvokableServiceContext invokableServiceContext) {
-         var addedServices = new ItzWarty.Collections.HashSet<Guid> { invokableServiceContext.Guid };
-         var removedServices = new ItzWarty.Collections.HashSet<Guid>();
+         var addedServices = new HashSet<Guid> { invokableServiceContext.Guid };
+         var removedServices = new HashSet<Guid>();
          pofStreamWriter.WriteAsync(new G2HServiceUpdate(addedServices, removedServices));
 //         pofSerializer.Serialize(socket.GetWriter(), serviceUpdate);
       }
 
       public void HandleServiceUnregistered(InvokableServiceContext invokableServiceContext) {
-         var addedServices = new ItzWarty.Collections.HashSet<Guid>();
-         var removedServices = new ItzWarty.Collections.HashSet<Guid> { invokableServiceContext.Guid };
+         var addedServices = new HashSet<Guid>();
+         var removedServices = new HashSet<Guid> { invokableServiceContext.Guid };
          pofStreamWriter.WriteAsync(new G2HServiceUpdate(addedServices, removedServices));
       }
 
