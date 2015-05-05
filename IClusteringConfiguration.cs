@@ -14,8 +14,8 @@
          this.ClusteringRoleFlags = clusteringRoleFlags;
       }
 
-      public int Port { get; }
-      public int HeartbeatIntervalMilliseconds { get; }
-      public ClusteringRoleFlags ClusteringRoleFlags { get; }
+      public int Port { get; private set; }
+      public int HeartbeatIntervalMilliseconds { get; private set; }
+      public ClusteringRoleFlags ClusteringRoleFlags { get; private set; }
    }
 }
