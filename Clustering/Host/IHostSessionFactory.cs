@@ -17,19 +17,21 @@ namespace Dargon.Services.Clustering.Host {
       private readonly ICollectionFactory collectionFactory;
       private readonly IPofSerializer pofSerializer;
       private readonly PofStreamsFactory pofStreamsFactory;
+      private readonly MethodArgumentsConverter methodArgumentsConverter;
 
-      public HostSessionFactory(IThreadingProxy threadingProxy, ICollectionFactory collectionFactory, IPofSerializer pofSerializer, PofStreamsFactory pofStreamsFactory) {
+      public HostSessionFactory(IThreadingProxy threadingProxy, ICollectionFactory collectionFactory, IPofSerializer pofSerializer, PofStreamsFactory pofStreamsFactory, MethodArgumentsConverter methodArgumentsConverter) {
          this.threadingProxy = threadingProxy;
          this.collectionFactory = collectionFactory;
          this.pofSerializer = pofSerializer;
          this.pofStreamsFactory = pofStreamsFactory;
+         this.methodArgumentsConverter = methodArgumentsConverter;
       }
 
       public IHostSession Create(IHostContext hostContext, IConnectedSocket socket) {
          var shutdownCancellationTokenSource = threadingProxy.CreateCancellationTokenSource();
          var pofStream = pofStreamsFactory.CreatePofStream(socket.Stream);
          var pofDispatcher = pofStreamsFactory.CreateDispatcher(pofStream);
-         var messageSender = new MessageSenderImpl(pofStream.Writer);
+         var messageSender = new MessageSenderImpl(pofStream.Writer, methodArgumentsConverter);
          var session = new HostSession(
             hostContext,
             shutdownCancellationTokenSource,

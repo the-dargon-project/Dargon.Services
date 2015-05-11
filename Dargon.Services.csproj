@@ -83,6 +83,8 @@
     <Compile Include="Client\RemoteServiceProxyInvocationInterceptor.cs" />
     <Compile Include="Clustering\ClusteringPhaseManager.cs" />
     <Compile Include="Messaging\MessageSender.cs" />
+    <Compile Include="Messaging\MethodArgumentsConverter.cs" />
+    <Compile Include="Messaging\MethodArgumentsDto.cs" />
     <Compile Include="ServiceUnavailableException.cs" />
     <Compile Include="IClusteringConfiguration.cs" />
     <Compile Include="Clustering\Host\RemoteInvocationResult.cs" />
