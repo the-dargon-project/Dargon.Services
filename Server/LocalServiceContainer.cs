@@ -3,6 +3,7 @@ using ItzWarty.Collections;
 using NLog;
 using System;
 using System.Collections.Generic;
+using Dargon.Services.Messaging;
 
 namespace Dargon.Services.Server {
    public interface LocalServiceContainer {
@@ -14,6 +15,7 @@ namespace Dargon.Services.Server {
 
       IEnumerable<Guid> EnumerateServiceGuids();
 
+      bool TryInvoke(Guid serviceGuid, string methodName, MethodArgumentsDto methodArguments, out object result);
       bool TryInvoke(Guid serviceGuid, string methodName, object[] methodArguments, out object result);
 
    }
@@ -55,6 +57,17 @@ namespace Dargon.Services.Server {
 
       public IEnumerable<Guid> EnumerateServiceGuids() {
          return serviceContextsByGuid.Keys;
+      }
+
+      public bool TryInvoke(Guid serviceGuid, string methodName, MethodArgumentsDto methodArgumentsDto, out object result) {
+         InvokableServiceContext invokableServiceContext;
+         if (!serviceContextsByGuid.TryGetValue(serviceGuid, out invokableServiceContext)) {
+            result = null;
+            return false;
+         } else {
+            result = invokableServiceContext.HandleInvocation(methodName, methodArgumentsDto);
+            return true;
+         }
       }
 
       public bool TryInvoke(Guid serviceGuid, string methodName, object[] methodArguments, out object result) {

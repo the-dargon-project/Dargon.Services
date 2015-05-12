@@ -22,15 +22,17 @@ namespace Dargon.Services.Clustering {
       private readonly PofStreamsFactory pofStreamsFactory;
       private readonly IHostSessionFactory hostSessionFactory;
       private readonly IClusteringConfiguration clusteringConfiguration;
+      private readonly MethodArgumentsConverter methodArgumentsConverter;
       private readonly ClusteringPhaseManager clusteringPhaseManager;
 
-      public ClusteringPhaseFactoryImpl(ICollectionFactory collectionFactory, IThreadingProxy threadingProxy, INetworkingProxy networkingProxy, PofStreamsFactory pofStreamsFactory, IHostSessionFactory hostSessionFactory, IClusteringConfiguration clusteringConfiguration, ClusteringPhaseManager clusteringPhaseManager) {
+      public ClusteringPhaseFactoryImpl(ICollectionFactory collectionFactory, IThreadingProxy threadingProxy, INetworkingProxy networkingProxy, PofStreamsFactory pofStreamsFactory, IHostSessionFactory hostSessionFactory, IClusteringConfiguration clusteringConfiguration, MethodArgumentsConverter methodArgumentsConverter, ClusteringPhaseManager clusteringPhaseManager) {
          this.collectionFactory = collectionFactory;
          this.threadingProxy = threadingProxy;
          this.networkingProxy = networkingProxy;
          this.pofStreamsFactory = pofStreamsFactory;
          this.hostSessionFactory = hostSessionFactory;
          this.clusteringConfiguration = clusteringConfiguration;
+         this.methodArgumentsConverter = methodArgumentsConverter;
          this.clusteringPhaseManager = clusteringPhaseManager;
       }
 
@@ -40,7 +42,7 @@ namespace Dargon.Services.Clustering {
       }
 
       public ClusteringPhase CreateHostPhase(LocalServiceContainer localServiceContainer, IListenerSocket listenerSocket) {
-         var hostContext = new HostContext(localServiceContainer);
+         var hostContext = new HostContext(methodArgumentsConverter, localServiceContainer);
          var phase = new HostPhase(collectionFactory, threadingProxy, hostSessionFactory, hostContext, listenerSocket);
          return phase;
       }
@@ -48,7 +50,7 @@ namespace Dargon.Services.Clustering {
       public ClusteringPhase CreateGuestPhase(LocalServiceContainer localServiceContainer, IConnectedSocket clientSocket) {
          var pofStream = pofStreamsFactory.CreatePofStream(clientSocket.Stream);
          var pofDispatcher = pofStreamsFactory.CreateDispatcher(pofStream);
-         var messageSender = new MessageSenderImpl(pofStream.Writer);
+         var messageSender = new MessageSenderImpl(pofStream.Writer, methodArgumentsConverter);
          var phase = new GuestPhase(
             this, 
             localServiceContainer, 

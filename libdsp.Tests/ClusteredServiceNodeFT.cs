@@ -1,7 +1,6 @@
 ﻿using Castle.DynamicProxy;
 using Dargon.PortableObjects;
 using Dargon.PortableObjects.Streams;
-using Dargon.Services.Clustering.Host;
 using Dargon.Services.Messaging;
 using Dargon.Services.Server;
 using ItzWarty.Collections;
@@ -45,11 +44,11 @@ namespace Dargon.Services {
          ISocketFactory socketFactory = new SocketFactory(tcpEndPointFactory, networkingInternalFactory);
          INetworkingProxy networkingProxy = new NetworkingProxy(socketFactory, tcpEndPointFactory);
          IPofContext pofContext = new DspPofContext();
-         InvokableServiceContextFactory invokableServiceContextFactory = new InvokableServiceContextFactoryImpl(collectionFactory);
          IPofSerializer pofSerializer = new PofSerializer(pofContext);
          PofStreamsFactory pofStreamsFactory = new PofStreamsFactoryImpl(threadingProxy, streamFactory, pofSerializer);
-         IHostSessionFactory hostSessionFactory = new HostSessionFactory(threadingProxy, collectionFactory, pofSerializer, pofStreamsFactory);
-         serviceClientFactory = new ServiceClientFactory(proxyGenerator, collectionFactory, threadingProxy, networkingProxy, pofStreamsFactory, hostSessionFactory, invokableServiceContextFactory);
+         MethodArgumentsConverter methodArgumentsConverter = new MethodArgumentsConverter(streamFactory, pofSerializer);
+         InvokableServiceContextFactory invokableServiceContextFactory = new InvokableServiceContextFactoryImpl(collectionFactory, methodArgumentsConverter);
+         serviceClientFactory = new ServiceClientFactory(proxyGenerator, streamFactory, collectionFactory, threadingProxy, networkingProxy, pofSerializer, pofStreamsFactory);
       }
 
       [Fact]

@@ -102,6 +102,20 @@ namespace Dargon.Services.Clustering.Host {
          }
       }
 
+      public async Task<RemoteInvocationResult> TryRemoteInvoke(Guid serviceGuid, string methodName, MethodArgumentsDto argumentsDto) {
+         if (!remotelyHostedServices.Contains(serviceGuid)) {
+            return new RemoteInvocationResult(false, null);
+         } else {
+            var invocationId = availableInvocationIds.TakeUniqueID();
+            var asyncValueBox = invocationResponseBoxesById.GetOrAdd(invocationId, id => new AsyncValueBoxImpl());
+            await messageSender.SendServiceInvocationAsync(invocationId, serviceGuid, methodName, argumentsDto);
+            var returnValue = await asyncValueBox.GetResultAsync();
+            var removed = invocationResponseBoxesById.Remove(new KeyValuePair<uint, AsyncValueBox>(invocationId, asyncValueBox));
+            Trace.Assert(removed, "Failed to remove AsyncValueBox from dict");
+            return new RemoteInvocationResult(true, returnValue);
+         }
+      }
+
       public void Dispose() {
          cancellationTokenSource.Cancel();
          shutdownLatch.Set();
