@@ -12,18 +12,17 @@ using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading;
+using Castle.Core.Internal;
 using Xunit;
 
 namespace Dargon.Services {
    public class ClusteredServiceNodeFT : NMockitoInstance {
-      private readonly IServiceClientFactory serviceClientFactory;
-
       private const int kTestPort = 20001;
       private const int kHeartBeatIntervalMilliseconds = 30000;
       private readonly IClusteringConfiguration clusteringConfiguration = new ClusteringConfiguration(kTestPort, kHeartBeatIntervalMilliseconds);
 
       private const string kVersioningServiceGuid = "1D98294F-FA5A-472F-91F7-2A96CF973531";
-      private const string kVersioningServiceVersion = "123.343.5-asdf";
+      private const string kVersioningServiceVersionString = "123.343.5-asdf";
       private const string kLoginServiceGuid = "E5C6A3A0-958A-48F6-9875-DF0C4FA561C1";
       private const string kLoginServiceStatus = "Okay";
       private const string kQueueServiceGuid = "69EE0CAF-B105-492C-9DF2-851F6207264C";
@@ -32,6 +31,10 @@ namespace Dargon.Services {
       private const string kShopServiceStatus = "Okay";
 
       public ClusteredServiceNodeFT() {
+         
+      }
+
+      private ServiceClientFactory CreateServiceClientFactory(params PofContext[] pofContexts) {
          var proxyGenerator = new ProxyGenerator();
          ICollectionFactory collectionFactory = new CollectionFactory();
          IThreadingFactory threadingFactory = new ThreadingFactory();
@@ -43,92 +46,164 @@ namespace Dargon.Services {
          INetworkingInternalFactory networkingInternalFactory = new NetworkingInternalFactory(threadingProxy, streamFactory);
          ISocketFactory socketFactory = new SocketFactory(tcpEndPointFactory, networkingInternalFactory);
          INetworkingProxy networkingProxy = new NetworkingProxy(socketFactory, tcpEndPointFactory);
-         IPofContext pofContext = new DspPofContext();
+         PofContext pofContext = new DspPofContext();
+         pofContexts.ForEach(pofContext.MergeContext);
          IPofSerializer pofSerializer = new PofSerializer(pofContext);
          PofStreamsFactory pofStreamsFactory = new PofStreamsFactoryImpl(threadingProxy, streamFactory, pofSerializer);
-         MethodArgumentsConverter methodArgumentsConverter = new MethodArgumentsConverter(streamFactory, pofSerializer);
-         InvokableServiceContextFactory invokableServiceContextFactory = new InvokableServiceContextFactoryImpl(collectionFactory, methodArgumentsConverter);
-         serviceClientFactory = new ServiceClientFactory(proxyGenerator, streamFactory, collectionFactory, threadingProxy, networkingProxy, pofSerializer, pofStreamsFactory);
+         PortableObjectBoxConverter portableObjectBoxConverter = new PortableObjectBoxConverter(streamFactory, pofSerializer);
+         InvokableServiceContextFactory invokableServiceContextFactory = new InvokableServiceContextFactoryImpl(collectionFactory, portableObjectBoxConverter);
+         return new ServiceClientFactory(proxyGenerator, streamFactory, collectionFactory, threadingProxy, networkingProxy, pofSerializer, pofStreamsFactory);
       }
 
       [Fact]
       public void Run() {
          Action<string> log = x => Debug.WriteLine("T: " + x);
          log("Spawning Service Node 1.");
-         var serviceNode1 = serviceClientFactory.CreateOrJoin(clusteringConfiguration);
+         var serviceNode1 = CreateServiceClientFactory(new VersioningServicePofContext(), new LoginServicePofContext()).CreateOrJoin(clusteringConfiguration);
          serviceNode1.RegisterService(new VersioningService(), typeof(IVersioningService));
 
          log("Spawning Service Node 2.");
-         var serviceNode2 = serviceClientFactory.CreateOrJoin(clusteringConfiguration);
+         var serviceNode2 = CreateServiceClientFactory(new VersioningServicePofContext(), new LoginServicePofContext(), new QueueServicePofContext()).CreateOrJoin(clusteringConfiguration);
          serviceNode2.RegisterService(new LoginService(), typeof(ILoginService));
          serviceNode2.RegisterService(new ShopService(), typeof(IShopService));
 
          log("Spawning Service Node 3.");
-         var serviceNode3 = serviceClientFactory.CreateOrJoin(clusteringConfiguration);
+         var serviceNode3 = CreateServiceClientFactory(new LoginServicePofContext(), new QueueServicePofContext()).CreateOrJoin(clusteringConfiguration);
          serviceNode3.RegisterService(new QueueService(), typeof(IQueueService));
 
          // Give 500ms for nodes to discover services.
          Thread.Sleep(500);
 
          log("Using remote service proxy of host node:");
-         RunHostClientLogic(serviceNode1);
+         RunHostClientLogic(serviceNode1, true, true, true, false);
 
          log("Using remote service proxy of guest node 1:");
-         RunHostClientLogic(serviceNode2);
+         RunHostClientLogic(serviceNode2, true, true, true, true);
 
          log("Using remote service proxy of guest node 2:");
-         RunHostClientLogic(serviceNode3);
+         RunHostClientLogic(serviceNode3, false, false, true, true);
       }
 
-      private void RunHostClientLogic(IServiceClient node) {
+      private void RunHostClientLogic(IServiceClient node, bool testVersioning, bool testLogin, bool testShop, bool testQueue) {
          Action<string> log = x => Debug.WriteLine("  N: " + x);
 
-         log("Test Versioning Service");
-         AssertEquals(node.GetService<IVersioningService>().GetVersion(), kVersioningServiceVersion);
+         if (testVersioning) {
+            log("Test Versioning Service");
+            AssertEquals(node.GetService<IVersioningService>().GetVersion().FriendlyName, kVersioningServiceVersionString);
+         }
 
-         log("Test Login Service");
-         AssertEquals(node.GetService<ILoginService>().GetStatus(), kLoginServiceStatus);
+         if (testLogin) {
+            log("Test Login Service");
+            AssertEquals(node.GetService<ILoginService>().GetStatus().StatusCode, kLoginServiceStatus);
+         }
 
-         log("Test Shop Service");
-         AssertEquals(node.GetService<IShopService>().GetStatus(), kShopServiceStatus);
+         if (testShop) {
+            log("Test Shop Service");
+            AssertEquals(node.GetService<IShopService>().GetStatus(), kShopServiceStatus);
+         }
 
-         log("Test Queue Service");
-         AssertEquals(node.GetService<IQueueService>().GetWaitTimeMillis(), kQueueServiceWaitTimeMillis);
+         if (testQueue) {
+            log("Test Queue Service");
+            AssertEquals(node.GetService<IQueueService>().GetWaitTimeMillis().Milliseconds, kQueueServiceWaitTimeMillis);
+         }
       }
 
       [Guid(kVersioningServiceGuid)]
       public interface IVersioningService {
-         string GetVersion();
+         VersioningServiceVersion GetVersion();
       }
 
       public class VersioningService : IVersioningService {
-         public string GetVersion() {
+         public VersioningServiceVersion GetVersion() {
             Debug.WriteLine("VersioningService: Invoked GetVersion()!");
-            return kVersioningServiceVersion;
+            return new VersioningServiceVersion(kVersioningServiceVersionString);;
+         }
+      }
+
+      public class VersioningServiceVersion : IPortableObject {
+         private string friendlyName;
+
+         public VersioningServiceVersion() { }
+
+         public VersioningServiceVersion(string friendlyName) {
+            this.friendlyName = friendlyName;
+         }
+
+         public string FriendlyName { get { return friendlyName; } }
+
+         public void Serialize(IPofWriter writer) => writer.WriteString(0, friendlyName);
+         public void Deserialize(IPofReader reader) => friendlyName = reader.ReadString(0);
+      }
+
+      public class VersioningServicePofContext : PofContext {
+         public VersioningServicePofContext() {
+            RegisterPortableObjectType(100, typeof(VersioningServiceVersion));
          }
       }
 
       [Guid(kLoginServiceGuid)]
       public interface ILoginService {
-         string GetStatus();
+         LoginServiceStatus GetStatus();
       }
 
       public class LoginService : ILoginService {
-         public string GetStatus() {
+         public LoginServiceStatus GetStatus() {
             Debug.WriteLine("LoginService: Invoked GetStatus()!");
-            return kLoginServiceStatus;
+            return new LoginServiceStatus(kLoginServiceStatus);
+         }
+      }
+
+      public class LoginServiceStatus : IPortableObject {
+         private string statusCode;
+
+         public LoginServiceStatus() { }
+
+         public LoginServiceStatus(string statusCode) {
+            this.statusCode = statusCode;
+         }
+
+         public string StatusCode => statusCode;
+
+         public void Serialize(IPofWriter writer) => writer.WriteString(0, statusCode);
+         public void Deserialize(IPofReader reader) => statusCode = reader.ReadString(0);
+      }
+
+      public class LoginServicePofContext : PofContext {
+         public LoginServicePofContext() {
+            RegisterPortableObjectType(200, typeof(LoginServiceStatus));
          }
       }
 
       [Guid(kQueueServiceGuid)]
       public interface IQueueService {
-         string GetWaitTimeMillis();
+         QueueServiceWaitTime GetWaitTimeMillis();
       }
 
       public class QueueService : IQueueService {
-         public string GetWaitTimeMillis() {
+         public QueueServiceWaitTime GetWaitTimeMillis() {
             Debug.WriteLine("QueueService: Invoked GetWaitTimeMillis()!");
-            return kQueueServiceWaitTimeMillis;
+            return new QueueServiceWaitTime(kQueueServiceWaitTimeMillis);
+         }
+      }
+
+      public class QueueServiceWaitTime : IPortableObject {
+         private string milliseconds;
+
+         public QueueServiceWaitTime() { }
+
+         public QueueServiceWaitTime(string milliseconds) {
+            this.milliseconds = milliseconds;
+         }
+
+         public string Milliseconds => milliseconds;
+
+         public void Serialize(IPofWriter writer) => writer.WriteString(0, milliseconds);
+         public void Deserialize(IPofReader reader) => milliseconds = reader.ReadString(0);
+      }
+
+      public class QueueServicePofContext : PofContext {
+         public QueueServicePofContext() {
+            RegisterPortableObjectType(300, typeof(QueueServiceWaitTime));
          }
       }
 

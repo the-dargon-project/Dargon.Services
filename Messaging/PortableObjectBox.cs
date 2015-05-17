@@ -4,10 +4,10 @@ using Dargon.PortableObjects;
 using ItzWarty;
 
 namespace Dargon.Services.Messaging {
-   public class MethodArgumentsDto : IPortableObject, IEquatable<MethodArgumentsDto> {
-      public MethodArgumentsDto() { }
+   public class PortableObjectBox : IPortableObject, IEquatable<PortableObjectBox> {
+      public PortableObjectBox() { }
 
-      public MethodArgumentsDto(byte[] buffer, int offset, int length) {
+      public PortableObjectBox(byte[] buffer, int offset, int length) {
          Buffer = buffer;
          Offset = offset;
          Length = length;
@@ -29,7 +29,7 @@ namespace Dargon.Services.Messaging {
          Length = reader.ReadS32(2);
       }
 
-      public bool Equals(MethodArgumentsDto other) {
+      public bool Equals(PortableObjectBox other) {
          return Length == other.Length &&
                 Buffer.Skip(Offset).SequenceEqual(other.Buffer.Skip(other.Offset));
       }

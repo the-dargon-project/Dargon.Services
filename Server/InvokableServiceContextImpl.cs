@@ -10,18 +10,18 @@ namespace Dargon.Services.Server {
    public interface InvokableServiceContext {
       Guid Guid { get; }
       object HandleInvocation(string action, object[] arguments);
-      object HandleInvocation(string action, MethodArgumentsDto arguments);
+      object HandleInvocation(string action, PortableObjectBox arguments);
    }
 
    public class InvokableServiceContextImpl : InvokableServiceContext {
-      private readonly MethodArgumentsConverter methodArgumentsConverter;
+      private readonly PortableObjectBoxConverter portableObjectBoxConverter;
       private readonly object serviceImplementation;
       private readonly Type serviceInterface;
       private readonly Guid guid;
       private readonly IMultiValueDictionary<string, MethodInfo> methodsByName;
 
-      public InvokableServiceContextImpl(ICollectionFactory collectionFactory, MethodArgumentsConverter methodArgumentsConverter, object serviceImplementation, Type serviceInterface) {
-         this.methodArgumentsConverter = methodArgumentsConverter;
+      public InvokableServiceContextImpl(ICollectionFactory collectionFactory, PortableObjectBoxConverter portableObjectBoxConverter, object serviceImplementation, Type serviceInterface) {
+         this.portableObjectBoxConverter = portableObjectBoxConverter;
          this.serviceImplementation = serviceImplementation;
          this.serviceInterface = serviceInterface;
 
@@ -53,9 +53,9 @@ namespace Dargon.Services.Server {
          throw new EntryPointNotFoundException("Could not find method " + action + " with given arguments");
       }
 
-      public object HandleInvocation(string action, MethodArgumentsDto arguments) {
+      public object HandleInvocation(string action, PortableObjectBox arguments) {
          object[] methodArguments;
-         if (methodArgumentsConverter.TryConvertFromDataTransferObject(arguments, out methodArguments)) {
+         if (portableObjectBoxConverter.TryConvertFromDataTransferObject(arguments, out methodArguments)) {
             return HandleInvocation(action, methodArguments);
          } else {
             throw new PortableException(new Exception("Could not deserialize data in argument dto."));

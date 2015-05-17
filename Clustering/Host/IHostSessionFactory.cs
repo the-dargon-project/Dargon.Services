@@ -17,21 +17,21 @@ namespace Dargon.Services.Clustering.Host {
       private readonly ICollectionFactory collectionFactory;
       private readonly IPofSerializer pofSerializer;
       private readonly PofStreamsFactory pofStreamsFactory;
-      private readonly MethodArgumentsConverter methodArgumentsConverter;
+      private readonly PortableObjectBoxConverter portableObjectBoxConverter;
 
-      public HostSessionFactory(IThreadingProxy threadingProxy, ICollectionFactory collectionFactory, IPofSerializer pofSerializer, PofStreamsFactory pofStreamsFactory, MethodArgumentsConverter methodArgumentsConverter) {
+      public HostSessionFactory(IThreadingProxy threadingProxy, ICollectionFactory collectionFactory, IPofSerializer pofSerializer, PofStreamsFactory pofStreamsFactory, PortableObjectBoxConverter portableObjectBoxConverter) {
          this.threadingProxy = threadingProxy;
          this.collectionFactory = collectionFactory;
          this.pofSerializer = pofSerializer;
          this.pofStreamsFactory = pofStreamsFactory;
-         this.methodArgumentsConverter = methodArgumentsConverter;
+         this.portableObjectBoxConverter = portableObjectBoxConverter;
       }
 
       public IHostSession Create(IHostContext hostContext, IConnectedSocket socket) {
          var shutdownCancellationTokenSource = threadingProxy.CreateCancellationTokenSource();
          var pofStream = pofStreamsFactory.CreatePofStream(socket.Stream);
          var pofDispatcher = pofStreamsFactory.CreateDispatcher(pofStream);
-         var messageSender = new MessageSenderImpl(pofStream.Writer, methodArgumentsConverter);
+         var messageSender = new MessageSenderImpl(pofStream.Writer, portableObjectBoxConverter);
          var session = new HostSession(
             hostContext,
             shutdownCancellationTokenSource,

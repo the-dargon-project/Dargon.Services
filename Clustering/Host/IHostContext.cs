@@ -7,32 +7,32 @@ using ItzWarty.Collections;
 namespace Dargon.Services.Clustering.Host {
    public interface IHostContext : IDisposable {
       Task<object> Invoke(Guid serviceGuid, string methodName, object[] methodArguments);
-      Task<object> Invoke(Guid serviceGuid, string methodName, MethodArgumentsDto methodArguments);
+      Task<object> Invoke(Guid serviceGuid, string methodName, PortableObjectBox methodArguments);
       void AddRemoteInvokable(IRemoteInvokable remoteInvokable);
       void RemoveRemoteInvokable(IRemoteInvokable remoteInvokable);
    }
 
    public interface IRemoteInvokable {
       Task<RemoteInvocationResult> TryRemoteInvoke(Guid serviceGuid, string methodName, object[] arguments);
-      Task<RemoteInvocationResult> TryRemoteInvoke(Guid serviceGuid, string methodName, MethodArgumentsDto argumentsDto);
+      Task<RemoteInvocationResult> TryRemoteInvoke(Guid serviceGuid, string methodName, PortableObjectBox argumentsDto);
    }
 
    public class HostContext : IHostContext {
       public IConcurrentSet<IRemoteInvokable> RemoteInvokables { get; set; }
-      private readonly MethodArgumentsConverter methodArgumentsConverter;
+      private readonly PortableObjectBoxConverter portableObjectBoxConverter;
       private readonly LocalServiceContainer localServiceContainer;
       private readonly IConcurrentSet<IRemoteInvokable> remoteInvokables;
 
       public HostContext(
-         MethodArgumentsConverter methodArgumentsConverter, 
+         PortableObjectBoxConverter portableObjectBoxConverter, 
          LocalServiceContainer localServiceContainer
       ) : this(
-         methodArgumentsConverter, 
+         portableObjectBoxConverter, 
          localServiceContainer, 
          new ConcurrentSet<IRemoteInvokable>()) {}
 
-      public HostContext(MethodArgumentsConverter methodArgumentsConverter, LocalServiceContainer localServiceContainer, IConcurrentSet<IRemoteInvokable> remoteInvokables) {
-         this.methodArgumentsConverter = methodArgumentsConverter;
+      public HostContext(PortableObjectBoxConverter portableObjectBoxConverter, LocalServiceContainer localServiceContainer, IConcurrentSet<IRemoteInvokable> remoteInvokables) {
+         this.portableObjectBoxConverter = portableObjectBoxConverter;
          this.localServiceContainer = localServiceContainer;
          this.remoteInvokables = remoteInvokables;
       }
@@ -61,16 +61,16 @@ namespace Dargon.Services.Clustering.Host {
          return result;
       }
 
-      public async Task<object> Invoke(Guid serviceGuid, string methodName, MethodArgumentsDto methodArgumentsDto) {
+      public async Task<object> Invoke(Guid serviceGuid, string methodName, PortableObjectBox portableObjectBox) {
          object result = null;
          try {
             object[] methodArguments;
-            if (methodArgumentsConverter.TryConvertFromDataTransferObject(methodArgumentsDto, out methodArguments) &&
+            if (portableObjectBoxConverter.TryConvertFromDataTransferObject(portableObjectBox, out methodArguments) &&
                 localServiceContainer.TryInvoke(serviceGuid, methodName, methodArguments, out result)) {
             } else {
                bool invocationSuccessful = false;
                foreach (var remoteInvokable in remoteInvokables) {
-                  var invocation = await remoteInvokable.TryRemoteInvoke(serviceGuid, methodName, methodArgumentsDto);
+                  var invocation = await remoteInvokable.TryRemoteInvoke(serviceGuid, methodName, portableObjectBox);
                   if (invocation.Success) {
                      result = invocation.ReturnValue;
                      invocationSuccessful = true;

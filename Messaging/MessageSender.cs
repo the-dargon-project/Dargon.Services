@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 namespace Dargon.Services.Messaging {
    public interface MessageSender : IDisposable {
       Task SendServiceInvocationAsync(uint invocationId, Guid serviceGuid, string methodName, object[] methodArguments);
-      Task SendServiceInvocationAsync(uint invocationId, Guid serviceGuid, string methodName, MethodArgumentsDto methodArgumentsDto);
+      Task SendServiceInvocationAsync(uint invocationId, Guid serviceGuid, string methodName, PortableObjectBox portableObjectBox);
       Task SendInvocationResultAsync(uint invocationId, object result);
       Task SendServiceBroadcastAsync(IReadOnlySet<Guid> serviceGuids);
       Task SendServiceUpdateAsync(IReadOnlySet<Guid> addedServices, IReadOnlySet<Guid> removedServices);
@@ -14,25 +14,29 @@ namespace Dargon.Services.Messaging {
 
    public class MessageSenderImpl : MessageSender {
       private readonly PofStreamWriter pofStreamWriter;
-      private readonly MethodArgumentsConverter methodArgumentsConverter;
+      private readonly PortableObjectBoxConverter portableObjectBoxConverter;
 
-      public MessageSenderImpl(PofStreamWriter pofStreamWriter, MethodArgumentsConverter methodArgumentsConverter) {
+      public MessageSenderImpl(PofStreamWriter pofStreamWriter, PortableObjectBoxConverter portableObjectBoxConverter) {
          this.pofStreamWriter = pofStreamWriter;
-         this.methodArgumentsConverter = methodArgumentsConverter;
+         this.portableObjectBoxConverter = portableObjectBoxConverter;
       }
 
       public Task SendServiceInvocationAsync(uint invocationId, Guid serviceGuid, string methodName, object[] methodArguments) {
-         var methodArgumentsDto = methodArgumentsConverter.ConvertToDataTransferObject(methodArguments);
+         var methodArgumentsDto = portableObjectBoxConverter.ConvertToDataTransferObject(methodArguments);
          return SendServiceInvocationAsync(invocationId, serviceGuid, methodName, methodArgumentsDto);
       }
 
-      public Task SendServiceInvocationAsync(uint invocationId, Guid serviceGuid, string methodName, MethodArgumentsDto methodArgumentsDto) {
-         var message = new X2XServiceInvocation(invocationId, serviceGuid, methodName, methodArgumentsDto);
+      public Task SendServiceInvocationAsync(uint invocationId, Guid serviceGuid, string methodName, PortableObjectBox portableObjectBox) {
+         var message = new X2XServiceInvocation(invocationId, serviceGuid, methodName, portableObjectBox);
          return pofStreamWriter.WriteAsync(message);
       }
 
       public Task SendInvocationResultAsync(uint invocationId, object result) {
-         var message = new X2XInvocationResult(invocationId, result);
+         var resultBox = result as PortableObjectBox;
+         if (resultBox == null) {
+            resultBox = portableObjectBoxConverter.ConvertToDataTransferObject(new[] { result });
+         }
+         var message = new X2XInvocationResult(invocationId, resultBox);
          return pofStreamWriter.WriteAsync(message);
       }
 

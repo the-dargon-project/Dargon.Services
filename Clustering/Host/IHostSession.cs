@@ -65,7 +65,7 @@ namespace Dargon.Services.Clustering.Host {
       internal void HandleX2XInvocationResult(X2XInvocationResult x) {
          AsyncValueBox valueBox;
          if (invocationResponseBoxesById.TryGetValue(x.InvocationId, out valueBox)) {
-            valueBox.SetResult(x.Payload);
+            valueBox.SetResult(x.PayloadBox);
          }
       }
 
@@ -102,7 +102,7 @@ namespace Dargon.Services.Clustering.Host {
          }
       }
 
-      public async Task<RemoteInvocationResult> TryRemoteInvoke(Guid serviceGuid, string methodName, MethodArgumentsDto argumentsDto) {
+      public async Task<RemoteInvocationResult> TryRemoteInvoke(Guid serviceGuid, string methodName, PortableObjectBox argumentsDto) {
          if (!remotelyHostedServices.Contains(serviceGuid)) {
             return new RemoteInvocationResult(false, null);
          } else {

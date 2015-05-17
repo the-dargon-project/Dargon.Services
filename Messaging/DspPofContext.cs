@@ -11,7 +11,7 @@ namespace Dargon.Services.Messaging {
          RegisterPortableObjectType(kPofIdentifierOffset + 4, typeof(X2XInvocationResult));
          RegisterPortableObjectType(kPofIdentifierOffset + 5, typeof(PortableException));
          RegisterPortableObjectType(kPofIdentifierOffset + 6, typeof(G2HServiceUpdate));
-         RegisterPortableObjectType(kPofIdentifierOffset + 7, typeof(MethodArgumentsDto));
+         RegisterPortableObjectType(kPofIdentifierOffset + 7, typeof(PortableObjectBox));
       }
    }
 }

@@ -57,7 +57,7 @@ namespace Dargon.Services.Clustering.Guest {
       internal void HandleX2XInvocationResult(X2XInvocationResult x) {
          AsyncValueBox valueBox;
          if (invocationResponseBoxesById.TryGetValue(x.InvocationId, out valueBox)) {
-            valueBox.SetResult(x.Payload);
+            valueBox.SetResult(x.PayloadBox);
          }
       }
 

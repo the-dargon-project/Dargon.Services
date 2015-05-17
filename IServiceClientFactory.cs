@@ -38,14 +38,14 @@ namespace Dargon.Services {
       public IServiceClient CreateOrJoin(IClusteringConfiguration clusteringConfiguration) {
          LocalServiceContainer localServiceContainer = new LocalServiceContainerImpl(collectionFactory);
          ClusteringPhaseManager clusteringPhaseManager = new ClusteringPhaseManagerImpl();
-         MethodArgumentsConverter methodArgumentsConverter = new MethodArgumentsConverter(streamFactory, pofSerializer);
-         IHostSessionFactory hostSessionFactory = new HostSessionFactory(threadingProxy, collectionFactory, pofSerializer, pofStreamsFactory, methodArgumentsConverter);
-         ClusteringPhaseFactory clusteringPhaseFactory = new ClusteringPhaseFactoryImpl(collectionFactory, threadingProxy, networkingProxy, pofStreamsFactory, hostSessionFactory, clusteringConfiguration, methodArgumentsConverter, clusteringPhaseManager);
+         PortableObjectBoxConverter portableObjectBoxConverter = new PortableObjectBoxConverter(streamFactory, pofSerializer);
+         IHostSessionFactory hostSessionFactory = new HostSessionFactory(threadingProxy, collectionFactory, pofSerializer, pofStreamsFactory, portableObjectBoxConverter);
+         ClusteringPhaseFactory clusteringPhaseFactory = new ClusteringPhaseFactoryImpl(collectionFactory, threadingProxy, networkingProxy, pofStreamsFactory, hostSessionFactory, clusteringConfiguration, portableObjectBoxConverter, clusteringPhaseManager);
          ClusteringPhase initialClusteringPhase = clusteringPhaseFactory.CreateIndeterminatePhase(localServiceContainer);
          clusteringPhaseManager.Transition(initialClusteringPhase);
          RemoteServiceInvocationValidatorFactory validatorFactory = new RemoteServiceInvocationValidatorFactoryImpl(collectionFactory);
-         RemoteServiceProxyFactory remoteServiceProxyFactory = new RemoteServiceProxyFactoryImpl(proxyGenerator, validatorFactory, clusteringPhaseManager);
-         InvokableServiceContextFactory invokableServiceContextFactory = new InvokableServiceContextFactoryImpl(collectionFactory, methodArgumentsConverter);
+         RemoteServiceProxyFactory remoteServiceProxyFactory = new RemoteServiceProxyFactoryImpl(proxyGenerator, portableObjectBoxConverter, validatorFactory, clusteringPhaseManager);
+         InvokableServiceContextFactory invokableServiceContextFactory = new InvokableServiceContextFactoryImpl(collectionFactory, portableObjectBoxConverter);
          return new ServiceClient(collectionFactory, localServiceContainer, clusteringPhaseManager, invokableServiceContextFactory, remoteServiceProxyFactory);
       }
    }

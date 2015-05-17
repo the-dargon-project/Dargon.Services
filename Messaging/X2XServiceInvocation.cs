@@ -7,7 +7,7 @@ namespace Dargon.Services.Messaging {
       private uint invocationId;
       private Guid serviceGuid;
       private string methodName;
-      private MethodArgumentsDto methodArguments;
+      private PortableObjectBox methodArguments;
 
       public X2XServiceInvocation() { }
 
@@ -15,7 +15,7 @@ namespace Dargon.Services.Messaging {
          uint invocationId, 
          Guid serviceGuid, 
          string methodName, 
-         MethodArgumentsDto methodArguments
+         PortableObjectBox methodArguments
       ) {
          this.invocationId = invocationId;
          this.serviceGuid = serviceGuid;
@@ -26,7 +26,7 @@ namespace Dargon.Services.Messaging {
       public uint InvocationId { get { return invocationId; } }
       public Guid ServiceGuid { get { return serviceGuid; } }
       public string MethodName { get { return methodName; } }
-      public MethodArgumentsDto MethodArguments { get { return methodArguments; } }
+      public PortableObjectBox MethodArguments { get { return methodArguments; } }
 
       public void Serialize(IPofWriter writer) {
          writer.WriteU32(0, invocationId);
@@ -39,7 +39,7 @@ namespace Dargon.Services.Messaging {
          invocationId = reader.ReadU32(0);
          serviceGuid = reader.ReadGuid(1);
          methodName = reader.ReadString(2);
-         methodArguments = reader.ReadObject<MethodArgumentsDto>(3);
+         methodArguments = reader.ReadObject<PortableObjectBox>(3);
       }
 
       public bool Equals(X2XServiceInvocation other) {

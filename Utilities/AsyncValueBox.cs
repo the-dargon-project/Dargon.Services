@@ -3,13 +3,14 @@ using System;
 using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Dargon.Services.Messaging;
 
 namespace Dargon.Services.Utilities {
    public interface AsyncValueBox {
-      void SetResult(object value);
+      void SetResult(PortableObjectBox value);
       void SetException(Exception value);
-      Task<object> GetResultAsync();
-      Task<object> GetResultAsync(ICancellationToken cancellationToken);
+      Task<PortableObjectBox> GetResultAsync();
+      Task<PortableObjectBox> GetResultAsync(ICancellationToken cancellationToken);
    }
 
    public class AsyncValueBoxImpl : AsyncValueBox {
@@ -26,7 +27,7 @@ namespace Dargon.Services.Utilities {
          this.result = null;
       }
 
-      public void SetResult(object value) {
+      public void SetResult(PortableObjectBox value) {
          lock (synchronization) {
             if (!isResultSet) {
                result = value;
@@ -50,22 +51,22 @@ namespace Dargon.Services.Utilities {
          }
       }
 
-      public async Task<object> GetResultAsync() {
+      public async Task<PortableObjectBox> GetResultAsync() {
          await countdown.WaitAsync();
          return GetResultHelper();
       }
 
-      public async Task<object> GetResultAsync(ICancellationToken cancellationToken) {
+      public async Task<PortableObjectBox> GetResultAsync(ICancellationToken cancellationToken) {
          await countdown.WaitAsync(cancellationToken.__InnerToken);
          return GetResultHelper();
       }
 
-      private object GetResultHelper() {
+      private PortableObjectBox GetResultHelper() {
          if (isExceptionThrown) {
             ExceptionDispatchInfo.Capture((Exception)result).Throw();
             throw new Exception("Unreachable code.");
          } else {
-            return result;
+            return (PortableObjectBox)result;
          }
       }
    }

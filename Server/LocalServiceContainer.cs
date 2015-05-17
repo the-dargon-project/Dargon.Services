@@ -15,7 +15,7 @@ namespace Dargon.Services.Server {
 
       IEnumerable<Guid> EnumerateServiceGuids();
 
-      bool TryInvoke(Guid serviceGuid, string methodName, MethodArgumentsDto methodArguments, out object result);
+      bool TryInvoke(Guid serviceGuid, string methodName, PortableObjectBox methodArguments, out object result);
       bool TryInvoke(Guid serviceGuid, string methodName, object[] methodArguments, out object result);
 
    }
@@ -59,13 +59,13 @@ namespace Dargon.Services.Server {
          return serviceContextsByGuid.Keys;
       }
 
-      public bool TryInvoke(Guid serviceGuid, string methodName, MethodArgumentsDto methodArgumentsDto, out object result) {
+      public bool TryInvoke(Guid serviceGuid, string methodName, PortableObjectBox portableObjectBox, out object result) {
          InvokableServiceContext invokableServiceContext;
          if (!serviceContextsByGuid.TryGetValue(serviceGuid, out invokableServiceContext)) {
             result = null;
             return false;
          } else {
-            result = invokableServiceContext.HandleInvocation(methodName, methodArgumentsDto);
+            result = invokableServiceContext.HandleInvocation(methodName, portableObjectBox);
             return true;
          }
       }

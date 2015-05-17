@@ -9,15 +9,15 @@ namespace Dargon.Services.Server {
 
    public class InvokableServiceContextFactoryImpl : InvokableServiceContextFactory {
       private readonly ICollectionFactory collectionFactory;
-      private readonly MethodArgumentsConverter methodArgumentsConverter;
+      private readonly PortableObjectBoxConverter portableObjectBoxConverter;
 
-      public InvokableServiceContextFactoryImpl(ICollectionFactory collectionFactory, MethodArgumentsConverter methodArgumentsConverter) {
+      public InvokableServiceContextFactoryImpl(ICollectionFactory collectionFactory, PortableObjectBoxConverter portableObjectBoxConverter) {
          this.collectionFactory = collectionFactory;
-         this.methodArgumentsConverter = methodArgumentsConverter;
+         this.portableObjectBoxConverter = portableObjectBoxConverter;
       }
 
       public InvokableServiceContext Create(object serviceImplementation, Type serviceInterface) {
-         return new InvokableServiceContextImpl(collectionFactory, methodArgumentsConverter, serviceImplementation, serviceInterface);
+         return new InvokableServiceContextImpl(collectionFactory, portableObjectBoxConverter, serviceImplementation, serviceInterface);
       }
    }
 }
