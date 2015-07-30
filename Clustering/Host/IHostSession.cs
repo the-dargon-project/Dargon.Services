@@ -7,8 +7,10 @@ using ItzWarty.Threading;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 using Nito.AsyncEx;
+using NLog;
 
 namespace Dargon.Services.Clustering.Host {
    public interface IHostSession : IDisposable {
@@ -17,6 +19,8 @@ namespace Dargon.Services.Clustering.Host {
    }
 
    public class HostSession : IHostSession, IRemoteInvokable {
+      private readonly static Logger logger = LogManager.GetCurrentClassLogger();
+
       private readonly IHostContext hostContext;
       private readonly ICancellationTokenSource cancellationTokenSource;
       private readonly MessageSender messageSender;
@@ -37,7 +41,7 @@ namespace Dargon.Services.Clustering.Host {
       }
 
       public void Initialize() {
-         pofDispatcher.RegisterHandler<X2XServiceInvocation>(x => HandleX2XServiceInvocation(x));
+         pofDispatcher.RegisterHandler<X2XServiceInvocation>(HandleX2XServiceInvocation);
          pofDispatcher.RegisterHandler<X2XInvocationResult>(HandleX2XInvocationResult);
          pofDispatcher.RegisterHandler<G2HServiceBroadcast>(HandleG2HServiceBroadcast);
          pofDispatcher.RegisterHandler<G2HServiceUpdate>(HandleG2HServiceUpdate);
@@ -53,16 +57,20 @@ namespace Dargon.Services.Clustering.Host {
          await shutdownLatch.WaitAsync();
       }
 
-      internal async Task HandleX2XServiceInvocation(X2XServiceInvocation x) {
-         try {
-            var result = await hostContext.Invoke(x.ServiceGuid, x.MethodName, x.MethodArguments);
-            var sendTask = messageSender.SendInvocationResultAsync(x.InvocationId, result);
-         } catch (Exception e) {
-            Debug.WriteLine(e);
-         }
+      internal void HandleX2XServiceInvocation(X2XServiceInvocation x) {
+         logger.Trace($"Invoking service {x.ServiceGuid} method {x.MethodName} with {x.MethodArguments.Length} arguments");
+         Task.Factory.StartNew(async (dummy) => {
+            try {
+               var result = await hostContext.Invoke(x.ServiceGuid, x.MethodName, x.MethodArguments);
+               var sendTask = messageSender.SendInvocationResultAsync(x.InvocationId, result);
+            } catch (Exception e) {
+               Debug.WriteLine(e);
+            }
+         }, CancellationToken.None, TaskCreationOptions.LongRunning);
       }
 
       internal void HandleX2XInvocationResult(X2XInvocationResult x) {
+         logger.Trace($"Handling invocation result for iid {x.InvocationId} result length {x.PayloadBox.Length}");
          AsyncValueBox valueBox;
          if (invocationResponseBoxesById.TryGetValue(x.InvocationId, out valueBox)) {
             valueBox.SetResult(x.PayloadBox);
@@ -70,10 +78,12 @@ namespace Dargon.Services.Clustering.Host {
       }
 
       internal void HandleG2HServiceBroadcast(G2HServiceBroadcast x) {
+         logger.Trace($"Received broadcast of services {x.ServiceGuids.Join(" ")}.");
          HandleServiceUpdateInternal(x.ServiceGuids, null);
       }
 
       internal void HandleG2HServiceUpdate(G2HServiceUpdate x) {
+         logger.Trace($"Received update: add {x.AddedServiceGuids.Join(" ")}, removed {x.RemovedServiceGuids.Join(" ")}.");
          HandleServiceUpdateInternal(x.AddedServiceGuids, x.RemovedServiceGuids);
       }
 
@@ -88,31 +98,41 @@ namespace Dargon.Services.Clustering.Host {
          }
       }
 
-      public async Task<RemoteInvocationResult> TryRemoteInvoke(Guid serviceGuid, string methodName, object[] arguments) {
+      public Task<RemoteInvocationResult> TryRemoteInvoke(Guid serviceGuid, string methodName, object[] arguments) {
+         logger.Trace($"Remote invoking service {serviceGuid} method {methodName} with {arguments.Length} arguments.");
          if (!remotelyHostedServices.Contains(serviceGuid)) {
-            return new RemoteInvocationResult(false, null);
+            return Task.FromResult(new RemoteInvocationResult(false, null));
          } else {
-            var invocationId = availableInvocationIds.TakeUniqueID();
-            var asyncValueBox = invocationResponseBoxesById.GetOrAdd(invocationId, id => new AsyncValueBoxImpl());
-            await messageSender.SendServiceInvocationAsync(invocationId, serviceGuid, methodName, arguments);
-            var returnValue = await asyncValueBox.GetResultAsync();
-            var removed = invocationResponseBoxesById.Remove(new KeyValuePair<uint, AsyncValueBox>(invocationId, asyncValueBox));
-            Trace.Assert(removed, "Failed to remove AsyncValueBox from dict");
-            return new RemoteInvocationResult(true, returnValue);
+            return Task.Factory.StartNew(async (throwaway) => {
+               var invocationId = availableInvocationIds.TakeUniqueID();
+               var asyncValueBox = invocationResponseBoxesById.GetOrAdd(invocationId, id => new AsyncValueBoxImpl());
+               await messageSender.SendServiceInvocationAsync(invocationId, serviceGuid, methodName, arguments);
+               var returnValue = await asyncValueBox.GetResultAsync();
+               var removed = invocationResponseBoxesById.Remove(new KeyValuePair<uint, AsyncValueBox>(invocationId, asyncValueBox));
+               Trace.Assert(removed, "Failed to remove AsyncValueBox from dict");
+               return new RemoteInvocationResult(true, returnValue);
+            }, CancellationToken.None, TaskCreationOptions.LongRunning).Unwrap();
          }
       }
 
-      public async Task<RemoteInvocationResult> TryRemoteInvoke(Guid serviceGuid, string methodName, PortableObjectBox argumentsDto) {
+      public Task<RemoteInvocationResult> TryRemoteInvoke(Guid serviceGuid, string methodName, PortableObjectBox argumentsDto) {
+         logger.Trace($"Remote invoking service {serviceGuid} method {methodName} with {argumentsDto.Length} bytes of arguments.");
          if (!remotelyHostedServices.Contains(serviceGuid)) {
-            return new RemoteInvocationResult(false, null);
+            logger.Trace($"Remote does not have service {serviceGuid}.");
+            return Task.FromResult(new RemoteInvocationResult(false, null));
          } else {
-            var invocationId = availableInvocationIds.TakeUniqueID();
-            var asyncValueBox = invocationResponseBoxesById.GetOrAdd(invocationId, id => new AsyncValueBoxImpl());
-            await messageSender.SendServiceInvocationAsync(invocationId, serviceGuid, methodName, argumentsDto);
-            var returnValue = await asyncValueBox.GetResultAsync();
-            var removed = invocationResponseBoxesById.Remove(new KeyValuePair<uint, AsyncValueBox>(invocationId, asyncValueBox));
-            Trace.Assert(removed, "Failed to remove AsyncValueBox from dict");
-            return new RemoteInvocationResult(true, returnValue);
+            logger.Trace($"Remote has service {serviceGuid}.");
+            return Task.Factory.StartNew(async (throwaway) => {
+               var invocationId = availableInvocationIds.TakeUniqueID();
+               logger.Trace($"Took iid {invocationId} for service {serviceGuid} method {methodName}.");
+               var asyncValueBox = invocationResponseBoxesById.GetOrAdd(invocationId, id => new AsyncValueBoxImpl());
+               await messageSender.SendServiceInvocationAsync(invocationId, serviceGuid, methodName, argumentsDto);
+               var returnValue = await asyncValueBox.GetResultAsync();
+               logger.Trace($"Got result for iid {invocationId} service {serviceGuid} method {methodName}.");
+               var removed = invocationResponseBoxesById.Remove(new KeyValuePair<uint, AsyncValueBox>(invocationId, asyncValueBox));
+               Trace.Assert(removed, "Failed to remove AsyncValueBox from dict");
+               return new RemoteInvocationResult(true, returnValue);
+            }, CancellationToken.None, TaskCreationOptions.LongRunning).Unwrap();
          }
       }
 

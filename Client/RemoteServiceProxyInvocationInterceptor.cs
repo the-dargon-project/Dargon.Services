@@ -1,6 +1,6 @@
-﻿using System;
-using Castle.DynamicProxy;
+﻿using Castle.DynamicProxy;
 using Dargon.Services.Clustering;
+using System;
 
 namespace Dargon.Services.Client {
    public class RemoteServiceProxyInvocationInterceptor : IInterceptor {

@@ -28,7 +28,8 @@ namespace Dargon.Services.Messaging {
 
       public Task SendServiceInvocationAsync(uint invocationId, Guid serviceGuid, string methodName, PortableObjectBox portableObjectBox) {
          var message = new X2XServiceInvocation(invocationId, serviceGuid, methodName, portableObjectBox);
-         return pofStreamWriter.WriteAsync(message);
+         pofStreamWriter.Write(message);
+         return Task.FromResult<object>(null);
       }
 
       public Task SendInvocationResultAsync(uint invocationId, object result) {
@@ -37,7 +38,8 @@ namespace Dargon.Services.Messaging {
             resultBox = portableObjectBoxConverter.ConvertToDataTransferObject(new[] { result });
          }
          var message = new X2XInvocationResult(invocationId, resultBox);
-         return pofStreamWriter.WriteAsync(message);
+         pofStreamWriter.Write(message);
+         return Task.FromResult<object>(null);
       }
 
       public Task SendServiceBroadcastAsync(IReadOnlySet<Guid> serviceGuids) {
