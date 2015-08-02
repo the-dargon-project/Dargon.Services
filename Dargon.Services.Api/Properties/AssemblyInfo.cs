@@ -1,16 +1,26 @@
 ﻿using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("libdsp")]
-[assembly: AssemblyDescription("Dargon Service Protocol Client/Server")]
+[assembly: AssemblyTitle("Dargon.Services.Api")]
+[assembly: AssemblyDescription("Dargon Services Library API")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("The Dargon Project")]
-[assembly: AssemblyProduct("libdsp")]
-[assembly: AssemblyCopyright("Copyright © Michael 'ItzWarty' Yu 2014")]
+[assembly: AssemblyProduct("Dargon.Services.Api")]
+[assembly: AssemblyCopyright("Copyright © The Dargon Project 2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
+
+// Setting ComVisible to false makes the types in this assembly not visible 
+// to COM components.  If you need to access a type in this assembly from 
+// COM, set the ComVisible attribute to true on that type.
+[assembly: ComVisible(false)]
+
+// The following GUID is for the ID of the typelib if this project is exposed to COM
+[assembly: Guid("a9fffc0f-43a6-468c-9836-92db4a32f761")]
 
 // Version information for an assembly consists of the following four values:
 //

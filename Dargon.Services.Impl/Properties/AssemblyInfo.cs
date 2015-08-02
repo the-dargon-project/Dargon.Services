@@ -5,8 +5,8 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Dargon.Services")]
-[assembly: AssemblyDescription("Dargon Service Protocol: Remote Procedure Call Library")]
+[assembly: AssemblyTitle("Dargon.Services.Impl")]
+[assembly: AssemblyDescription("Dargon Service Protocol: Remote Procedure Call Library Impl")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("The Dargon Project")]
 [assembly: AssemblyProduct("Dargon.Services")]

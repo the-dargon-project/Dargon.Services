@@ -1,18 +1,11 @@
-﻿using Dargon.Services.Server;
-using ItzWarty;
-using ItzWarty.Collections;
-using System;
+﻿using System;
 using Dargon.Services.Client;
 using Dargon.Services.Clustering;
+using Dargon.Services.Server;
+using ItzWarty.Collections;
+using Extensions = ItzWarty.Extensions;
 
 namespace Dargon.Services {
-   public interface IServiceClient : IDisposable {
-      void RegisterService(object serviceImplementation, Type serviceInterface);
-      void UnregisterService(object serviceImplementation, Type serviceInterface);
-
-      TService GetService<TService>() where TService : class;
-   }
-
    public class ServiceClient : IServiceClient {
       private readonly LocalServiceContainer localServiceContainer;
       private readonly ClusteringPhaseManager clusteringPhaseManager;
@@ -27,14 +20,14 @@ namespace Dargon.Services {
          ClusteringPhaseManager clusteringPhaseManager,
          InvokableServiceContextFactory invokableServiceContextFactory,
          RemoteServiceProxyFactory remoteServiceProxyFactory
-      ) : this(
-         localServiceContainer,
-         clusteringPhaseManager,
-         invokableServiceContextFactory,
-         remoteServiceProxyFactory,
-         collectionFactory.CreateConcurrentDictionary<object, InvokableServiceContext>(),
-         collectionFactory.CreateConcurrentDictionary<Type, object>()
-      ) { }
+         ) : this(
+            localServiceContainer,
+            clusteringPhaseManager,
+            invokableServiceContextFactory,
+            remoteServiceProxyFactory,
+            collectionFactory.CreateConcurrentDictionary<object, InvokableServiceContext>(),
+            collectionFactory.CreateConcurrentDictionary<Type, object>()
+            ) { }
 
       public ServiceClient(LocalServiceContainer localServiceContainer, ClusteringPhaseManager clusteringPhaseManager, InvokableServiceContextFactory invokableServiceContextFactory, RemoteServiceProxyFactory remoteServiceProxyFactory, IConcurrentDictionary<object, InvokableServiceContext> serviceContextsByService, IConcurrentDictionary<Type, object> serviceProxiesByInterface) {
          this.localServiceContainer = localServiceContainer;
@@ -46,8 +39,8 @@ namespace Dargon.Services {
       }
 
       public void RegisterService(object serviceImplementation, Type serviceInterface) {
-         InvokableServiceContext context = null;
-         if (serviceContextsByService.TryAdd(serviceImplementation, () => context = invokableServiceContextFactory.Create(serviceImplementation, serviceInterface))) {
+         InvokableServiceContext context = invokableServiceContextFactory.Create(serviceImplementation, serviceInterface);
+         if (serviceContextsByService.TryAdd(serviceImplementation, context)) {
             localServiceContainer.Register(context);
             clusteringPhaseManager.HandleServiceRegistered(context);
          }
@@ -56,7 +49,7 @@ namespace Dargon.Services {
       public void UnregisterService(object serviceImplementation, Type serviceInterface) {
          InvokableServiceContext context;
          if (serviceContextsByService.TryGetValue(serviceImplementation, out context)) {
-            if (serviceContextsByService.TryRemove(serviceImplementation, context)) {
+            if (Extensions.TryRemove(serviceContextsByService, serviceImplementation, context)) {
                localServiceContainer.Unregister(context);
                clusteringPhaseManager.HandleServiceUnregistered(context);
             }
@@ -67,7 +60,7 @@ namespace Dargon.Services {
          return (TService)serviceProxiesByInterface.GetOrAdd(
             typeof(TService),
             add => remoteServiceProxyFactory.Create<TService>()
-         );
+            );
       }
 
       public void Dispose() { }
