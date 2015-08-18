@@ -1,17 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+VisualStudioVersion = 14.0.22823.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dargon.Services.Impl", "Dargon.Services.Impl\Dargon.Services.Impl.csproj", "{9E41DC5D-E409-45E5-AE89-191DB4252EE0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dargon.Services.Tests", "Dargon.Services.Impl.Test\Dargon.Services.Tests.csproj", "{AD1F3318-0005-4D68-99D5-83279264BE82}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dargon.Services.Api", "Dargon.Services.Api\Dargon.Services.Api.csproj", "{A9FFFC0F-43A6-468C-9836-92DB4A32F761}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dargon.Ryu.Api", "..\Dargon.Ryu\Dargon.Ryu.Api\Dargon.Ryu.Api.csproj", "{BE844DEB-2F95-407E-973E-AE3F3983B54D}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dargon.Ryu.Impl", "..\Dargon.Ryu\Dargon.Ryu.Impl\Dargon.Ryu.Impl.csproj", "{2ED5C703-8A91-4701-9AE9-DA86AA93A169}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,14 +27,6 @@ Global
 		{A9FFFC0F-43A6-468C-9836-92DB4A32F761}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A9FFFC0F-43A6-468C-9836-92DB4A32F761}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A9FFFC0F-43A6-468C-9836-92DB4A32F761}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BE844DEB-2F95-407E-973E-AE3F3983B54D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BE844DEB-2F95-407E-973E-AE3F3983B54D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BE844DEB-2F95-407E-973E-AE3F3983B54D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BE844DEB-2F95-407E-973E-AE3F3983B54D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2ED5C703-8A91-4701-9AE9-DA86AA93A169}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2ED5C703-8A91-4701-9AE9-DA86AA93A169}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2ED5C703-8A91-4701-9AE9-DA86AA93A169}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2ED5C703-8A91-4701-9AE9-DA86AA93A169}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

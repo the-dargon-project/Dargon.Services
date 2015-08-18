@@ -54,6 +54,12 @@
       <HintPath>..\packages\Dargon.PortableObjects.Streams.0.3.0\lib\net45\Dargon.PortableObjects.Streams.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Dargon.Ryu">
+      <HintPath>..\packages\Dargon.Ryu.Impl.0.0.0\lib\net45\Dargon.Ryu.dll</HintPath>
+    </Reference>
+    <Reference Include="Dargon.Ryu.Api">
+      <HintPath>..\packages\Dargon.Ryu.Api.0.0.1\lib\portable-net45+netcore45+MonoAndroid1+MonoTouch1\Dargon.Ryu.Api.dll</HintPath>
+    </Reference>
     <Reference Include="Dargon.TestUtilities, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Dargon.TestUtilities.0.0.0\lib\net45\Dargon.TestUtilities.dll</HintPath>
       <Private>True</Private>
@@ -119,10 +125,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Dargon.Ryu\Dargon.Ryu.Api\Dargon.Ryu.Api.csproj">
-      <Project>{be844deb-2f95-407e-973e-ae3f3983b54d}</Project>
-      <Name>Dargon.Ryu.Api</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Dargon.Ryu\Dargon.Ryu.Impl\Dargon.Ryu.Impl.csproj">
       <Project>{2ed5c703-8a91-4701-9ae9-da86aa93a169}</Project>
       <Name>Dargon.Ryu.Impl</Name>

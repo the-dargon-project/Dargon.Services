@@ -35,13 +35,11 @@
     <Reference Include="Castle.Core">
       <HintPath>..\packages\Castle.Core.3.3.3\lib\net45\Castle.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Dargon.PortableObjects, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Dargon.PortableObjects.0.1.4\lib\net45\Dargon.PortableObjects.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Dargon.PortableObjects">
+      <HintPath>..\packages\Dargon.PortableObjects.0.1.2\lib\net45\Dargon.PortableObjects.dll</HintPath>
     </Reference>
-    <Reference Include="Dargon.PortableObjects.Streams, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Dargon.PortableObjects.Streams">
       <HintPath>..\packages\Dargon.PortableObjects.Streams.0.3.0\lib\net45\Dargon.PortableObjects.Streams.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="Dargon.Ryu.Api, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Dargon.Ryu.Api.0.0.1\lib\portable-net45+netcore45+MonoAndroid1+MonoTouch1\Dargon.Ryu.Api.dll</HintPath>
