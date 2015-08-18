@@ -12,8 +12,10 @@ namespace Dargon.Services {
       public ServicesRyuPackage() {
          PofContext<DspPofContext>();
          Singleton<IServiceClientFactory, ServiceClientFactory>();
-         Singleton<IServiceClient, ServiceClient>();
-         Singleton<ServiceClient>(
+         Singleton<LocalServiceRegistry, LocalServiceRegistryImpl>();
+         Singleton<RemoteServiceProxyContainer, RemoteServiceProxyContainerImpl>();
+         Singleton<IServiceClient, ServiceClientProxyImpl>();
+         Singleton<ServiceClientProxyImpl>(
             ryu => ryu.Get<IServiceClientFactory>()
                       .CreateOrJoin(ryu.Get<IClusteringConfiguration>())
          );

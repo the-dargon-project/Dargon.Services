@@ -19,11 +19,11 @@ namespace Dargon.Services {
          var ryu = new RyuFactory().Create();
          ryu.Setup();
 
-//         var clusteringConfiguration = CreateMock<IClusteringConfiguration>();
-//         ryu.Set<IClusteringConfiguration>(clusteringConfiguration);
-//
-//         var serviceClient = ryu.Get<IServiceClient>();
-//         AssertNotNull(serviceClient);
+         var clusteringConfiguration = CreateMock<IClusteringConfiguration>();
+         ryu.Set<IClusteringConfiguration>(clusteringConfiguration);
+
+         var serviceClient = ryu.Get<IServiceClient>();
+         AssertNotNull(serviceClient);
       }
    }
 }

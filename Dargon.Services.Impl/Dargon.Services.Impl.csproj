@@ -84,10 +84,12 @@
     <Compile Include="Client\RemoteServiceProxyFactory.cs" />
     <Compile Include="Client\RemoteServiceProxyInvocationInterceptor.cs" />
     <Compile Include="Clustering\ClusteringPhaseManager.cs" />
+    <Compile Include="LocalServiceRegistryImpl.cs" />
     <Compile Include="Messaging\MessageSender.cs" />
     <Compile Include="Messaging\PortableObjectBoxConverter.cs" />
     <Compile Include="Messaging\PortableObjectBox.cs" />
-    <Compile Include="ServiceClient.cs" />
+    <Compile Include="RemoteServiceProxyContainerImpl.cs" />
+    <Compile Include="ServiceClientProxyImpl.cs" />
     <Compile Include="ServicesRyuPackage.cs" />
     <Compile Include="ServiceUnavailableException.cs" />
     <Compile Include="IClusteringConfiguration.cs" />

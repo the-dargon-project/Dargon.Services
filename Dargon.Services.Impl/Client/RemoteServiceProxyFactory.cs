@@ -1,4 +1,5 @@
-﻿using Castle.DynamicProxy;
+﻿using System;
+using Castle.DynamicProxy;
 using Dargon.Services.Clustering;
 using Dargon.Services.Messaging;
 using Dargon.Services.Utilities;
@@ -6,6 +7,7 @@ using Dargon.Services.Utilities;
 namespace Dargon.Services.Client {
    public interface RemoteServiceProxyFactory {
       TService Create<TService>() where TService : class;
+      TService Create<TService>(Guid guid) where TService : class;
    }
 
    public class RemoteServiceProxyFactoryImpl : RemoteServiceProxyFactory {
@@ -23,7 +25,16 @@ namespace Dargon.Services.Client {
 
       public TService Create<TService>() where TService : class {
          var serviceInterface = typeof(TService);
-         var serviceGuid = AttributeUtilities.GetInterfaceGuid(serviceInterface);
+         Guid serviceGuid;
+         if (!AttributeUtilities.TryGetInterfaceGuid(serviceInterface, out serviceGuid)) {
+            throw new InvalidOperationException($"Remote service interface {serviceInterface.FullName} lacks service guid attribute.");
+         } else {
+            return Create<TService>(serviceGuid);
+         }
+      }
+
+      public TService Create<TService>(Guid serviceGuid) where TService : class {
+         var serviceInterface = typeof(TService);
          var validator = validatorFactory.Create(serviceGuid, serviceInterface);
          var translator = new InvocationResultTranslatorImpl(portableObjectBoxConverter);
          var interceptor = new RemoteServiceProxyInvocationInterceptor(serviceGuid, validator, translator, clusteringPhaseManager);

@@ -1,4 +1,5 @@
-﻿using Castle.DynamicProxy;
+﻿using System;
+using Castle.DynamicProxy;
 using Dargon.PortableObjects;
 using Dargon.PortableObjects.Streams;
 using Dargon.Services.Client;
@@ -46,7 +47,11 @@ namespace Dargon.Services {
          RemoteServiceInvocationValidatorFactory validatorFactory = new RemoteServiceInvocationValidatorFactoryImpl(collectionFactory);
          RemoteServiceProxyFactory remoteServiceProxyFactory = new RemoteServiceProxyFactoryImpl(proxyGenerator, portableObjectBoxConverter, validatorFactory, clusteringPhaseManager);
          InvokableServiceContextFactory invokableServiceContextFactory = new InvokableServiceContextFactoryImpl(collectionFactory, portableObjectBoxConverter);
-         return new ServiceClient(collectionFactory, localServiceContainer, clusteringPhaseManager, invokableServiceContextFactory, remoteServiceProxyFactory);
+         IConcurrentDictionary<Guid, InvokableServiceContext> serviceContextsById = new ConcurrentDictionary<Guid, InvokableServiceContext>();
+         LocalServiceRegistry localServiceRegistry = new LocalServiceRegistryImpl(localServiceContainer, clusteringPhaseManager, invokableServiceContextFactory, serviceContextsById);
+         IConcurrentDictionary<Type, object> serviceProxiesByInterface = new ConcurrentDictionary<Type, object>();
+         RemoteServiceProxyContainer remoteServiceProxyContainer = new RemoteServiceProxyContainerImpl(remoteServiceProxyFactory, serviceProxiesByInterface);
+         return new ServiceClientProxyImpl(localServiceRegistry, remoteServiceProxyContainer);
       }
    }
 }

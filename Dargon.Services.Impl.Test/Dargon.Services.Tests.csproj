@@ -39,8 +39,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Castle.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Castle.Core.3.3.3\lib\net45\Castle.Core.dll</HintPath>
+      <HintPath>..\packages\Dargon.TestUtilities.0.0.0\lib\net45\Castle.Core.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Dargon.Management.Api, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Dargon.Management.Api.0.1.2\lib\net45\Dargon.Management.Api.dll</HintPath>
@@ -54,17 +54,9 @@
       <HintPath>..\packages\Dargon.PortableObjects.Streams.0.3.0\lib\net45\Dargon.PortableObjects.Streams.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Dargon.Ryu, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Dargon.Ryu.Impl.0.0.0\lib\net45\Dargon.Ryu.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Dargon.Ryu.Api, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Dargon.Ryu.Api.0.0.1\lib\portable-net45+netcore45+MonoAndroid1+MonoTouch1\Dargon.Ryu.Api.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Dargon.TestUtilities, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Dargon.TestUtilities.0.1.0\lib\net45\Dargon.TestUtilities.dll</HintPath>
+      <HintPath>..\packages\Dargon.TestUtilities.0.0.0\lib\net45\Dargon.TestUtilities.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="ImpromptuInterface, Version=6.2.2.0, Culture=neutral, PublicKeyToken=0b1781c923b2975b, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -100,13 +92,13 @@
       <HintPath>..\packages\NLog.3.1.0.0\lib\net45\NLog.dll</HintPath>
     </Reference>
     <Reference Include="NMockito, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\NMockito.0.1.0\lib\net45\NMockito.dll</HintPath>
+      <HintPath>..\packages\NMockito.1.2.1\lib\net45\NMockito.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="xunit, Version=1.9.2.1705, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\xunit.1.9.2\lib\net20\xunit.dll</HintPath>
+      <HintPath>..\packages\Dargon.TestUtilities.0.0.0\lib\net45\xunit.dll</HintPath>
+      <Private>True</Private>
     </Reference>
   </ItemGroup>
   <Choose>
@@ -121,19 +113,28 @@
     <Compile Include="ClusteredServiceNodeFT.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RyuContainerTests.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Dargon.Services.Api\Dargon.Services.Api.csproj">
-      <Project>{A9FFFC0F-43A6-468C-9836-92DB4A32F761}</Project>
-      <Name>Dargon.Services.Api</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Dargon.Services.Impl\Dargon.Services.Impl.csproj">
-      <Project>{9E41DC5D-E409-45E5-AE89-191DB4252EE0}</Project>
-      <Name>Dargon.Services.Impl</Name>
-    </ProjectReference>
+    <Compile Include="ServiceClientProxyImplTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Dargon.Ryu\Dargon.Ryu.Api\Dargon.Ryu.Api.csproj">
+      <Project>{be844deb-2f95-407e-973e-ae3f3983b54d}</Project>
+      <Name>Dargon.Ryu.Api</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Dargon.Ryu\Dargon.Ryu.Impl\Dargon.Ryu.Impl.csproj">
+      <Project>{2ed5c703-8a91-4701-9ae9-da86aa93a169}</Project>
+      <Name>Dargon.Ryu.Impl</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Dargon.Services.Api\Dargon.Services.Api.csproj">
+      <Project>{a9fffc0f-43a6-468c-9836-92db4a32f761}</Project>
+      <Name>Dargon.Services.Api</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Dargon.Services.Impl\Dargon.Services.Impl.csproj">
+      <Project>{9e41dc5d-e409-45e5-ae89-191db4252ee0}</Project>
+      <Name>Dargon.Services.Impl</Name>
+    </ProjectReference>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

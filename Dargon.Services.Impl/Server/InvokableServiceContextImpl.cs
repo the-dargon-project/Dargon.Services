@@ -14,27 +14,20 @@ namespace Dargon.Services.Server {
    }
 
    public class InvokableServiceContextImpl : InvokableServiceContext {
+      private readonly ICollectionFactory collectionFactory;
       private readonly PortableObjectBoxConverter portableObjectBoxConverter;
       private readonly object serviceImplementation;
       private readonly Type serviceInterface;
       private readonly Guid guid;
       private readonly IMultiValueDictionary<string, MethodInfo> methodsByName;
 
-      public InvokableServiceContextImpl(ICollectionFactory collectionFactory, PortableObjectBoxConverter portableObjectBoxConverter, object serviceImplementation, Type serviceInterface) {
+      public InvokableServiceContextImpl(ICollectionFactory collectionFactory, PortableObjectBoxConverter portableObjectBoxConverter, object serviceImplementation, Type serviceInterface, Guid guid, IMultiValueDictionary<string, MethodInfo> methodsByName) {
+         this.collectionFactory = collectionFactory;
          this.portableObjectBoxConverter = portableObjectBoxConverter;
          this.serviceImplementation = serviceImplementation;
          this.serviceInterface = serviceInterface;
-
-         guid = AttributeUtilities.GetInterfaceGuid(serviceInterface);
-
-         methodsByName = collectionFactory.CreateMultiValueDictionary<string, MethodInfo>();
-         var interfaces = serviceInterface.GetInterfaces().Concat(serviceInterface);
-         foreach (var i in interfaces) {
-            var interfaceMethods = i.GetMethods(BindingFlags.Instance | BindingFlags.Public);
-            foreach (var method in interfaceMethods) {
-               methodsByName.Add(method.Name, method);
-            }
-         }
+         this.guid = guid;
+         this.methodsByName = methodsByName;
       }
 
       public Guid Guid => guid;
