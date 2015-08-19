@@ -54,11 +54,13 @@
       <HintPath>..\packages\Dargon.PortableObjects.Streams.0.3.0\lib\net45\Dargon.PortableObjects.Streams.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Dargon.Ryu">
-      <HintPath>..\packages\Dargon.Ryu.Impl.0.0.0\lib\net45\Dargon.Ryu.dll</HintPath>
+    <Reference Include="Dargon.Ryu.Api, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Dargon.Ryu.Api.0.0.3\lib\portable-net45+netcore45+MonoAndroid1+MonoTouch1\Dargon.Ryu.Api.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Dargon.Ryu.Api">
-      <HintPath>..\packages\Dargon.Ryu.Api.0.0.1\lib\portable-net45+netcore45+MonoAndroid1+MonoTouch1\Dargon.Ryu.Api.dll</HintPath>
+    <Reference Include="Dargon.Ryu.Impl, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Dargon.Ryu.Impl.0.1.2\lib\net45\Dargon.Ryu.Impl.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Dargon.TestUtilities, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Dargon.TestUtilities.0.0.0\lib\net45\Dargon.TestUtilities.dll</HintPath>
@@ -69,7 +71,7 @@
       <HintPath>..\packages\ImpromptuInterface.6.2.2\lib\net40\ImpromptuInterface.dll</HintPath>
     </Reference>
     <Reference Include="ItzWarty.Commons, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\ItzWarty.Commons.0.4.0\lib\portable-net45+netcore45+MonoAndroid1+MonoTouch1\ItzWarty.Commons.dll</HintPath>
+      <HintPath>..\packages\ItzWarty.Commons.0.5.0\lib\portable-net45+netcore45+MonoAndroid1+MonoTouch1\ItzWarty.Commons.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="ItzWarty.Proxies.Api, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -77,7 +79,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="ItzWarty.Proxies.Impl, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\ItzWarty.Proxies.Impl.0.2.0\lib\net45\ItzWarty.Proxies.Impl.dll</HintPath>
+      <HintPath>..\packages\ItzWarty.Proxies.Impl.0.2.2\lib\net45\ItzWarty.Proxies.Impl.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
@@ -125,10 +127,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Dargon.Ryu\Dargon.Ryu.Impl\Dargon.Ryu.Impl.csproj">
-      <Project>{2ed5c703-8a91-4701-9ae9-da86aa93a169}</Project>
-      <Name>Dargon.Ryu.Impl</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Dargon.Services.Api\Dargon.Services.Api.csproj">
       <Project>{a9fffc0f-43a6-468c-9836-92db4a32f761}</Project>
       <Name>Dargon.Services.Api</Name>

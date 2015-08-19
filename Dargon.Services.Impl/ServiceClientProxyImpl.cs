@@ -43,5 +43,9 @@ namespace Dargon.Services {
       public TService GetService<TService>() where TService : class {
          return remoteServiceProxyContainer.GetService<TService>();
       }
+
+      public TService GetService<TService>(Guid serviceGuid) where TService : class {
+         return remoteServiceProxyContainer.GetService<TService>(serviceGuid);
+      }
    }
 }

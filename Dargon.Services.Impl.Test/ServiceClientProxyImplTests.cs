@@ -84,6 +84,25 @@ namespace Dargon.Services {
          VerifyNoMoreInteractions();
       }
 
+      [Fact]
+      public void GetService_WithInterface_DelegatesToRemoteServiceProxyContainerTest() {
+         var remoteService = CreateMock<TestInterface>();
+         When(remoteServiceProxyContainer.GetService<TestInterface>()).ThenReturn(remoteService);
+         AssertEquals(remoteService, testObj.GetService<TestInterface>());
+         Verify(remoteServiceProxyContainer).GetService<TestInterface>();
+         VerifyNoMoreInteractions();
+      }
+
+      [Fact]
+      public void GetService_WithInterfaceAndServiceGuid_DelegatesToRemoteServiceProxyContainerTest() {
+         var serviceGuid = CreatePlaceholder<Guid>();
+         var remoteService = CreateMock<TestInterface>();
+         When(remoteServiceProxyContainer.GetService<TestInterface>(serviceGuid)).ThenReturn(remoteService);
+         AssertEquals(remoteService, testObj.GetService<TestInterface>(serviceGuid));
+         Verify(remoteServiceProxyContainer).GetService<TestInterface>(serviceGuid);
+         VerifyNoMoreInteractions();
+      }
+
       /// <summary>
       /// No service guid specified here for purpose of test.
       /// </summary>

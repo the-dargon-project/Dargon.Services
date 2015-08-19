@@ -6,7 +6,6 @@ using Dargon.Services.Utilities;
 
 namespace Dargon.Services.Client {
    public interface RemoteServiceProxyFactory {
-      TService Create<TService>() where TService : class;
       TService Create<TService>(Guid guid) where TService : class;
    }
 
@@ -21,16 +20,6 @@ namespace Dargon.Services.Client {
          this.portableObjectBoxConverter = portableObjectBoxConverter;
          this.validatorFactory = validatorFactory;
          this.clusteringPhaseManager = clusteringPhaseManager;
-      }
-
-      public TService Create<TService>() where TService : class {
-         var serviceInterface = typeof(TService);
-         Guid serviceGuid;
-         if (!AttributeUtilities.TryGetInterfaceGuid(serviceInterface, out serviceGuid)) {
-            throw new InvalidOperationException($"Remote service interface {serviceInterface.FullName} lacks service guid attribute.");
-         } else {
-            return Create<TService>(serviceGuid);
-         }
       }
 
       public TService Create<TService>(Guid serviceGuid) where TService : class {
