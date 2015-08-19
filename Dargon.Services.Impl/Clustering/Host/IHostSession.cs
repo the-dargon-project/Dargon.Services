@@ -64,7 +64,7 @@ namespace Dargon.Services.Clustering.Host {
                var result = await hostContext.Invoke(x.ServiceGuid, x.MethodName, x.MethodArguments);
                var sendTask = messageSender.SendInvocationResultAsync(x.InvocationId, result);
             } catch (Exception e) {
-               Debug.WriteLine(e);
+               logger.Error(e);
             }
          }, CancellationToken.None, TaskCreationOptions.LongRunning);
       }

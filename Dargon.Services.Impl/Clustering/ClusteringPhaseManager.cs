@@ -4,6 +4,7 @@ using System;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using NLog;
 
 namespace Dargon.Services.Clustering {
    public interface ClusteringPhaseManager : IDisposable {
@@ -15,6 +16,8 @@ namespace Dargon.Services.Clustering {
    }
 
    public class ClusteringPhaseManagerImpl : ClusteringPhaseManager {
+      private readonly static Logger logger = LogManager.GetCurrentClassLogger();
+
       private readonly ReaderWriterLockSlim synchronization = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
       private bool disposed = false;
       private ClusteringPhase currentClusteringPhase = null;
@@ -26,7 +29,7 @@ namespace Dargon.Services.Clustering {
          try {
             ThrowIfDisposed();
 
-            Debug.WriteLine("Transition from phase " + (currentClusteringPhase?.ToString() ?? "null") + " to " + (nextClusteringPhase?.ToString() ?? "null"));
+            logger.Info("Transition from phase " + (currentClusteringPhase?.ToString() ?? "null") + " to " + (nextClusteringPhase?.ToString() ?? "null"));
             currentClusteringPhase = nextClusteringPhase;
             currentClusteringPhase.HandleEnter();
          } finally {

@@ -35,7 +35,7 @@ namespace Dargon.Services.Clustering.Guest {
       }
 
       public void Initialize() {
-         Debug.WriteLine("Guest init");
+         logger.Info("Guest init");
          pofDispatcher.RegisterHandler<X2XServiceInvocation>(HandleX2XServiceInvocation);
          pofDispatcher.RegisterHandler<X2XInvocationResult>(HandleX2XInvocationResult);
          pofDispatcher.RegisterShutdownHandler(HandleDispatcherShutdown);
