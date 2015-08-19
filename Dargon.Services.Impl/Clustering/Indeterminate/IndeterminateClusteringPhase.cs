@@ -3,6 +3,7 @@ using ItzWarty.Networking;
 using ItzWarty.Threading;
 using NLog;
 using System;
+using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
@@ -33,8 +34,8 @@ namespace Dargon.Services.Clustering.Indeterminate {
       public void HandleEnter() {
          IListenerSocket listener = null;
          IConnectedSocket client = null;
-         var connectEndpoint = networkingProxy.CreateLoopbackEndPoint(clusteringConfiguration.Port);
-         var hostAllowed = !clusteringConfiguration.ClusteringRoleFlags.HasFlag(ClusteringRoleFlags.GuestOnly);
+         var connectEndpoint = networkingProxy.CreateEndPoint(clusteringConfiguration.RemoteAddress, clusteringConfiguration.Port);
+         var hostAllowed = !clusteringConfiguration.ClusteringRoleFlags.HasFlag(ClusteringRoleFlags.GuestOnly) && IPAddress.IsLoopback(clusteringConfiguration.RemoteAddress);
          var guestAllowed = !clusteringConfiguration.ClusteringRoleFlags.HasFlag(ClusteringRoleFlags.HostOnly);
          while (listener == null && client == null) {
             if (hostAllowed && TryCreateHostListener(clusteringConfiguration, out listener)) {

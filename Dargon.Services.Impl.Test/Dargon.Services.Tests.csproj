@@ -73,8 +73,8 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="ItzWarty.Proxies.Api, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\ItzWarty.Proxies.Api.0.1.0\lib\net45\ItzWarty.Proxies.Api.dll</HintPath>
+      <HintPath>..\packages\ItzWarty.Proxies.Api.0.1.1\lib\portable-net45+netcore45+MonoAndroid1+MonoTouch1\ItzWarty.Proxies.Api.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="ItzWarty.Proxies.Impl, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\ItzWarty.Proxies.Impl.0.2.0\lib\net45\ItzWarty.Proxies.Impl.dll</HintPath>

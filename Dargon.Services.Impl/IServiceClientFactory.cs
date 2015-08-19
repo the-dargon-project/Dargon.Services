@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using Castle.DynamicProxy;
 using Dargon.PortableObjects;
 using Dargon.PortableObjects.Streams;
@@ -37,6 +38,11 @@ namespace Dargon.Services {
       }
 
       public IServiceClient CreateOrJoin(IClusteringConfiguration clusteringConfiguration) {
+         if (clusteringConfiguration.ClusteringRoleFlags == ClusteringRoleFlags.HostOnly &&
+             !IPAddress.IsLoopback(clusteringConfiguration.RemoteAddress)) {
+            throw new InvalidOperationException("It is impossible host a Dargon Service cluster located at a remote address!");
+         }
+
          LocalServiceContainer localServiceContainer = new LocalServiceContainerImpl(collectionFactory);
          ClusteringPhaseManager clusteringPhaseManager = new ClusteringPhaseManagerImpl();
          PortableObjectBoxConverter portableObjectBoxConverter = new PortableObjectBoxConverter(streamFactory, pofSerializer);
