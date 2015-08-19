@@ -62,6 +62,10 @@
       <HintPath>..\packages\Dargon.Ryu.Impl.0.1.2\lib\net45\Dargon.Ryu.Impl.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Dargon.Services.Api, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Dargon.Services.Api.0.4.0\lib\net45\Dargon.Services.Api.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Dargon.TestUtilities, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Dargon.TestUtilities.0.0.0\lib\net45\Dargon.TestUtilities.dll</HintPath>
       <Private>True</Private>
@@ -127,10 +131,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Dargon.Services.Api\Dargon.Services.Api.csproj">
-      <Project>{a9fffc0f-43a6-468c-9836-92db4a32f761}</Project>
-      <Name>Dargon.Services.Api</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Dargon.Services.Impl\Dargon.Services.Impl.csproj">
       <Project>{9e41dc5d-e409-45e5-ae89-191db4252ee0}</Project>
       <Name>Dargon.Services.Impl</Name>
