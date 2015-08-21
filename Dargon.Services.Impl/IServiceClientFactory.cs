@@ -37,6 +37,10 @@ namespace Dargon.Services {
          this.pofStreamsFactory = pofStreamsFactory;
       }
 
+      static ServiceClientFactory() {
+         AsyncStatics.__SetInvokerIfUninitialized(() => new AsyncServiceInvokerImpl());
+      }
+
       public IServiceClient CreateOrJoin(IClusteringConfiguration clusteringConfiguration) {
          if (clusteringConfiguration.ClusteringRoleFlags == ClusteringRoleFlags.HostOnly &&
              !IPAddress.IsLoopback(clusteringConfiguration.RemoteAddress)) {

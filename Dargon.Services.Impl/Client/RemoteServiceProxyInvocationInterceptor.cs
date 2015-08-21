@@ -1,6 +1,8 @@
 ﻿using Castle.DynamicProxy;
 using Dargon.Services.Clustering;
 using System;
+using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Dargon.Services.Client {
    public class RemoteServiceProxyInvocationInterceptor : IInterceptor {
@@ -17,13 +19,17 @@ namespace Dargon.Services.Client {
       }
 
       public void Intercept(IInvocation invocation) {
-         var methodName = invocation.Method.Name;
-         var methodArguments = invocation.Arguments;
+         invocation.ReturnValue = RunInterceptedInvocationAsync(invocation.Method, invocation.Arguments).Result;
+      }
+
+      public async Task<object> RunInterceptedInvocationAsync(MethodInfo methodInfo, object[] methodArguments) {
+         var methodName = methodInfo.Name;
+         var returnType = methodInfo.ReturnType;
 
          validator.ValidateInvocationOrThrow(methodName, methodArguments);
 
-         var payload = clusteringPhaseManager.InvokeServiceCall(serviceGuid, methodName, methodArguments).Result;
-         invocation.ReturnValue = translator.TranslateOrThrow(payload, invocation.Method.ReturnType);
+         var payload = await clusteringPhaseManager.InvokeServiceCall(serviceGuid, methodName, methodArguments);
+         return translator.TranslateOrThrow(payload, returnType);
       }
    }
 }
