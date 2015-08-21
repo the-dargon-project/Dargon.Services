@@ -40,6 +40,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AsyncServiceInvoker.cs" />
+    <Compile Include="AsyncStatics.cs" />
     <Compile Include="IServiceClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RemoteServiceProxyContainer.cs" />
