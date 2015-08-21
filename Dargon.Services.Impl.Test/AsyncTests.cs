@@ -67,12 +67,19 @@ namespace Dargon.Services {
             AssertEquals(123, oneTwoThreeBoxBox.Item1.value);
             AssertEquals(234, twoThreeFour);
          }
+
+         for (var i = 0; i < 5; i++) {
+            stopwatch.Restart();
+            Async(() => remoteService.DoNothing()).Wait();
+            Trace.WriteLine($"No-op invocation #{i} took {stopwatch.ElapsedMilliseconds} ms!");
+         }
       }
 
       [Guid("4EEBA55A-26A3-4143-95F5-4C84708070C7")]
       public interface ExampleInterface {
          string Greet(string name, int age, int incorrectAge, bool trueValue, bool otherTrueValue);
          int Three { get; }
+         void DoNothing();
       }
 
       public class IntBox {
@@ -82,6 +89,7 @@ namespace Dargon.Services {
       public class ExampleImplementation : ExampleInterface {
          public string Greet(string name, int age, int incorrectAge, bool trueValue, bool otherTrueValue) => $"Hello, {name} who is {age} and not {incorrectAge}... Here's two trues: {trueValue} {otherTrueValue}!";
          public int Three => 3;
+         public void DoNothing() { }
       }
    }
 }
