@@ -52,7 +52,7 @@ namespace Dargon.Services.Clustering.Guest {
          Task.Factory.StartNew((dummy) => {
             object result;
             try {
-               if (localServiceContainer.TryInvoke(x.ServiceGuid, x.MethodName, x.MethodArguments, out result)) {
+               if (localServiceContainer.TryInvoke(x.ServiceGuid, x.MethodName, x.GenericArguments, x.MethodArguments, out result)) {
                   logger.Trace($"Successfully locally invoked service {x.ServiceGuid} method {x.MethodName} for iid {x.InvocationId}.");
                } else {
                   logger.Trace($"Could not locally find service {x.ServiceGuid} method {x.MethodName} for iid {x.InvocationId}.");
@@ -92,18 +92,18 @@ namespace Dargon.Services.Clustering.Guest {
          messageSender.SendServiceUpdateAsync(addedServices, removedServices);
       }
 
-      public Task<object> InvokeServiceCall(Guid serviceGuid, string methodName, object[] methodArguments) {
+      public Task<object> InvokeServiceCall(Guid serviceGuid, string methodName, Type[] genericArguments, object[] methodArguments) {
          logger.Trace($"Invoking service {serviceGuid} method {methodName} with {methodArguments.Length} arguments");
          return Task.Factory.StartNew(async (throwaway) => {
             object localResult;
-            if (localServiceContainer.TryInvoke(serviceGuid, methodName, methodArguments, out localResult)) {
+            if (localServiceContainer.TryInvoke(serviceGuid, methodName, genericArguments, methodArguments, out localResult)) {
                return localResult;
             } else {
                // Code looks different than in host session - if an exception has been thrown
                var invocationId = availableInvocationIds.TakeUniqueID();
                logger.Trace($"Took invocationId {invocationId} for {serviceGuid} method {methodName} call.");
                var asyncValueBox = invocationResponseBoxesById.GetOrAdd(invocationId, (id) => new AsyncValueBoxImpl());
-               await messageSender.SendServiceInvocationAsync(invocationId, serviceGuid, methodName, methodArguments);
+               await messageSender.SendServiceInvocationAsync(invocationId, serviceGuid, methodName, genericArguments, methodArguments);
                var returnValue = await asyncValueBox.GetResultAsync();
                var removed = invocationResponseBoxesById.Remove(invocationId.PairValue(asyncValueBox));
                Trace.Assert(removed, "Failed to remove AsyncValueBox from dict");

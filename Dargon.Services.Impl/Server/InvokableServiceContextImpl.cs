@@ -3,14 +3,15 @@ using ItzWarty;
 using ItzWarty.Collections;
 using System;
 using System.Data;
+using System.Linq;
 using System.Reflection;
 using Dargon.Services.Messaging;
 
 namespace Dargon.Services.Server {
    public interface InvokableServiceContext {
       Guid Guid { get; }
-      object HandleInvocation(string action, object[] arguments);
-      object HandleInvocation(string action, PortableObjectBox arguments);
+      object HandleInvocation(string action, Type[] genericArguments, object[] arguments);
+      object HandleInvocation(string action, PortableObjectBox genericArguments, PortableObjectBox methodArgumentsDto);
    }
 
    public class InvokableServiceContextImpl : InvokableServiceContext {
@@ -32,7 +33,8 @@ namespace Dargon.Services.Server {
 
       public Guid Guid => guid;
 
-      public object HandleInvocation(string action, object[] arguments) {
+      public object HandleInvocation(string action, Type[] genericArguments, object[] arguments) {
+         var isGenericInvocation = genericArguments.Any();
          HashSet<MethodInfo> candidates;
          if (methodsByName.TryGetValue(action, out candidates)) {
             foreach (var candidate in candidates) {
@@ -40,16 +42,28 @@ namespace Dargon.Services.Server {
                if (parameters.Length != arguments.Length) {
                   continue;
                }
-               return candidate.Invoke(serviceImplementation, arguments);
+               if (isGenericInvocation != candidate.IsGenericMethod) {
+                  continue;
+               }
+               if (isGenericInvocation && candidate.GetGenericArguments().Length != genericArguments.Length) {
+                  continue;
+               }
+               var invokedMethod = candidate;
+               if (isGenericInvocation) {
+                  invokedMethod = candidate.MakeGenericMethod(genericArguments);
+               }
+               return invokedMethod.Invoke(serviceImplementation, arguments);
             }
          }
          throw new EntryPointNotFoundException("Could not find method " + action + " with given arguments");
       }
 
-      public object HandleInvocation(string action, PortableObjectBox arguments) {
+      public object HandleInvocation(string action, PortableObjectBox genericArgumentsDto, PortableObjectBox methodArgumentsDto) {
+         Type[] genericArguments;
          object[] methodArguments;
-         if (portableObjectBoxConverter.TryConvertFromDataTransferObject(arguments, out methodArguments)) {
-            return HandleInvocation(action, methodArguments);
+         if (portableObjectBoxConverter.TryConvertFromDataTransferObject(genericArgumentsDto, out genericArguments) &&
+             portableObjectBoxConverter.TryConvertFromDataTransferObject(methodArgumentsDto, out methodArguments)) {
+            return HandleInvocation(action, genericArguments, methodArguments);
          } else {
             throw new PortableException(new Exception("Could not deserialize data in argument dto."));
          }

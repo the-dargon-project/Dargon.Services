@@ -8,6 +8,6 @@ namespace Dargon.Services.Clustering {
       void HandleServiceRegistered(InvokableServiceContext invokableServiceContext);
       void HandleServiceUnregistered(InvokableServiceContext invokableServiceContext);
 
-      Task<object> InvokeServiceCall(Guid serviceGuid, string methodName, object[] methodArguments);
+      Task<object> InvokeServiceCall(Guid serviceGuid, string methodName, Type[] genericArguments, object[] methodArguments);
    }
 }

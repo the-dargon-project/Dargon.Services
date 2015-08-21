@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 
 namespace Dargon.Services.Messaging {
    public interface MessageSender : IDisposable {
-      Task SendServiceInvocationAsync(uint invocationId, Guid serviceGuid, string methodName, object[] methodArguments);
-      Task SendServiceInvocationAsync(uint invocationId, Guid serviceGuid, string methodName, PortableObjectBox portableObjectBox);
+      Task SendServiceInvocationAsync(uint invocationId, Guid serviceGuid, string methodName, Type[] genericArguments, object[] methodArguments);
+      Task SendServiceInvocationAsync(uint invocationId, Guid serviceGuid, string methodName, PortableObjectBox genericArgumentsDto, PortableObjectBox methodArgumentsDto);
       Task SendInvocationResultAsync(uint invocationId, object result);
       Task SendServiceBroadcastAsync(IReadOnlySet<Guid> serviceGuids);
       Task SendServiceUpdateAsync(IReadOnlySet<Guid> addedServices, IReadOnlySet<Guid> removedServices);
@@ -21,13 +21,14 @@ namespace Dargon.Services.Messaging {
          this.portableObjectBoxConverter = portableObjectBoxConverter;
       }
 
-      public Task SendServiceInvocationAsync(uint invocationId, Guid serviceGuid, string methodName, object[] methodArguments) {
+      public Task SendServiceInvocationAsync(uint invocationId, Guid serviceGuid, string methodName, Type[] genericArguments, object[] methodArguments) {
+         var genericArgumentsDto = portableObjectBoxConverter.ConvertToDataTransferObject(genericArguments);
          var methodArgumentsDto = portableObjectBoxConverter.ConvertToDataTransferObject(methodArguments);
-         return SendServiceInvocationAsync(invocationId, serviceGuid, methodName, methodArgumentsDto);
+         return SendServiceInvocationAsync(invocationId, serviceGuid, methodName, genericArgumentsDto, methodArgumentsDto);
       }
 
-      public Task SendServiceInvocationAsync(uint invocationId, Guid serviceGuid, string methodName, PortableObjectBox portableObjectBox) {
-         var message = new X2XServiceInvocation(invocationId, serviceGuid, methodName, portableObjectBox);
+      public Task SendServiceInvocationAsync(uint invocationId, Guid serviceGuid, string methodName, PortableObjectBox genericArgumentsDto, PortableObjectBox methodArgumentsDto) {
+         var message = new X2XServiceInvocation(invocationId, serviceGuid, methodName, genericArgumentsDto, methodArgumentsDto);
          pofStreamWriter.Write(message);
          return Task.FromResult<object>(null);
       }

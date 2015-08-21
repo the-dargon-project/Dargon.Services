@@ -15,8 +15,8 @@ namespace Dargon.Services.Server {
 
       IEnumerable<Guid> EnumerateServiceGuids();
 
-      bool TryInvoke(Guid serviceGuid, string methodName, PortableObjectBox methodArguments, out object result);
-      bool TryInvoke(Guid serviceGuid, string methodName, object[] methodArguments, out object result);
+      bool TryInvoke(Guid serviceGuid, string methodName, PortableObjectBox genericArgumentsDto, PortableObjectBox methodArgumentsDto, out object result);
+      bool TryInvoke(Guid serviceGuid, string methodName, Type[] genericArguments, object[] methodArguments, out object result);
 
    }
 
@@ -59,24 +59,24 @@ namespace Dargon.Services.Server {
          return serviceContextsByGuid.Keys;
       }
 
-      public bool TryInvoke(Guid serviceGuid, string methodName, PortableObjectBox portableObjectBox, out object result) {
+      public bool TryInvoke(Guid serviceGuid, string methodName, PortableObjectBox genericArgumentsDto, PortableObjectBox methodArgumentsDto, out object result) {
          InvokableServiceContext invokableServiceContext;
          if (!serviceContextsByGuid.TryGetValue(serviceGuid, out invokableServiceContext)) {
             result = null;
             return false;
          } else {
-            result = invokableServiceContext.HandleInvocation(methodName, portableObjectBox);
+            result = invokableServiceContext.HandleInvocation(methodName, genericArgumentsDto, methodArgumentsDto);
             return true;
          }
       }
 
-      public bool TryInvoke(Guid serviceGuid, string methodName, object[] methodArguments, out object result) {
+      public bool TryInvoke(Guid serviceGuid, string methodName, Type[] genericArguments, object[] methodArguments, out object result) {
          InvokableServiceContext invokableServiceContext;
          if (!serviceContextsByGuid.TryGetValue(serviceGuid, out invokableServiceContext)) {
             result = null;
             return false;
          } else {
-            result = invokableServiceContext.HandleInvocation(methodName, methodArguments);
+            result = invokableServiceContext.HandleInvocation(methodName, genericArguments, methodArguments);
             return true;
          }
       }

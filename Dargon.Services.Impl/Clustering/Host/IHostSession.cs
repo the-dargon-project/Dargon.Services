@@ -15,7 +15,7 @@ using NLog;
 namespace Dargon.Services.Clustering.Host {
    public interface IHostSession : IDisposable {
       Task StartAndAwaitShutdown();
-      Task<RemoteInvocationResult> TryRemoteInvoke(Guid serviceGuid, string methodName, object[] arguments);
+      Task<RemoteInvocationResult> TryRemoteInvoke(Guid serviceGuid, string methodName, Type[] genericArguments, object[] arguments);
    }
 
    public class HostSession : IHostSession, IRemoteInvokable {
@@ -61,7 +61,7 @@ namespace Dargon.Services.Clustering.Host {
          logger.Trace($"Invoking service {x.ServiceGuid} method {x.MethodName} with {x.MethodArguments.Length} arguments");
          Task.Factory.StartNew(async (dummy) => {
             try {
-               var result = await hostContext.Invoke(x.ServiceGuid, x.MethodName, x.MethodArguments);
+               var result = await hostContext.Invoke(x.ServiceGuid, x.MethodName, x.GenericArguments, x.MethodArguments);
                var sendTask = messageSender.SendInvocationResultAsync(x.InvocationId, result);
             } catch (Exception e) {
                logger.Error(e);
@@ -98,15 +98,15 @@ namespace Dargon.Services.Clustering.Host {
          }
       }
 
-      public Task<RemoteInvocationResult> TryRemoteInvoke(Guid serviceGuid, string methodName, object[] arguments) {
-         logger.Trace($"Remote invoking service {serviceGuid} method {methodName} with {arguments.Length} arguments.");
+      public Task<RemoteInvocationResult> TryRemoteInvoke(Guid serviceGuid, string methodName, Type[] genericArguments, object[] arguments) {
+         logger.Trace($"Remote invoking service {serviceGuid} method {methodName} with {genericArguments.Length} generic arguments and {arguments.Length} arguments.");
          if (!remotelyHostedServices.Contains(serviceGuid)) {
             return Task.FromResult(new RemoteInvocationResult(false, null));
          } else {
             return Task.Factory.StartNew(async (throwaway) => {
                var invocationId = availableInvocationIds.TakeUniqueID();
                var asyncValueBox = invocationResponseBoxesById.GetOrAdd(invocationId, id => new AsyncValueBoxImpl());
-               await messageSender.SendServiceInvocationAsync(invocationId, serviceGuid, methodName, arguments);
+               await messageSender.SendServiceInvocationAsync(invocationId, serviceGuid, methodName, genericArguments, arguments);
                var returnValue = await asyncValueBox.GetResultAsync();
                var removed = invocationResponseBoxesById.Remove(new KeyValuePair<uint, AsyncValueBox>(invocationId, asyncValueBox));
                Trace.Assert(removed, "Failed to remove AsyncValueBox from dict");
@@ -115,8 +115,8 @@ namespace Dargon.Services.Clustering.Host {
          }
       }
 
-      public Task<RemoteInvocationResult> TryRemoteInvoke(Guid serviceGuid, string methodName, PortableObjectBox argumentsDto) {
-         logger.Trace($"Remote invoking service {serviceGuid} method {methodName} with {argumentsDto.Length} bytes of arguments.");
+      public Task<RemoteInvocationResult> TryRemoteInvoke(Guid serviceGuid, string methodName, PortableObjectBox genericArguments, PortableObjectBox argumentsDto) {
+         logger.Trace($"Remote invoking service {serviceGuid} method {methodName} with {genericArguments.Length} generic arguments and {argumentsDto.Length} bytes of arguments.");
          if (!remotelyHostedServices.Contains(serviceGuid)) {
             logger.Trace($"Remote does not have service {serviceGuid}.");
             return Task.FromResult(new RemoteInvocationResult(false, null));
@@ -126,7 +126,7 @@ namespace Dargon.Services.Clustering.Host {
                var invocationId = availableInvocationIds.TakeUniqueID();
                logger.Trace($"Took iid {invocationId} for service {serviceGuid} method {methodName}.");
                var asyncValueBox = invocationResponseBoxesById.GetOrAdd(invocationId, id => new AsyncValueBoxImpl());
-               await messageSender.SendServiceInvocationAsync(invocationId, serviceGuid, methodName, argumentsDto);
+               await messageSender.SendServiceInvocationAsync(invocationId, serviceGuid, methodName, genericArguments, argumentsDto);
                var returnValue = await asyncValueBox.GetResultAsync();
                logger.Trace($"Got result for iid {invocationId} service {serviceGuid} method {methodName}.");
                var removed = invocationResponseBoxesById.Remove(new KeyValuePair<uint, AsyncValueBox>(invocationId, asyncValueBox));

@@ -47,7 +47,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Dargon.PortableObjects, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Dargon.PortableObjects.0.1.4\lib\net45\Dargon.PortableObjects.dll</HintPath>
+      <HintPath>..\packages\Dargon.PortableObjects.0.2.0\lib\net45\Dargon.PortableObjects.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Dargon.PortableObjects.Streams, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -124,6 +124,7 @@
   <ItemGroup>
     <Compile Include="AsyncTests.cs" />
     <Compile Include="ClusteredServiceNodeFT.cs" />
+    <Compile Include="GenericTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RyuContainerTests.cs" />
     <Compile Include="ServiceClientProxyImplTests.cs" />

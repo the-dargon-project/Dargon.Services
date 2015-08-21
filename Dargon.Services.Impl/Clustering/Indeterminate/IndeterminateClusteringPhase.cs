@@ -84,9 +84,9 @@ namespace Dargon.Services.Clustering.Indeterminate {
          // does nothing
       }
 
-      public async Task<object> InvokeServiceCall(Guid serviceGuid, string methodName, object[] methodArguments) {
+      public async Task<object> InvokeServiceCall(Guid serviceGuid, string methodName, Type[] genericArguments, object[] methodArguments) {
          await phaseTransitionedLatch.WaitAsync();
-         return await clusteringPhaseManager.InvokeServiceCall(serviceGuid, methodName, methodArguments);
+         return await clusteringPhaseManager.InvokeServiceCall(serviceGuid, methodName, genericArguments, methodArguments);
       }
 
       public void Dispose() {

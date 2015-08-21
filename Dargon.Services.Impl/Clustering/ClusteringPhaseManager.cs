@@ -12,7 +12,7 @@ namespace Dargon.Services.Clustering {
       void HandleServiceRegistered(InvokableServiceContext invokableServiceContext);
       void HandleServiceUnregistered(InvokableServiceContext invokableServiceContext);
 
-      Task<object> InvokeServiceCall(Guid serviceGuid, string methodName, object[] methodArguments);
+      Task<object> InvokeServiceCall(Guid serviceGuid, string methodName, Type[] genericArguments, object[] methodArguments);
    }
 
    public class ClusteringPhaseManagerImpl : ClusteringPhaseManager {
@@ -55,10 +55,10 @@ namespace Dargon.Services.Clustering {
          }
       }
 
-      public Task<object> InvokeServiceCall(Guid serviceGuid, string methodName, object[] methodArguments) {
+      public Task<object> InvokeServiceCall(Guid serviceGuid, string methodName, Type[] genericArguments, object[] methodArguments) {
          synchronization.EnterReadLock();
          try {
-            return currentClusteringPhase.InvokeServiceCall(serviceGuid, methodName, methodArguments);
+            return currentClusteringPhase.InvokeServiceCall(serviceGuid, methodName, genericArguments, methodArguments);
          } finally {
             synchronization.ExitReadLock();
          }

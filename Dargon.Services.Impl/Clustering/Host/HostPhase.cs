@@ -71,9 +71,9 @@ namespace Dargon.Services.Clustering.Host {
          // does nothing
       }
 
-      public Task<object> InvokeServiceCall(Guid serviceGuid, string methodName, object[] methodArguments) {
-         logger.Trace($"Invoking service call on service {serviceGuid} method {methodName} with {methodArguments.Length} arguments.");
-         return hostContext.Invoke(serviceGuid, methodName, methodArguments);
+      public Task<object> InvokeServiceCall(Guid serviceGuid, string methodName, Type[] genericArguments, object[] methodArguments) {
+         logger.Trace($"Invoking service call on service {serviceGuid} method {methodName} with {genericArguments.Length} generic arguments and {methodArguments.Length} arguments.");
+         return hostContext.Invoke(serviceGuid, methodName, genericArguments, methodArguments);
       }
 
       public void Dispose() {

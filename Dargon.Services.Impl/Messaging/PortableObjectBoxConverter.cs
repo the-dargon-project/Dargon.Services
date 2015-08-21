@@ -16,20 +16,20 @@ namespace Dargon.Services.Messaging {
          this.pofSerializer = pofSerializer;
       }
 
-      public PortableObjectBox ConvertToDataTransferObject(object[] methodArguments) {
+      public PortableObjectBox ConvertToDataTransferObject<T>(T methodArguments) {
          using (var outerMs = streamFactory.CreateMemoryStream()) {
-            pofSerializer.Serialize(outerMs.Writer, (object)methodArguments);
+            pofSerializer.Serialize(outerMs.Writer, methodArguments);
             return new PortableObjectBox(outerMs.GetBuffer(), 0, (int)outerMs.Length);
          }
       }
 
-      public bool TryConvertFromDataTransferObject(PortableObjectBox dto, out object[] methodArguments) {
+      public bool TryConvertFromDataTransferObject<T>(PortableObjectBox dto, out T methodArguments) {
          using (var ms = streamFactory.CreateMemoryStream(dto.Buffer, dto.Offset, dto.Length)) {
             try {
-               methodArguments = (object[])pofSerializer.Deserialize(ms.Reader);
+               methodArguments = (T)pofSerializer.Deserialize(ms.Reader);
                return true;
             } catch (TypeNotFoundException) {
-               methodArguments = null;
+               methodArguments = default(T);
                return false;
             }
          }

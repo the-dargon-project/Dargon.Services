@@ -1,11 +1,12 @@
 ﻿using ItzWarty;
 using ItzWarty.Collections;
 using System;
+using System.Linq;
 using System.Reflection;
 
 namespace Dargon.Services.Client {
    public interface RemoteServiceInvocationValidator {
-      void ValidateInvocationOrThrow(string methodName, object[] methodArguments);
+      void ValidateInvocationOrThrow(string methodName, Type[] genericArguments, object[] methodArguments);
    }
 
    public class RemoteServiceInvocationValidatorImpl : RemoteServiceInvocationValidator {
@@ -19,12 +20,19 @@ namespace Dargon.Services.Client {
          this.methodsByName = methodsByName;
       }
 
-      public void ValidateInvocationOrThrow(string methodName, object[] methodArguments) {
+      public void ValidateInvocationOrThrow(string methodName, Type[] genericArguments, object[] methodArguments) {
+         var isGenericInvocation = genericArguments.Any();
          HashSet<MethodInfo> candidates;
          if (methodsByName.TryGetValue(methodName, out candidates)) {
             foreach (var candidate in candidates) {
                var parameters = candidate.GetParameters();
                if (parameters.Length != methodArguments.Length) {
+                  continue;
+               }
+               if (isGenericInvocation != candidate.IsGenericMethod) {
+                  continue;
+               }
+               if (isGenericInvocation && candidate.GetGenericArguments().Length != genericArguments.Length) {
                   continue;
                }
                return;
