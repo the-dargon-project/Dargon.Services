@@ -73,6 +73,23 @@ namespace Dargon.Services {
             Async(() => remoteService.DoNothing()).Wait();
             Trace.WriteLine($"No-op invocation #{i} took {stopwatch.ElapsedMilliseconds} ms!");
          }
+
+         for (var i = 0; i < 5; i++) {
+            stopwatch.Restart();
+            string iOut = null;
+            Async(() => remoteService.OutTest(i, out iOut)).Wait();
+            AssertEquals(i + "!", iOut);
+            Trace.WriteLine($"Out invocation #{i} took {stopwatch.ElapsedMilliseconds} ms!");
+         }
+
+         for (var i = 0; i < 5; i++) {
+            stopwatch.Restart();
+            string a = "a", b = "b";
+            Async(() => remoteService.Swap(ref a, ref b)).Wait();
+            AssertEquals("b", a);
+            AssertEquals("a", b);
+            Trace.WriteLine($"Ref swap invocation #{i} took {stopwatch.ElapsedMilliseconds} ms!");
+         }
       }
 
       [Guid("4EEBA55A-26A3-4143-95F5-4C84708070C7")]
@@ -80,6 +97,8 @@ namespace Dargon.Services {
          string Greet(string name, int age, int incorrectAge, bool trueValue, bool otherTrueValue);
          int Three { get; }
          void DoNothing();
+         void OutTest(int a, out string b);
+         void Swap<T>(ref T a, ref T b);
       }
 
       public class IntBox {
@@ -90,6 +109,12 @@ namespace Dargon.Services {
          public string Greet(string name, int age, int incorrectAge, bool trueValue, bool otherTrueValue) => $"Hello, {name} who is {age} and not {incorrectAge}... Here's two trues: {trueValue} {otherTrueValue}!";
          public int Three => 3;
          public void DoNothing() { }
+         public void OutTest(int a, out string b) => b = a + "!";
+         public void Swap<T>(ref T a, ref T b) {
+            T temp = a;
+            a = b;
+            b = temp;
+         }
       }
    }
 }
