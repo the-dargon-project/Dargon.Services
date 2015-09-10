@@ -1,11 +1,8 @@
-using Dargon.Services.Utilities;
-using ItzWarty;
+using Dargon.Services.Messaging;
 using ItzWarty.Collections;
 using System;
-using System.Data;
 using System.Linq;
-using System.Reflection;
-using Dargon.Services.Messaging;
+using ItzWarty;
 
 namespace Dargon.Services.Server {
    public interface InvokableServiceContext {
@@ -20,39 +17,49 @@ namespace Dargon.Services.Server {
       private readonly object serviceImplementation;
       private readonly Type serviceInterface;
       private readonly Guid guid;
-      private readonly IMultiValueDictionary<string, MethodInfo> methodsByName;
+      private readonly IMultiValueDictionary<string, MethodDescriptor> methodDescriptorsByName;
 
-      public InvokableServiceContextImpl(ICollectionFactory collectionFactory, PortableObjectBoxConverter portableObjectBoxConverter, object serviceImplementation, Type serviceInterface, Guid guid, IMultiValueDictionary<string, MethodInfo> methodsByName) {
+      public InvokableServiceContextImpl(ICollectionFactory collectionFactory, PortableObjectBoxConverter portableObjectBoxConverter, object serviceImplementation, Type serviceInterface, Guid guid, IMultiValueDictionary<string, MethodDescriptor> methodDescriptorsByName) {
          this.collectionFactory = collectionFactory;
          this.portableObjectBoxConverter = portableObjectBoxConverter;
          this.serviceImplementation = serviceImplementation;
          this.serviceInterface = serviceInterface;
          this.guid = guid;
-         this.methodsByName = methodsByName;
+         this.methodDescriptorsByName = methodDescriptorsByName;
       }
 
       public Guid Guid => guid;
 
       public object HandleInvocation(string action, Type[] genericArguments, object[] arguments) {
          var isGenericInvocation = genericArguments.Any();
-         HashSet<MethodInfo> candidates;
-         if (methodsByName.TryGetValue(action, out candidates)) {
-            foreach (var candidate in candidates) {
-               var parameters = candidate.GetParameters();
+         HashSet<MethodDescriptor> methodDescriptors;
+         if (methodDescriptorsByName.TryGetValue(action, out methodDescriptors)) {
+            foreach (var methodDescriptor in methodDescriptors) {
+               var methodInfo = methodDescriptor.MethodInfo;
+               var parameters = methodInfo.GetParameters();
                if (parameters.Length != arguments.Length) {
                   continue;
                }
-               if (isGenericInvocation != candidate.IsGenericMethod) {
+               if (isGenericInvocation != methodInfo.IsGenericMethod) {
                   continue;
                }
-               if (isGenericInvocation && candidate.GetGenericArguments().Length != genericArguments.Length) {
+               if (isGenericInvocation && methodInfo.GetGenericArguments().Length != genericArguments.Length) {
                   continue;
                }
-               var invokedMethod = candidate;
+               var invokedMethod = methodInfo;
                if (isGenericInvocation) {
-                  invokedMethod = candidate.MakeGenericMethod(genericArguments);
+                  invokedMethod = methodInfo.MakeGenericMethod(genericArguments);
                }
-               return invokedMethod.Invoke(serviceImplementation, arguments);
+               var returnValue = invokedMethod.Invoke(serviceImplementation, arguments);
+               if (methodDescriptor.OutRefParameterIndices.None()) {
+                  return returnValue;
+               } else {
+                  return new OutRefMethodResult(
+                     returnValue,
+                     Util.Generate(
+                        methodDescriptor.OutRefParameterIndices.Length,
+                        i => arguments[methodDescriptor.OutRefParameterIndices[i]]));
+               }
             }
          }
          throw new EntryPointNotFoundException("Could not find method " + action + " with given arguments");

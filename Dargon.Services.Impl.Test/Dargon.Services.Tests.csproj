@@ -126,6 +126,8 @@
     <Compile Include="ClusteredServiceNodeFT.cs" />
     <Compile Include="GenericTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="OutTests.cs" />
+    <Compile Include="RefTests.cs" />
     <Compile Include="RyuContainerTests.cs" />
     <Compile Include="ServiceClientProxyImplTests.cs" />
   </ItemGroup>

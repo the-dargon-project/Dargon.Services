@@ -89,9 +89,11 @@
     <Compile Include="Clustering\ClusteringPhaseManager.cs" />
     <Compile Include="LocalServiceRegistryImpl.cs" />
     <Compile Include="Messaging\MessageSender.cs" />
+    <Compile Include="Messaging\OutRefMethodResult.cs" />
     <Compile Include="Messaging\PortableObjectBoxConverter.cs" />
     <Compile Include="Messaging\PortableObjectBox.cs" />
     <Compile Include="RemoteServiceProxyContainerImpl.cs" />
+    <Compile Include="Server\MethodDescriptor.cs" />
     <Compile Include="ServiceClientProxyImpl.cs" />
     <Compile Include="ServicesRyuPackage.cs" />
     <Compile Include="ServiceUnavailableException.cs" />
@@ -120,6 +122,7 @@
     <Compile Include="Server\InvokableServiceContextImpl.cs" />
     <Compile Include="Utilities\AsyncValueBox.cs" />
     <Compile Include="Utilities\AttributeUtilities.cs" />
+    <Compile Include="Utilities\ReflectionUtilities.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

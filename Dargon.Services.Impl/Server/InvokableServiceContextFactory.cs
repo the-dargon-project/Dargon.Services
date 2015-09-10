@@ -1,5 +1,6 @@
 ﻿using ItzWarty.Collections;
 using System;
+using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using Dargon.Services.Messaging;
@@ -21,16 +22,17 @@ namespace Dargon.Services.Server {
       }
       
       public InvokableServiceContext Create(object serviceImplementation, Type serviceInterface, Guid guid) {
-         var methodsByName = collectionFactory.CreateMultiValueDictionary<string, MethodInfo>();
+         var methodDescriptorsByName = collectionFactory.CreateMultiValueDictionary<string, MethodDescriptor>();
          var interfaces = serviceInterface.GetInterfaces().Concat(serviceInterface);
          foreach (var i in interfaces) {
             var interfaceMethods = i.GetMethods(BindingFlags.Instance | BindingFlags.Public);
-            foreach (var method in interfaceMethods) {
-               methodsByName.Add(method.Name, method);
+            foreach (var methodInfo in interfaceMethods) {
+               var outRefParameterIndices = methodInfo.GetOutRefParameterIndices();
+               var methodDescriptor = new MethodDescriptor(methodInfo, outRefParameterIndices);
+               methodDescriptorsByName.Add(methodInfo.Name, methodDescriptor);
             }
          }
-
-         return new InvokableServiceContextImpl(collectionFactory, portableObjectBoxConverter, serviceImplementation, serviceInterface, guid, methodsByName);
+         return new InvokableServiceContextImpl(collectionFactory, portableObjectBoxConverter, serviceImplementation, serviceInterface, guid, methodDescriptorsByName);
       }
    }
 }

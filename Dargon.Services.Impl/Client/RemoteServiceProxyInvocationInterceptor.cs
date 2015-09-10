@@ -24,13 +24,12 @@ namespace Dargon.Services.Client {
 
       public async Task<object> RunInterceptedInvocationAsync(MethodInfo methodInfo, object[] methodArguments) {
          var methodName = methodInfo.Name;
-         var returnType = methodInfo.ReturnType;
          var genericArguments = methodInfo.GetGenericArguments();
 
          validator.ValidateInvocationOrThrow(methodName, genericArguments, methodArguments);
 
          var payload = await clusteringPhaseManager.InvokeServiceCall(serviceGuid, methodName, genericArguments, methodArguments);
-         return translator.TranslateOrThrow(payload, returnType);
+         return translator.TranslateOrThrow(payload, methodInfo, methodArguments);
       }
    }
 }
