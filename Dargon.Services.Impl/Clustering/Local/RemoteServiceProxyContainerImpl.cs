@@ -3,7 +3,7 @@ using Dargon.Services.Client;
 using Dargon.Services.Utilities;
 using ItzWarty.Collections;
 
-namespace Dargon.Services {
+namespace Dargon.Services.Clustering.Local {
    public class RemoteServiceProxyContainerImpl : RemoteServiceProxyContainer {
       private readonly RemoteServiceProxyFactory remoteServiceProxyFactory;
       private readonly IConcurrentDictionary<Type, object> serviceProxiesByInterface;

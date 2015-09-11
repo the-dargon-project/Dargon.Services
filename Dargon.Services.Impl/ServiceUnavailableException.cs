@@ -1,5 +1,5 @@
-﻿using ItzWarty;
-using System;
+﻿using System;
+using ItzWarty;
 
 namespace Dargon.Services {
    public class ServiceUnavailableException : Exception {

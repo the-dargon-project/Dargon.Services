@@ -1,8 +1,7 @@
 ﻿using System;
 using Castle.DynamicProxy;
-using Dargon.Services.Clustering;
+using Dargon.Services.Clustering.Local;
 using Dargon.Services.Messaging;
-using Dargon.Services.Utilities;
 
 namespace Dargon.Services.Client {
    public interface RemoteServiceProxyFactory {

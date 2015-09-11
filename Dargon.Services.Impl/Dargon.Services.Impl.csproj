@@ -43,15 +43,11 @@
       <HintPath>..\packages\Dargon.PortableObjects.Streams.0.3.0\lib\net45\Dargon.PortableObjects.Streams.dll</HintPath>
     </Reference>
     <Reference Include="Dargon.Ryu.Api, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Dargon.Ryu.Api.0.0.1\lib\portable-net45+netcore45+MonoAndroid1+MonoTouch1\Dargon.Ryu.Api.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Dargon.Services.Api, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Dargon.Services.Api.0.5.0\lib\net45\Dargon.Services.Api.dll</HintPath>
+      <HintPath>..\packages\Dargon.Ryu.Api.0.0.4\lib\portable-net45+netcore45+MonoAndroid1+MonoTouch1\Dargon.Ryu.Api.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="ItzWarty.Commons, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\ItzWarty.Commons.0.4.0\lib\portable-net45+netcore45+MonoAndroid1+MonoTouch1\ItzWarty.Commons.dll</HintPath>
+      <HintPath>..\packages\ItzWarty.Commons.0.5.2\lib\portable-net45+netcore45+MonoAndroid1+MonoTouch1\ItzWarty.Commons.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="ItzWarty.Proxies.Api, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -86,46 +82,58 @@
     <Compile Include="Client\RemoteServiceInvokerFactory.cs" />
     <Compile Include="Client\RemoteServiceProxyFactory.cs" />
     <Compile Include="Client\RemoteServiceProxyInvocationInterceptor.cs" />
-    <Compile Include="Clustering\ClusteringPhaseManager.cs" />
+    <Compile Include="Clustering\ClusteringConfiguration.cs" />
+    <Compile Include="Clustering\Local\ClusteringPhaseManager.cs" />
+    <Compile Include="Clustering\Remote\InvalidLocalServiceRegistryImpl.cs" />
+    <Compile Include="Clustering\Remote\LoadBalancedRemoteServiceProxyContainerImpl.cs" />
+    <Compile Include="Clustering\Remote\RemoteServiceClientContainerImpl.cs" />
+    <Compile Include="Clustering\Remote\RemoteServiceClientSource.cs" />
+    <Compile Include="Clustering\Remote\LoadBalancedServiceProxyInterceptorImpl.cs" />
+    <Compile Include="Clustering\Remote\RemoteServiceClientContainer.cs" />
     <Compile Include="LocalServiceRegistryImpl.cs" />
     <Compile Include="Messaging\MessageSender.cs" />
     <Compile Include="Messaging\OutRefMethodResult.cs" />
     <Compile Include="Messaging\PortableObjectBoxConverter.cs" />
     <Compile Include="Messaging\PortableObjectBox.cs" />
-    <Compile Include="RemoteServiceProxyContainerImpl.cs" />
     <Compile Include="Server\MethodDescriptor.cs" />
+    <Compile Include="Clustering\Local\RemoteServiceProxyContainerImpl.cs" />
+    <Compile Include="ServiceClientFactoryImpl.cs" />
     <Compile Include="ServiceClientProxyImpl.cs" />
     <Compile Include="ServicesRyuPackage.cs" />
     <Compile Include="ServiceUnavailableException.cs" />
-    <Compile Include="IClusteringConfiguration.cs" />
-    <Compile Include="Clustering\Host\RemoteInvocationResult.cs" />
+    <Compile Include="Clustering\Local\Host\RemoteInvocationResult.cs" />
     <Compile Include="Server\InvokableServiceContextFactory.cs" />
-    <Compile Include="IServiceClientFactory.cs" />
     <Compile Include="Messaging\X2XServiceInvocation.cs" />
     <Compile Include="Messaging\PortableException.cs" />
-    <Compile Include="ClusteringRole.cs" />
     <Compile Include="Messaging\DspPofContext.cs" />
     <Compile Include="Messaging\G2HServiceBroadcast.cs" />
     <Compile Include="Messaging\G2HServiceUpdate.cs" />
-    <Compile Include="Clustering\Guest\GuestPhase.cs" />
-    <Compile Include="Clustering\Host\IHostContext.cs" />
-    <Compile Include="Clustering\ClusteringPhase.cs" />
-    <Compile Include="Clustering\ClusteringPhaseFactory.cs" />
+    <Compile Include="Clustering\Local\Guest\GuestPhase.cs" />
+    <Compile Include="Clustering\Local\Host\HostContext.cs" />
+    <Compile Include="Clustering\Local\ClusteringPhase.cs" />
+    <Compile Include="Clustering\Local\ClusteringPhaseFactory.cs" />
     <Compile Include="Server\LocalServiceContainer.cs" />
-    <Compile Include="Clustering\Indeterminate\IndeterminateClusteringPhase.cs" />
-    <Compile Include="Clustering\Host\HostPhase.cs" />
-    <Compile Include="ClusteringRoleFlags.cs" />
+    <Compile Include="Clustering\Local\Indeterminate\IndeterminateClusteringPhase.cs" />
+    <Compile Include="Clustering\Local\Host\HostPhase.cs" />
     <Compile Include="Messaging\X2XInvocationResult.cs" />
-    <Compile Include="Clustering\Host\IHostSession.cs" />
-    <Compile Include="Clustering\Host\IHostSessionFactory.cs" />
+    <Compile Include="Clustering\Local\Host\HostSession.cs" />
+    <Compile Include="Clustering\Local\Host\HostSessionFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Server\InvokableServiceContextImpl.cs" />
+    <Compile Include="Utilities\AsyncInterceptorUtilities.cs" />
     <Compile Include="Utilities\AsyncValueBox.cs" />
     <Compile Include="Utilities\AttributeUtilities.cs" />
     <Compile Include="Utilities\ReflectionUtilities.cs" />
+    <Compile Include="Utilities\IAsyncInterceptor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Dargon.Services.Api\Dargon.Services.Api.csproj">
+      <Project>{a9fffc0f-43a6-468c-9836-92db4a32f761}</Project>
+      <Name>Dargon.Services.Api</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

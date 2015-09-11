@@ -1,9 +1,9 @@
-﻿using ItzWarty;
-using ItzWarty.Collections;
-using NLog;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Dargon.Services.Messaging;
+using ItzWarty;
+using ItzWarty.Collections;
+using NLog;
 
 namespace Dargon.Services.Server {
    public interface LocalServiceContainer {

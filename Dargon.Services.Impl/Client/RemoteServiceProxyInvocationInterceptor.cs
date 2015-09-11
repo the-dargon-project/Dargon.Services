@@ -1,11 +1,12 @@
-﻿using Castle.DynamicProxy;
-using Dargon.Services.Clustering;
-using System;
+﻿using System;
 using System.Reflection;
 using System.Threading.Tasks;
+using Castle.DynamicProxy;
+using Dargon.Services.Clustering.Local;
+using Dargon.Services.Utilities;
 
 namespace Dargon.Services.Client {
-   public class RemoteServiceProxyInvocationInterceptor : IInterceptor {
+   public class RemoteServiceProxyInvocationInterceptor : IAsyncInterceptor {
       private readonly Guid serviceGuid;
       private readonly RemoteServiceInvocationValidator validator;
       private readonly InvocationResultTranslator translator;
@@ -19,10 +20,10 @@ namespace Dargon.Services.Client {
       }
 
       public void Intercept(IInvocation invocation) {
-         invocation.ReturnValue = RunInterceptedInvocationAsync(invocation.Method, invocation.Arguments).Result;
+         invocation.ReturnValue = InterceptAsync(invocation.Method, invocation.Arguments).Result;
       }
 
-      public async Task<object> RunInterceptedInvocationAsync(MethodInfo methodInfo, object[] methodArguments) {
+      public async Task<object> InterceptAsync(MethodInfo methodInfo, object[] methodArguments) {
          var methodName = methodInfo.Name;
          var genericArguments = methodInfo.GetGenericArguments();
 

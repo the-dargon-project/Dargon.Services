@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using Dargon.PortableObjects;
 
 namespace Dargon.Services.Messaging {

@@ -5,7 +5,8 @@ using Dargon.PortableObjects;
 using Dargon.PortableObjects.Streams;
 using Dargon.Services.Client;
 using Dargon.Services.Clustering;
-using Dargon.Services.Clustering.Host;
+using Dargon.Services.Clustering.Local;
+using Dargon.Services.Clustering.Local.Host;
 using Dargon.Services.Messaging;
 using Dargon.Services.Server;
 using ItzWarty.Collections;
@@ -14,11 +15,7 @@ using ItzWarty.Networking;
 using ItzWarty.Threading;
 
 namespace Dargon.Services {
-   public interface IServiceClientFactory {
-      IServiceClient CreateOrJoin(IClusteringConfiguration clusteringConfiguration);
-   }
-
-   public class ServiceClientFactory : IServiceClientFactory {
+   public class ServiceClientFactoryImpl : ServiceClientFactory {
       private readonly ProxyGenerator proxyGenerator;
       private readonly IStreamFactory streamFactory;
       private readonly ICollectionFactory collectionFactory;
@@ -27,7 +24,7 @@ namespace Dargon.Services {
       private readonly IPofSerializer pofSerializer;
       private readonly PofStreamsFactory pofStreamsFactory;
 
-      public ServiceClientFactory(ProxyGenerator proxyGenerator, IStreamFactory streamFactory, ICollectionFactory collectionFactory, IThreadingProxy threadingProxy, INetworkingProxy networkingProxy, IPofSerializer pofSerializer, PofStreamsFactory pofStreamsFactory) {
+      public ServiceClientFactoryImpl(ProxyGenerator proxyGenerator, IStreamFactory streamFactory, ICollectionFactory collectionFactory, IThreadingProxy threadingProxy, INetworkingProxy networkingProxy, IPofSerializer pofSerializer, PofStreamsFactory pofStreamsFactory) {
          this.proxyGenerator = proxyGenerator;
          this.streamFactory = streamFactory;
          this.collectionFactory = collectionFactory;
@@ -37,20 +34,42 @@ namespace Dargon.Services {
          this.pofStreamsFactory = pofStreamsFactory;
       }
 
-      static ServiceClientFactory() {
+      static ServiceClientFactoryImpl() {
          AsyncStatics.__SetInvokerIfUninitialized(() => new AsyncServiceInvokerImpl());
       }
 
-      public IServiceClient CreateOrJoin(IClusteringConfiguration clusteringConfiguration) {
-         if (clusteringConfiguration.ClusteringRoleFlags == ClusteringRoleFlags.HostOnly &&
-             !IPAddress.IsLoopback(clusteringConfiguration.RemoteAddress)) {
+      public ServiceClient Local(int port) {
+         return Local(port, ClusteringRole.HostOrGuest);
+      }
+
+      public ServiceClient Local(int port, ClusteringRole clusteringRole) {
+         return Construct(new ClusteringConfigurationImpl(
+            IPAddress.Loopback,
+            port,
+            clusteringRole));
+      }
+
+      public ServiceClient Remote(IPEndPoint endpoint) {
+         return Remote(endpoint.Address, endpoint.Port);
+      }
+
+      public ServiceClient Remote(IPAddress address, int port) {
+         return Construct(new ClusteringConfigurationImpl(
+            address,
+            port,
+            ClusteringRole.GuestOnly));
+      }
+
+      public ServiceClient Construct(ClusteringConfiguration clusteringConfiguration) {
+         if (clusteringConfiguration.ClusteringRole == ClusteringRole.HostOnly &&
+             !IPAddress.IsLoopback(clusteringConfiguration.Address)) {
             throw new InvalidOperationException("It is impossible host a Dargon Service cluster located at a remote address!");
          }
 
          LocalServiceContainer localServiceContainer = new LocalServiceContainerImpl(collectionFactory);
          ClusteringPhaseManager clusteringPhaseManager = new ClusteringPhaseManagerImpl();
          PortableObjectBoxConverter portableObjectBoxConverter = new PortableObjectBoxConverter(streamFactory, pofSerializer);
-         IHostSessionFactory hostSessionFactory = new HostSessionFactory(threadingProxy, collectionFactory, pofSerializer, pofStreamsFactory, portableObjectBoxConverter);
+         HostSessionFactory hostSessionFactory = new HostSessionFactoryImpl(threadingProxy, collectionFactory, pofSerializer, pofStreamsFactory, portableObjectBoxConverter);
          ClusteringPhaseFactory clusteringPhaseFactory = new ClusteringPhaseFactoryImpl(collectionFactory, threadingProxy, networkingProxy, pofStreamsFactory, hostSessionFactory, clusteringConfiguration, portableObjectBoxConverter, clusteringPhaseManager);
          ClusteringPhase initialClusteringPhase = clusteringPhaseFactory.CreateIndeterminatePhase(localServiceContainer);
          clusteringPhaseManager.Transition(initialClusteringPhase);

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using Dargon.PortableObjects;
-using ItzWarty;
 
 namespace Dargon.Services.Messaging {
    public class PortableObjectBox : IPortableObject, IEquatable<PortableObjectBox> {

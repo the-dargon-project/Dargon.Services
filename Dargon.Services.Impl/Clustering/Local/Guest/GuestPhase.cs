@@ -1,18 +1,16 @@
-﻿using Dargon.PortableObjects.Streams;
+﻿using System;
+using System.Diagnostics;
+using System.Threading;
+using System.Threading.Tasks;
+using Dargon.PortableObjects.Streams;
 using Dargon.Services.Messaging;
 using Dargon.Services.Server;
 using Dargon.Services.Utilities;
 using ItzWarty;
 using ItzWarty.Collections;
-using ItzWarty.Networking;
-using System;
-using System.Diagnostics;
-using System.Threading;
-using System.Threading.Tasks;
 using NLog;
-using NLog.LayoutRenderers;
 
-namespace Dargon.Services.Clustering.Guest {
+namespace Dargon.Services.Clustering.Local.Guest {
    public class GuestPhase : ClusteringPhase {
       private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 

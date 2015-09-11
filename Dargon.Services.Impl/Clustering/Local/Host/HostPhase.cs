@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Net.Sockets;
 using System.Threading.Tasks;
@@ -9,20 +8,20 @@ using ItzWarty.Networking;
 using ItzWarty.Threading;
 using NLog;
 
-namespace Dargon.Services.Clustering.Host {
+namespace Dargon.Services.Clustering.Local.Host {
    public class HostPhase : ClusteringPhase {
       private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
       private readonly IThreadingProxy threadingProxy;
-      private readonly IHostSessionFactory hostSessionFactory;
-      private readonly IHostContext hostContext;
+      private readonly HostSessionFactory hostSessionFactory;
+      private readonly HostContext hostContext;
       private readonly IListenerSocket listenerSocket;
       private readonly ICancellationTokenSource cancellationTokenSource;
       private readonly IThread listenerThread;
-      private readonly IConcurrentSet<IHostSession> sessions;
+      private readonly IConcurrentSet<HostSession> sessions;
       private bool disposed = false;
 
-      public HostPhase(ICollectionFactory collectionFactory, IThreadingProxy threadingProxy, IHostSessionFactory hostSessionFactory, IHostContext hostContext, IListenerSocket listenerSocket) {
+      public HostPhase(ICollectionFactory collectionFactory, IThreadingProxy threadingProxy, HostSessionFactory hostSessionFactory, HostContext hostContext, IListenerSocket listenerSocket) {
          this.threadingProxy = threadingProxy;
          this.hostSessionFactory = hostSessionFactory;
          this.hostContext = hostContext;
@@ -30,7 +29,7 @@ namespace Dargon.Services.Clustering.Host {
 
          this.cancellationTokenSource = threadingProxy.CreateCancellationTokenSource();
          this.listenerThread = threadingProxy.CreateThread(ListenerThreadEntryPoint, new ThreadCreationOptions { IsBackground = true });
-         sessions = collectionFactory.CreateConcurrentSet<IHostSession>();
+         sessions = collectionFactory.CreateConcurrentSet<HostSession>();
       }
 
       public void HandleEnter() {
@@ -48,7 +47,7 @@ namespace Dargon.Services.Clustering.Host {
 
       internal async Task ProcessSessionAsync(IConnectedSocket socket) {
          logger.Info("Entering Host Phase SessionThreadEntryPoint");
-         IHostSession session = null;
+         HostSession session = null;
          try {
             session = hostSessionFactory.Create(hostContext, socket);
             sessions.Add(session);

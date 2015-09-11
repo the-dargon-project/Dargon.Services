@@ -3,7 +3,7 @@ using Dargon.PortableObjects;
 using ItzWarty.Collections;
 
 namespace Dargon.Services.Messaging {
-   internal class G2HServiceBroadcast : IPortableObject, IEquatable<G2HServiceBroadcast> {           
+   internal class G2HServiceBroadcast : IPortableObject {           
       private IReadOnlySet<Guid> serviceGuids;
 
       public G2HServiceBroadcast() { }
@@ -20,14 +20,6 @@ namespace Dargon.Services.Messaging {
 
       public void Deserialize(IPofReader reader) {
          serviceGuids = reader.ReadCollection<Guid, HashSet<Guid>>(0);
-      }
-
-      public override bool Equals(object obj) {
-         return obj is G2HServiceBroadcast && Equals((G2HServiceBroadcast)obj);
-      }
-
-      public bool Equals(G2HServiceBroadcast other) {
-         return serviceGuids.SetEquals(other.serviceGuids);
       }
    }
 }

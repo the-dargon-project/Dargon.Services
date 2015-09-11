@@ -1,4 +1,4 @@
-namespace Dargon.Services.Clustering.Host {
+namespace Dargon.Services.Clustering.Local.Host {
    public class RemoteInvocationResult {
       public RemoteInvocationResult(bool success, object returnValue) {
          Success = success;

@@ -1,27 +1,27 @@
-﻿using Dargon.PortableObjects.Streams;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Threading;
+using System.Threading.Tasks;
+using Dargon.PortableObjects.Streams;
 using Dargon.Services.Messaging;
 using Dargon.Services.Utilities;
 using ItzWarty;
 using ItzWarty.Collections;
 using ItzWarty.Threading;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Threading;
-using System.Threading.Tasks;
 using Nito.AsyncEx;
 using NLog;
 
-namespace Dargon.Services.Clustering.Host {
-   public interface IHostSession : IDisposable {
+namespace Dargon.Services.Clustering.Local.Host {
+   public interface HostSession : IDisposable {
       Task StartAndAwaitShutdown();
       Task<RemoteInvocationResult> TryRemoteInvoke(Guid serviceGuid, string methodName, Type[] genericArguments, object[] arguments);
    }
 
-   public class HostSession : IHostSession, IRemoteInvokable {
+   public class HostSessionImpl : HostSession, RemoteInvokable {
       private readonly static Logger logger = LogManager.GetCurrentClassLogger();
 
-      private readonly IHostContext hostContext;
+      private readonly HostContext hostContext;
       private readonly ICancellationTokenSource cancellationTokenSource;
       private readonly MessageSender messageSender;
       private readonly PofDispatcher pofDispatcher;
@@ -30,7 +30,7 @@ namespace Dargon.Services.Clustering.Host {
       private readonly IConcurrentDictionary<uint, AsyncValueBox> invocationResponseBoxesById;
       private readonly AsyncManualResetEvent shutdownLatch = new AsyncManualResetEvent();
 
-      public HostSession(IHostContext hostContext, ICancellationTokenSource cancellationTokenSource, MessageSender messageSender, PofDispatcher pofDispatcher, IConcurrentSet<Guid> remotelyHostedServices, IUniqueIdentificationSet availableInvocationIds, IConcurrentDictionary<uint, AsyncValueBox> invocationResponseBoxesById) {
+      public HostSessionImpl(HostContext hostContext, ICancellationTokenSource cancellationTokenSource, MessageSender messageSender, PofDispatcher pofDispatcher, IConcurrentSet<Guid> remotelyHostedServices, IUniqueIdentificationSet availableInvocationIds, IConcurrentDictionary<uint, AsyncValueBox> invocationResponseBoxesById) {
          this.hostContext = hostContext;
          this.cancellationTokenSource = cancellationTokenSource;
          this.messageSender = messageSender;

@@ -1,5 +1,5 @@
 using System;
-using Dargon.Services.Clustering;
+using Dargon.Services.Clustering.Local;
 using Dargon.Services.Server;
 using ItzWarty.Collections;
 
@@ -35,10 +35,8 @@ namespace Dargon.Services {
          }
       }
 
-      public void UnregisterService(object serviceImplementation, Guid serviceGuid) {
-         if (serviceImplementation == null) {
-            throw new ArgumentNullException(nameof(serviceImplementation));
-         } else if (serviceGuid.Equals(Guid.Empty)) {
+      public void UnregisterService(Guid serviceGuid) {
+         if (serviceGuid.Equals(Guid.Empty)) {
             throw new ArgumentException($"Provided guid for removed service was zero guid!");
          } else {
             InvokableServiceContext context;

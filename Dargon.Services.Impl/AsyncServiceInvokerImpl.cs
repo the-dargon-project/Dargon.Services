@@ -1,12 +1,9 @@
-﻿using Castle.DynamicProxy;
-using ItzWarty;
-using System;
+﻿using System;
 using System.Diagnostics;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
-using Dargon.Services.Client;
+using Dargon.Services.Utilities;
 
 namespace Dargon.Services {
    public class AsyncServiceInvokerImpl : AsyncServiceInvoker {
@@ -36,17 +33,11 @@ namespace Dargon.Services {
                invocationReturnValue = method.Invoke(null, methodArguments);
             } else {
                var methodObject = await EvaluateAsync(methodCallExpression.Object);
-               var methodObjectType = methodObject.GetType();
-               DebugWriteLine("!! methodObject: " + methodObject);
-               if (methodObjectType.FullName.Contains("Castle.Proxies")) {
-                  var interceptors = (IInterceptor[])methodObjectType.GetField("__interceptors").GetValue(methodObject);
-                  if (interceptors.Length != 1) {
-                     throw new InvalidOperationException("Encountered multiple interceptors for type " + methodObjectType + ": " + interceptors.Join(", "));
-                  }
 
-                  var interceptor = (RemoteServiceProxyInvocationInterceptor)interceptors[0];
+               IAsyncInterceptor asyncInterceptor;
+               if (AsyncInterceptorUtilities.TryGetAsyncInterceptor(methodObject, out asyncInterceptor)) {
                   DebugWriteLine($"!> Asynchronously invoking service method {methodCallExpression.Method.Name}!");
-                  invocationReturnValue = await interceptor.RunInterceptedInvocationAsync(methodCallExpression.Method, methodArguments);
+                  invocationReturnValue = await asyncInterceptor.InterceptAsync(methodCallExpression.Method, methodArguments);
                } else {
                   var method = methodCallExpression.Method;
                   invocationReturnValue = method.Invoke(methodObject, methodArguments);
@@ -75,7 +66,6 @@ namespace Dargon.Services {
                   var thisExpression = await EvaluateAsync(memberExpression.Expression);
                   DebugWriteLine("!! property: " + getterMethod + " " + memberExpression.NodeType + " " + memberExpression.Member.Name + " " + memberExpression.Member.MemberType);
                   return await EvaluateAsync(Expression.Call(Expression.Constant(thisExpression), getterMethod));
-                  break;
                default:
                   DebugWriteLine(memberExpression.ToString());
                   Console.WriteLine(memberExpression.NodeType + " " + memberExpression.GetType() + " " + memberExpression.CanReduce);
@@ -133,9 +123,11 @@ namespace Dargon.Services {
       }
 
       private static void DebugWriteLine(string output) {
+#pragma warning disable 162
          if (kDebugEnabled) {
             Debug.WriteLine(output);
          }
+#pragma warning restore 162
       }
    }
 }

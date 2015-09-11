@@ -1,23 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Castle.DynamicProxy;
+﻿using Castle.DynamicProxy;
 using Dargon.Ryu;
+using Dargon.Services.Clustering;
+using Dargon.Services.Clustering.Local;
 using Dargon.Services.Messaging;
 
 namespace Dargon.Services {
    public class ServicesRyuPackage : RyuPackageV1 {
       public ServicesRyuPackage() {
          PofContext<DspPofContext>();
-         Singleton<IServiceClientFactory, ServiceClientFactory>();
+         Singleton<ServiceClientFactory, ServiceClientFactoryImpl>();
          Singleton<LocalServiceRegistry, LocalServiceRegistryImpl>();
          Singleton<RemoteServiceProxyContainer, RemoteServiceProxyContainerImpl>();
-         Singleton<IServiceClient, ServiceClientProxyImpl>();
+         Singleton<ServiceClient, ServiceClientProxyImpl>();
          Singleton<ServiceClientProxyImpl>(
-            ryu => ryu.Get<IServiceClientFactory>()
-                      .CreateOrJoin(ryu.Get<IClusteringConfiguration>())
+            ryu => ryu.Get<ServiceClientFactoryImpl>()
+                      .Construct(ryu.Get<ClusteringConfiguration>())
          );
          Singleton<ProxyGenerator>(ryu => new ProxyGenerator(), RyuTypeFlags.IgnoreDuplicates);
       }

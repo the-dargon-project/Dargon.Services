@@ -1,14 +1,14 @@
-using Dargon.Services.Server;
-using ItzWarty.Networking;
-using ItzWarty.Threading;
-using NLog;
 using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
+using Dargon.Services.Server;
+using ItzWarty.Networking;
+using ItzWarty.Threading;
+using NLog;
 
-namespace Dargon.Services.Clustering.Indeterminate {
+namespace Dargon.Services.Clustering.Local.Indeterminate {
    public class IndeterminateClusteringPhase : ClusteringPhase {
       private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
@@ -17,12 +17,12 @@ namespace Dargon.Services.Clustering.Indeterminate {
       private readonly IThreadingProxy threadingProxy;
       private readonly INetworkingProxy networkingProxy;
       private readonly ClusteringPhaseFactory clusteringPhaseFactory;
-      private readonly IClusteringConfiguration clusteringConfiguration;
+      private readonly ClusteringConfiguration clusteringConfiguration;
       private readonly LocalServiceContainer localServiceContainer;
       private readonly ClusteringPhaseManager clusteringPhaseManager;
       private readonly SemaphoreSlim phaseTransitionedLatch = new SemaphoreSlim(0, int.MaxValue);
 
-      public IndeterminateClusteringPhase(IThreadingProxy threadingProxy, INetworkingProxy networkingProxy, ClusteringPhaseFactory clusteringPhaseFactory, IClusteringConfiguration clusteringConfiguration, LocalServiceContainer localServiceContainer, ClusteringPhaseManager clusteringPhaseManager) {
+      public IndeterminateClusteringPhase(IThreadingProxy threadingProxy, INetworkingProxy networkingProxy, ClusteringPhaseFactory clusteringPhaseFactory, ClusteringConfiguration clusteringConfiguration, LocalServiceContainer localServiceContainer, ClusteringPhaseManager clusteringPhaseManager) {
          this.threadingProxy = threadingProxy;
          this.networkingProxy = networkingProxy;
          this.clusteringPhaseFactory = clusteringPhaseFactory;
@@ -34,9 +34,9 @@ namespace Dargon.Services.Clustering.Indeterminate {
       public void HandleEnter() {
          IListenerSocket listener = null;
          IConnectedSocket client = null;
-         var connectEndpoint = networkingProxy.CreateEndPoint(clusteringConfiguration.RemoteAddress, clusteringConfiguration.Port);
-         var hostAllowed = !clusteringConfiguration.ClusteringRoleFlags.HasFlag(ClusteringRoleFlags.GuestOnly) && IPAddress.IsLoopback(clusteringConfiguration.RemoteAddress);
-         var guestAllowed = !clusteringConfiguration.ClusteringRoleFlags.HasFlag(ClusteringRoleFlags.HostOnly);
+         var connectEndpoint = networkingProxy.CreateEndPoint(clusteringConfiguration.Address, clusteringConfiguration.Port);
+         var hostAllowed = !clusteringConfiguration.ClusteringRole.HasFlag(ClusteringRole.GuestOnly) && IPAddress.IsLoopback(clusteringConfiguration.Address);
+         var guestAllowed = !clusteringConfiguration.ClusteringRole.HasFlag(ClusteringRole.HostOnly);
          while (listener == null && client == null) {
             if (hostAllowed && TryCreateHostListener(clusteringConfiguration, out listener)) {
                break;
@@ -66,7 +66,7 @@ namespace Dargon.Services.Clustering.Indeterminate {
          }
       }
 
-      private bool TryCreateHostListener(IClusteringConfiguration configuration, out IListenerSocket listener) {
+      private bool TryCreateHostListener(ClusteringConfiguration configuration, out IListenerSocket listener) {
          try {
             listener = networkingProxy.CreateListenerSocket(configuration.Port);
             return true;

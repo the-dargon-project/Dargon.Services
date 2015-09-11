@@ -1,21 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Dargon.Ryu;
 using NMockito;
 using Xunit;
 
 namespace Dargon.Services {
    public class RyuContainerTests : NMockitoInstance {
-      public RyuContainerTests() {
-
-      }
-
       [Fact]
       public void Run() {
-         Console.WriteLine(typeof(IServiceClient).FullName);
+         Console.WriteLine(typeof(ServiceClient).FullName);
          var ryu = new RyuFactory().Create();
          ryu.Setup();
 

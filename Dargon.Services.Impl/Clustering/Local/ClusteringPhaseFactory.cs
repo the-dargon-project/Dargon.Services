@@ -1,7 +1,7 @@
 ﻿using Dargon.PortableObjects.Streams;
-using Dargon.Services.Clustering.Guest;
-using Dargon.Services.Clustering.Host;
-using Dargon.Services.Clustering.Indeterminate;
+using Dargon.Services.Clustering.Local.Guest;
+using Dargon.Services.Clustering.Local.Host;
+using Dargon.Services.Clustering.Local.Indeterminate;
 using Dargon.Services.Messaging;
 using Dargon.Services.Server;
 using Dargon.Services.Utilities;
@@ -9,7 +9,7 @@ using ItzWarty.Collections;
 using ItzWarty.Networking;
 using ItzWarty.Threading;
 
-namespace Dargon.Services.Clustering {
+namespace Dargon.Services.Clustering.Local {
    public interface ClusteringPhaseFactory {
       ClusteringPhase CreateIndeterminatePhase(LocalServiceContainer localServiceContainer);
       ClusteringPhase CreateHostPhase(LocalServiceContainer localServiceContainer, IListenerSocket listenerSocket);
@@ -20,12 +20,12 @@ namespace Dargon.Services.Clustering {
       private readonly IThreadingProxy threadingProxy;
       private readonly INetworkingProxy networkingProxy;
       private readonly PofStreamsFactory pofStreamsFactory;
-      private readonly IHostSessionFactory hostSessionFactory;
-      private readonly IClusteringConfiguration clusteringConfiguration;
+      private readonly HostSessionFactory hostSessionFactory;
+      private readonly ClusteringConfiguration clusteringConfiguration;
       private readonly PortableObjectBoxConverter portableObjectBoxConverter;
       private readonly ClusteringPhaseManager clusteringPhaseManager;
 
-      public ClusteringPhaseFactoryImpl(ICollectionFactory collectionFactory, IThreadingProxy threadingProxy, INetworkingProxy networkingProxy, PofStreamsFactory pofStreamsFactory, IHostSessionFactory hostSessionFactory, IClusteringConfiguration clusteringConfiguration, PortableObjectBoxConverter portableObjectBoxConverter, ClusteringPhaseManager clusteringPhaseManager) {
+      public ClusteringPhaseFactoryImpl(ICollectionFactory collectionFactory, IThreadingProxy threadingProxy, INetworkingProxy networkingProxy, PofStreamsFactory pofStreamsFactory, HostSessionFactory hostSessionFactory, ClusteringConfiguration clusteringConfiguration, PortableObjectBoxConverter portableObjectBoxConverter, ClusteringPhaseManager clusteringPhaseManager) {
          this.collectionFactory = collectionFactory;
          this.threadingProxy = threadingProxy;
          this.networkingProxy = networkingProxy;
@@ -42,7 +42,7 @@ namespace Dargon.Services.Clustering {
       }
 
       public ClusteringPhase CreateHostPhase(LocalServiceContainer localServiceContainer, IListenerSocket listenerSocket) {
-         var hostContext = new HostContext(portableObjectBoxConverter, localServiceContainer);
+         var hostContext = new HostContextImpl(portableObjectBoxConverter, localServiceContainer);
          var phase = new HostPhase(collectionFactory, threadingProxy, hostSessionFactory, hostContext, listenerSocket);
          return phase;
       }

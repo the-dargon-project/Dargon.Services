@@ -1,4 +1,9 @@
-﻿using Castle.DynamicProxy;
+﻿using System;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
+using System.Threading;
+using Castle.Core.Internal;
+using Castle.DynamicProxy;
 using Dargon.PortableObjects;
 using Dargon.PortableObjects.Streams;
 using Dargon.Services.Messaging;
@@ -8,18 +13,11 @@ using ItzWarty.IO;
 using ItzWarty.Networking;
 using ItzWarty.Threading;
 using NMockito;
-using System;
-using System.Diagnostics;
-using System.Runtime.InteropServices;
-using System.Threading;
-using Castle.Core.Internal;
 using Xunit;
 
 namespace Dargon.Services {
    public class ClusteredServiceNodeFT : NMockitoInstance {
       private const int kTestPort = 20001;
-      private const int kHeartBeatIntervalMilliseconds = 30000;
-      private readonly IClusteringConfiguration clusteringConfiguration = new ClusteringConfiguration(kTestPort, kHeartBeatIntervalMilliseconds);
 
       private const string kVersioningServiceGuid = "1D98294F-FA5A-472F-91F7-2A96CF973531";
       private const string kVersioningServiceVersionString = "123.343.5-asdf";
@@ -30,11 +28,7 @@ namespace Dargon.Services {
       private const string kShopServiceGuid = "EFBE6150-CC18-441C-9757-23C41823F8C3";
       private const string kShopServiceStatus = "Okay";
 
-      public ClusteredServiceNodeFT() {
-         
-      }
-
-      private ServiceClientFactory CreateServiceClientFactory(params PofContext[] pofContexts) {
+      private ServiceClientFactoryImpl CreateServiceClientFactory(params PofContext[] pofContexts) {
          var proxyGenerator = new ProxyGenerator();
          ICollectionFactory collectionFactory = new CollectionFactory();
          IThreadingFactory threadingFactory = new ThreadingFactory();
@@ -52,23 +46,23 @@ namespace Dargon.Services {
          PofStreamsFactory pofStreamsFactory = new PofStreamsFactoryImpl(threadingProxy, streamFactory, pofSerializer);
          PortableObjectBoxConverter portableObjectBoxConverter = new PortableObjectBoxConverter(streamFactory, pofSerializer);
          InvokableServiceContextFactory invokableServiceContextFactory = new InvokableServiceContextFactoryImpl(collectionFactory, portableObjectBoxConverter);
-         return new ServiceClientFactory(proxyGenerator, streamFactory, collectionFactory, threadingProxy, networkingProxy, pofSerializer, pofStreamsFactory);
+         return new ServiceClientFactoryImpl(proxyGenerator, streamFactory, collectionFactory, threadingProxy, networkingProxy, pofSerializer, pofStreamsFactory);
       }
 
       [Fact]
       public void Run() {
          Action<string> log = x => Debug.WriteLine("T: " + x);
          log("Spawning Service Node 1.");
-         var serviceNode1 = CreateServiceClientFactory(new VersioningServicePofContext(), new LoginServicePofContext()).CreateOrJoin(clusteringConfiguration);
+         var serviceNode1 = CreateServiceClientFactory(new VersioningServicePofContext(), new LoginServicePofContext()).Local(kTestPort);
          serviceNode1.RegisterService(new VersioningService(), typeof(IVersioningService));
 
          log("Spawning Service Node 2.");
-         var serviceNode2 = CreateServiceClientFactory(new VersioningServicePofContext(), new LoginServicePofContext(), new QueueServicePofContext()).CreateOrJoin(clusteringConfiguration);
+         var serviceNode2 = CreateServiceClientFactory(new VersioningServicePofContext(), new LoginServicePofContext(), new QueueServicePofContext()).Local(kTestPort);
          serviceNode2.RegisterService(new LoginService(), typeof(ILoginService));
          serviceNode2.RegisterService(new ShopService(), typeof(IShopService));
 
          log("Spawning Service Node 3.");
-         var serviceNode3 = CreateServiceClientFactory(new LoginServicePofContext(), new QueueServicePofContext()).CreateOrJoin(clusteringConfiguration);
+         var serviceNode3 = CreateServiceClientFactory(new LoginServicePofContext(), new QueueServicePofContext()).Local(kTestPort);
          serviceNode3.RegisterService(new QueueService(), typeof(IQueueService));
 
          // Give 500ms for nodes to discover services.
@@ -84,7 +78,7 @@ namespace Dargon.Services {
          RunHostClientLogic(serviceNode3, false, false, true, true);
       }
 
-      private void RunHostClientLogic(IServiceClient node, bool testVersioning, bool testLogin, bool testShop, bool testQueue) {
+      private void RunHostClientLogic(ServiceClient node, bool testVersioning, bool testLogin, bool testShop, bool testQueue) {
          Action<string> log = x => Debug.WriteLine("  N: " + x);
 
          if (testVersioning) {

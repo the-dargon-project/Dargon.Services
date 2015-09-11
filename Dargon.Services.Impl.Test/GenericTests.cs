@@ -1,7 +1,6 @@
-﻿using Dargon.Ryu;
+﻿using System.Runtime.InteropServices;
+using Dargon.Ryu;
 using NMockito;
-using System;
-using System.Runtime.InteropServices;
 using Xunit;
 
 namespace Dargon.Services {
@@ -12,14 +11,12 @@ namespace Dargon.Services {
       public void Run() {
          var ryu = new RyuFactory().Create();
          ryu.Setup();
-         var serviceClientFactory = ryu.Get<IServiceClientFactory>();
-         var serverClusteringConfiguration = new ClusteringConfiguration(kTestServicePort, 0, ClusteringRoleFlags.HostOnly);
-         var serverServiceClient = serviceClientFactory.CreateOrJoin(serverClusteringConfiguration);
+         var serviceClientFactory = ryu.Get<ServiceClientFactory>();
+         var serverServiceClient = serviceClientFactory.Local(kTestServicePort, ClusteringRole.HostOnly);
          var dependency = CreateMock<WrapperClass<int, string>.Dependency<bool>>();
          serverServiceClient.RegisterService(new WrapperClass<int, string>.BoxServiceImpl<bool>(dependency), typeof(WrapperClass<int, string>.BoxService<bool>));
-
-         var clientClusteringConfiguration = new ClusteringConfiguration(kTestServicePort, 0, ClusteringRoleFlags.GuestOnly);
-         var clientServiceClient = serviceClientFactory.CreateOrJoin(clientClusteringConfiguration);
+         
+         var clientServiceClient = serviceClientFactory.Local(kTestServicePort, ClusteringRole.GuestOnly);
 
          var remoteService = clientServiceClient.GetService<WrapperClass<int, string>.BoxService<bool>>();
          remoteService.Put(10, "hello", true, 123);

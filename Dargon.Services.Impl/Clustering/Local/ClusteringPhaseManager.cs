@@ -1,12 +1,11 @@
-﻿using Dargon.Services.Server;
-using ItzWarty;
-using System;
-using System.Diagnostics;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Dargon.Services.Server;
+using ItzWarty;
 using NLog;
 
-namespace Dargon.Services.Clustering {
+namespace Dargon.Services.Clustering.Local {
    public interface ClusteringPhaseManager : IDisposable {
       void Transition(ClusteringPhase nextClusteringPhase);
       void HandleServiceRegistered(InvokableServiceContext invokableServiceContext);

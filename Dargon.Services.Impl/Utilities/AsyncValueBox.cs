@@ -1,9 +1,9 @@
-﻿using ItzWarty.Threading;
-using System;
+﻿using System;
 using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Dargon.Services.Messaging;
+using ItzWarty.Threading;
 
 namespace Dargon.Services.Utilities {
    public interface AsyncValueBox {

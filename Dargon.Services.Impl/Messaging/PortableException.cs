@@ -2,7 +2,7 @@ using System;
 using Dargon.PortableObjects;
 
 namespace Dargon.Services.Messaging {
-   public class PortableException : Exception, IPortableObject, IEquatable<PortableException> {
+   public class PortableException : Exception, IPortableObject {
       private string type;
       private string message;
       private string stackTrace;
@@ -36,17 +36,5 @@ namespace Dargon.Services.Messaging {
       public override string Message => message;
       public override string StackTrace => stackTrace;
       public new PortableException InnerException => innerException;
-
-      public override bool Equals(object other) {
-         return other != null && Equals(other as PortableException);
-      }
-
-      public bool Equals(PortableException other) {
-         return other != null && 
-                Equals(type, other.type) && 
-                Equals(message, other.message) && 
-                Equals(stackTrace, other.stackTrace) && 
-                Equals(innerException, other.innerException);
-      }
    }
 }

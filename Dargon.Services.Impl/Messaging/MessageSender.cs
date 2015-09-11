@@ -1,7 +1,7 @@
-﻿using Dargon.PortableObjects.Streams;
-using ItzWarty.Collections;
-using System;
+﻿using System;
 using System.Threading.Tasks;
+using Dargon.PortableObjects.Streams;
+using ItzWarty.Collections;
 
 namespace Dargon.Services.Messaging {
    public interface MessageSender : IDisposable {
