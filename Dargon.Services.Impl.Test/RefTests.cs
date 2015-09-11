@@ -10,7 +10,7 @@ namespace Dargon.Services {
    public class RefTests : NMockitoInstance {
       private static readonly Guid kWartyAccountId = Guid.NewGuid();
       private static readonly Guid kFredAccountId = Guid.NewGuid();
-      private const int kTestServicePort = 30001;
+      private const int kTestServicePort = 30041;
 
       [Fact]
       public void Run() {

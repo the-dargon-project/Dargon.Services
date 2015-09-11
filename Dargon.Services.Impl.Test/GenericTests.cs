@@ -5,7 +5,7 @@ using Xunit;
 
 namespace Dargon.Services {
    public class GenericTests : NMockitoInstance {
-      private const int kTestServicePort = 31000;
+      private const int kTestServicePort = 31040;
 
       [Fact]
       public void Run() {
