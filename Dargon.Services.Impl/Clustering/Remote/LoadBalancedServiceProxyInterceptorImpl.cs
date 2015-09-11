@@ -7,7 +7,7 @@ using Castle.DynamicProxy;
 using Dargon.Services.Utilities;
 
 namespace Dargon.Services.Clustering.Remote {
-   public class LoadBalancedServiceProxyInterceptorImpl<TService> : IAsyncInterceptor where TService : class {
+   public class LoadBalancedServiceProxyInterceptorImpl<TService> : AsyncInterceptorBase where TService : class {
       private readonly object updateSynchronization = new object();
       private readonly RemoteServiceClientSource remoteServiceClientsSource;
       private readonly Guid serviceGuid;
@@ -20,11 +20,7 @@ namespace Dargon.Services.Clustering.Remote {
          this.serviceGuid = serviceGuid;
       }
 
-      public void Intercept(IInvocation invocation) {
-         invocation.ReturnValue = InterceptAsync(invocation.Method, invocation.Arguments).Result;
-      }
-
-      public Task<object> InterceptAsync(MethodInfo methodInfo, object[] methodArguments) {
+      public override Task<object> InterceptAsync(MethodInfo methodInfo, object[] methodArguments) {
          SynchronizeServices();
 
          var count = Interlocked.Increment(ref counter);

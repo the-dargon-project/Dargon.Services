@@ -6,8 +6,10 @@ using ItzWarty;
 using System;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.ExceptionServices;
 using Dargon.Services.Messaging;
 using ItzWarty.Collections;
+using Nito.AsyncEx;
 
 namespace Dargon.Services.Server {
    public interface InvokableServiceContext {
@@ -55,7 +57,13 @@ namespace Dargon.Services.Server {
                if (isGenericInvocation) {
                   invokedMethod = methodInfo.MakeGenericMethod(genericArguments);
                }
-               var returnValue = invokedMethod.Invoke(serviceImplementation, arguments);
+               object returnValue;
+               try {
+                  returnValue = invokedMethod.Invoke(serviceImplementation, arguments);
+               } catch (TargetInvocationException tie) {
+                  ExceptionDispatchInfo.Capture(tie.InnerException).Throw();
+                  throw new InvalidOperationException(nameof(InvokableServiceContextImpl) + " Unreachable Code");
+               }
                if (methodDescriptor.OutRefParameterIndices.None()) {
                   return returnValue;
                } else {

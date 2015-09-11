@@ -124,6 +124,7 @@
     <Compile Include="Clustering\Local\Host\HostSessionFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Server\InvokableServiceContextImpl.cs" />
+    <Compile Include="Utilities\AsyncInterceptorBase.cs" />
     <Compile Include="Utilities\AsyncInterceptorUtilities.cs" />
     <Compile Include="Utilities\AsyncValueBox.cs" />
     <Compile Include="Utilities\AttributeUtilities.cs" />

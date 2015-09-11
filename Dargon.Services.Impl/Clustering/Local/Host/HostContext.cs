@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Dargon.PortableObjects;
 using Dargon.Services.Messaging;
 using Dargon.Services.Server;
 using ItzWarty.Collections;
@@ -66,7 +67,11 @@ namespace Dargon.Services.Clustering.Local.Host {
             logger.Trace($"Successfully invoked service {serviceGuid} method {methodName} with {genericArguments.Length} generic arguments and {methodArguments.Length} arguments!");
          } catch (Exception e) {
             logger.Trace($"Invocation of service {serviceGuid} method {methodName} with {genericArguments.Length} generic arguments and {methodArguments.Length} arguments, {e}");
-            result = new PortableException(e);
+            if (e is IPortableObject) {
+               result = e;
+            } else {
+               result = new PortableException(e);
+            }
          }
          return result;
       }
@@ -100,8 +105,12 @@ namespace Dargon.Services.Clustering.Local.Host {
                }
             }
          } catch (Exception e) {
-            logger.Trace($"Could not remotely invoke service {serviceGuid} method {methodName} with {methodArgumentsDto.Length} bytes of arguments.");
-            result = new PortableException(e);
+            logger.Trace($"Remove invocation of service {serviceGuid} method {methodName} with {methodArgumentsDto.Length} bytes of arguments threw", e);
+            if (e is IPortableObject) {
+               result = e;
+            } else {
+               result = new PortableException(e);
+            }
          }
          return result;
       }

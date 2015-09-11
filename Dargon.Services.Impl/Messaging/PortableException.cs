@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using Dargon.PortableObjects;
 
 namespace Dargon.Services.Messaging {
@@ -6,7 +7,7 @@ namespace Dargon.Services.Messaging {
       private string type;
       private string message;
       private string stackTrace;
-      private PortableException innerException;
+      private Exception innerException;
 
       public PortableException() { }
 
@@ -16,7 +17,9 @@ namespace Dargon.Services.Messaging {
          this.type = exceptionType;
          this.message = exceptionMessage;
          this.stackTrace = exceptionStackTrace;
-         this.innerException = innerException == null ? null : new PortableException(innerException);
+         this.innerException = innerException == null ? null : (innerException is IPortableObject ? innerException : new PortableException(innerException));
+
+         SetInnerException(innerException);
       }
 
       public void Serialize(IPofWriter writer) {
@@ -30,11 +33,19 @@ namespace Dargon.Services.Messaging {
          type = reader.ReadString(0);
          message = reader.ReadString(1);
          stackTrace = (string)reader.ReadObject(2);
-         innerException = reader.ReadObject<PortableException>(3);
+         innerException = (Exception)reader.ReadObject(3);
+
+         SetInnerException(innerException);
       }
 
+      public string ExceptionType => type;
       public override string Message => message;
       public override string StackTrace => stackTrace;
-      public new PortableException InnerException => innerException;
+
+      private void SetInnerException(Exception exception) {
+         typeof(Exception)
+             .GetField("_innerException", BindingFlags.NonPublic | BindingFlags.Instance)
+             .SetValue(this, exception);
+      }
    }
 }

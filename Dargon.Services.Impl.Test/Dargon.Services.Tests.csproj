@@ -120,6 +120,7 @@
   <ItemGroup>
     <Compile Include="AsyncTests.cs" />
     <Compile Include="ClusteredServiceNodeFT.cs" />
+    <Compile Include="ExceptionTests.cs" />
     <Compile Include="GenericTests.cs" />
     <Compile Include="LocalServiceRegistryExtensionsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using Dargon.PortableObjects;
 using Dargon.PortableObjects.Streams;
 using Dargon.Services.Messaging;
 using Dargon.Services.Server;
@@ -58,7 +59,11 @@ namespace Dargon.Services.Clustering.Local.Guest {
                }
             } catch (Exception e) {
                logger.Trace($"Local invocation for service {x.ServiceGuid} method {x.MethodName} for iid {x.InvocationId} threw ", e);
-               result = new PortableException(e);
+               if (e is IPortableObject) {
+                  result = e;
+               } else {
+                  result = new PortableException(e);
+               }
             }
             messageSender.SendInvocationResultAsync(x.InvocationId, result);
          }, CancellationToken.None, TaskCreationOptions.LongRunning);
